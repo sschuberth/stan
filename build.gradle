@@ -1,0 +1,20 @@
+apply plugin: 'application'
+
+mainClassName = 'com.github.sschuberth.stst.PostbankPDFParser'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.itextpdf:itextpdf:5.5.10'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
