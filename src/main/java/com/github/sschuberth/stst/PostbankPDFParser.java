@@ -73,6 +73,7 @@ class PostbankPDFParser {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         boolean foundStart = false;
+        BookingItem item = null;
         for (String line : lines) {
             if (!foundStart) {
                 if (!line.equals("Buchung Wert Vorgang/Buchungsinformation Soll Haben")) {
@@ -102,8 +103,12 @@ class PostbankPDFParser {
                 }
                 float amount = format.parse(amountStr).floatValue();
 
-                BookingItem item = new BookingItem(date, valueDate, m.group(3), amount);
+                item = new BookingItem(date, valueDate, m.group(3), amount);
                 items.add(item);
+            } else {
+                if (item != null) {
+                    item.info.add(line);
+                }
             }
         }
 
