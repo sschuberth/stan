@@ -18,6 +18,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class PostbankPDFParser {
+    private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\+-]) ([\\d\\.,]+)$");
+    private static DateTimeFormatter BOOKING_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
     private static class MyLocationTextExtractionStrategy extends LocationTextExtractionStrategy {
         private float spaceCharWidthFactor;
 
@@ -69,9 +72,6 @@ class PostbankPDFParser {
         String[] lines = text.toString().split("\\n");
         List<BookingItem> items = new ArrayList<>();
 
-        Pattern firstLine = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\+-]) ([\\d\\.,]+)$");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
         boolean foundStart = false;
         BookingItem item = null;
         for (String line : lines) {
@@ -84,10 +84,10 @@ class PostbankPDFParser {
                 }
             }
 
-            Matcher m = firstLine.matcher(line);
+            Matcher m = BOOKING_ITEM_PATTERN.matcher(line);
             if (m.matches()) {
-                LocalDate date = LocalDate.parse(m.group(1) + "2016", formatter);
-                LocalDate valueDate = LocalDate.parse(m.group(2) + "2016", formatter);
+                LocalDate date = LocalDate.parse(m.group(1) + "2016", BOOKING_DATE_FORMATTER);
+                LocalDate valueDate = LocalDate.parse(m.group(2) + "2016", BOOKING_DATE_FORMATTER);
 
                 DecimalFormatSymbols symbols = new DecimalFormatSymbols();
                 symbols.setDecimalSeparator(',');
