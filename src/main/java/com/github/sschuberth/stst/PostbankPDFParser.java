@@ -87,6 +87,7 @@ class PostbankPDFParser {
 
             Matcher m = BOOKING_ITEM_PATTERN.matcher(line);
             if (m.matches()) {
+                // TODO: Do not assume year 2016.
                 LocalDate date = LocalDate.parse(m.group(1) + "2016", BOOKING_DATE_FORMATTER);
                 LocalDate valueDate = LocalDate.parse(m.group(2) + "2016", BOOKING_DATE_FORMATTER);
 
