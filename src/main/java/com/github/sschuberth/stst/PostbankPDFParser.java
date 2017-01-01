@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class PostbankPDFParser {
+    private static String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
     private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\+-]) ([\\d\\.,]+)$");
     private static DateTimeFormatter BOOKING_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -76,7 +77,7 @@ class PostbankPDFParser {
         BookingItem item = null;
         for (String line : lines) {
             if (!foundStart) {
-                if (!line.equals("Buchung Wert Vorgang/Buchungsinformation Soll Haben")) {
+                if (!line.equals(BOOKING_TABLE_HEADER)) {
                     continue;
                 } else {
                     foundStart = true;
