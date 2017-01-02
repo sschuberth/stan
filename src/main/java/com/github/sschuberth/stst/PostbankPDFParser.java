@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class PostbankPDFParser {
+    private static String BOOKING_PAGE_HEADER = "Auszug Seite IBAN BIC (SWIFT)";
     private static String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
     private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\+-]) ([\\d\\.,]+)$");
     private static DateTimeFormatter BOOKING_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -85,7 +86,7 @@ class PostbankPDFParser {
                 };
 
                 TextExtractionStrategy strategy = new FilteredTextRenderListener(new MyLocationTextExtractionStrategy(0.3f), filter);
-                text.append(PdfTextExtractor.getTextFromPage(reader, i, strategy));
+                text.append(PdfTextExtractor.getTextFromPage(reader, i, strategy)).append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,8 +96,14 @@ class PostbankPDFParser {
         List<BookingItem> items = new ArrayList<>();
 
         boolean foundStart = false;
+        boolean skipLine = false;
         BookingItem item = null;
         for (String line : lines) {
+            if (skipLine) {
+                skipLine = false;
+                continue;
+            }
+
             if (!foundStart) {
                 if (!line.equals(BOOKING_TABLE_HEADER)) {
                     continue;
@@ -104,6 +111,10 @@ class PostbankPDFParser {
                     foundStart = true;
                     continue;
                 }
+            } else if (line.equals(BOOKING_PAGE_HEADER)) {
+                foundStart = false;
+                skipLine = true;
+                continue;
             }
 
             Matcher m = BOOKING_ITEM_PATTERN.matcher(line);
