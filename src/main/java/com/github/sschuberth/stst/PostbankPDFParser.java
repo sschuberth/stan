@@ -30,6 +30,7 @@ class PostbankPDFParser {
             this.spaceCharWidthFactor = spaceCharWidthFactor;
         }
 
+        @Override
         protected boolean isChunkAtWordBoundary(TextChunk chunk, TextChunk previousChunk) {
             float width = chunk.getLocation().getCharSpaceWidth();
             if (width < 0.1f) {
