@@ -3,8 +3,15 @@ package com.github.sschuberth.stst;
 import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.parser.FilteredTextRenderListener;
+import com.itextpdf.text.pdf.parser.ImageRenderInfo;
+import com.itextpdf.text.pdf.parser.LineSegment;
 import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
+import com.itextpdf.text.pdf.parser.RenderFilter;
+import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
+import com.itextpdf.text.pdf.parser.TextRenderInfo;
+import com.itextpdf.text.pdf.parser.Vector;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -64,7 +71,20 @@ class PostbankPDFParser {
                 }
 
                 // For some reason we must not share the strategy across pages to get correct results.
-                MyLocationTextExtractionStrategy strategy = new MyLocationTextExtractionStrategy(0.3f);
+                RenderFilter filter = new RenderFilter() {
+                    @Override
+                    public boolean allowText(TextRenderInfo renderInfo) {
+                        LineSegment line = renderInfo.getBaseline();
+                        return line.getStartPoint().get(Vector.I1) != line.getEndPoint().get(Vector.I1);
+                    }
+
+                    @Override
+                    public boolean allowImage(ImageRenderInfo renderInfo) {
+                        return false;
+                    }
+                };
+
+                TextExtractionStrategy strategy = new FilteredTextRenderListener(new MyLocationTextExtractionStrategy(0.3f), filter);
                 text.append(PdfTextExtractor.getTextFromPage(reader, i, strategy));
             }
         } catch (IOException e) {
