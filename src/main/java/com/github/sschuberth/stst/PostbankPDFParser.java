@@ -20,6 +20,8 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -92,17 +94,16 @@ class PostbankPDFParser {
             e.printStackTrace();
         }
 
-        String[] lines = text.toString().split("\\n");
-        List<BookingItem> items = new ArrayList<>();
+        List<String> lines = Arrays.asList(text.toString().split("\\n"));
 
         boolean foundStart = false;
-        boolean skipLine = false;
+
         BookingItem item = null;
-        for (String line : lines) {
-            if (skipLine) {
-                skipLine = false;
-                continue;
-            }
+        List<BookingItem> items = new ArrayList<>();
+
+        Iterator<String> i = lines.iterator();
+        while (i.hasNext()) {
+            String line = i.next();
 
             if (!foundStart) {
                 if (!line.equals(BOOKING_TABLE_HEADER)) {
@@ -112,8 +113,8 @@ class PostbankPDFParser {
                     continue;
                 }
             } else if (line.equals(BOOKING_PAGE_HEADER)) {
+                i.next();
                 foundStart = false;
-                skipLine = true;
                 continue;
             }
 
