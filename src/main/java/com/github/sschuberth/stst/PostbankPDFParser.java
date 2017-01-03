@@ -21,8 +21,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -122,7 +122,7 @@ class PostbankPDFParser {
 
         Float sumIn = null, sumOut = null;
 
-        Iterator<String> i = lines.iterator();
+        ListIterator<String> i = lines.listIterator();
         while (i.hasNext()) {
             String line = i.next();
 
@@ -142,19 +142,25 @@ class PostbankPDFParser {
 
                 continue;
             } else if (line.equals(BOOKING_SUMMARY_IN)) {
+                // Extract the incoming sum from the next line.
                 Matcher m = BOOKING_SUMMARY_PATTERN.matcher(i.next());
-                if (m.matches()) {
-                    String amountStr = m.group(2);
-                    sumIn = bookingFormat.parse(amountStr).floatValue();
+                if (!m.matches()) {
+                    throw new ParseException("Error parsing incoming booking summary", i.nextIndex());
                 }
+
+                String amountStr = m.group(2);
+                sumIn = bookingFormat.parse(amountStr).floatValue();
 
                 continue;
             } else if (line.equals(BOOKING_SUMMARY_OUT)) {
+                // Extract the outgoing sum from the next line.
                 Matcher m = BOOKING_SUMMARY_PATTERN.matcher(i.next());
-                if (m.matches()) {
-                    String amountStr = m.group(2);
-                    sumOut = bookingFormat.parse(amountStr).floatValue();
+                if (!m.matches()) {
+                    throw new ParseException("Error parsing outgoing booking summary", i.nextIndex());
                 }
+
+                String amountStr = m.group(2);
+                sumOut = bookingFormat.parse(amountStr).floatValue();
 
                 break;
             }
@@ -179,8 +185,11 @@ class PostbankPDFParser {
             }
         }
 
-        if (sumIn == null || sumOut == null) {
-            return null;
+        if (sumIn == null) {
+            throw new ParseException("No incoming booking summary found", i.nextIndex());
+        }
+        if (sumOut == null) {
+            throw new ParseException("No outgoing booking summary found", i.nextIndex());
         }
 
         float calcIn = 0, calcOut = 0;
@@ -192,8 +201,12 @@ class PostbankPDFParser {
             }
         }
 
-        if (Math.abs(calcIn - sumIn) >= 0.01 || Math.abs(calcOut - sumOut) >= 0.01) {
-            return null;
+        if (Math.abs(calcIn - sumIn) >= 0.01) {
+            throw new ParseException("Sanity check on incoming booking summary failed", i.nextIndex());
+        }
+
+        if (Math.abs(calcOut - sumOut) >= 0.01) {
+            throw new ParseException("Sanity check on outgoing booking summary failed", i.nextIndex());
         }
 
         return items;
