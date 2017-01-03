@@ -38,6 +38,10 @@ class PostbankPDFParser {
     private static String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
     private static Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) EUR ([\\+-] [\\d\\.,]+)$");
 
+    /*
+     * Use an extraction strategy that allow to customize the ratio between the regular character width and the space
+     * character width to tweak recognition of word boundaries. Inspired by http://stackoverflow.com/a/13645183/1127485.
+     */
     private static class MyLocationTextExtractionStrategy extends LocationTextExtractionStrategy {
         private float spaceCharWidthFactor;
 
@@ -74,12 +78,14 @@ class PostbankPDFParser {
                     continue;
                 }
 
+                // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
+                // http://stackoverflow.com/a/37786643/1127485.
                 for (PdfName key : pageFonts.getKeys()) {
                     PdfDictionary fontDictionary = pageFonts.getAsDict(key);
                     fontDictionary.put(PdfName.TOUNICODE, null);
                 }
 
-                // For some reason we must not share the strategy across pages to get correct results.
+                // Create a filter to ignore vertical text.
                 RenderFilter filter = new RenderFilter() {
                     @Override
                     public boolean allowText(TextRenderInfo renderInfo) {
@@ -93,8 +99,12 @@ class PostbankPDFParser {
                     }
                 };
 
+                // For some reason we must not share the strategy across pages to get correct results.
                 TextExtractionStrategy strategy = new FilteredTextRenderListener(new MyLocationTextExtractionStrategy(0.3f), filter);
-                text.append(PdfTextExtractor.getTextFromPage(reader, i, strategy)).append("\n");
+                text.append(PdfTextExtractor.getTextFromPage(reader, i, strategy));
+
+                // Ensure text from each page ends with a new-line to separate from the first line on the next page.
+                text.append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -116,6 +126,7 @@ class PostbankPDFParser {
         while (i.hasNext()) {
             String line = i.next();
 
+            // Loop until the booking table header is found, and then skip it.
             if (!foundStart) {
                 if (line.equals(BOOKING_TABLE_HEADER)) {
                     foundStart = true;
@@ -125,6 +136,7 @@ class PostbankPDFParser {
             }
 
             if (line.equals(BOOKING_PAGE_HEADER)) {
+                // Skip the booking page header and the following line to start looking for the table header again.
                 i.next();
                 foundStart = false;
 
@@ -147,6 +159,7 @@ class PostbankPDFParser {
                 break;
             }
 
+            // A matching pattern creates a new booking item.
             Matcher m = BOOKING_ITEM_PATTERN.matcher(line);
             if (m.matches()) {
                 // TODO: Do not assume year 2016.
@@ -159,6 +172,7 @@ class PostbankPDFParser {
                 currentItem = new BookingItem(date, valueDate, m.group(3), amount);
                 items.add(currentItem);
             } else {
+                // Add the line as info to the current booking item, if any.
                 if (currentItem != null) {
                     currentItem.info.add(line);
                 }
