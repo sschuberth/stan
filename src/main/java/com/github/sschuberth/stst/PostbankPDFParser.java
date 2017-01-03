@@ -31,7 +31,12 @@ class PostbankPDFParser {
     private static String BOOKING_PAGE_HEADER = "Auszug Seite IBAN BIC (SWIFT)";
     private static String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
     private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\+-] [\\d\\.,]+)$");
+
     private static DateTimeFormatter BOOKING_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+    private static String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
+    private static String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
+    private static Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) EUR ([\\+-] [\\d\\.,]+)$");
 
     private static class MyLocationTextExtractionStrategy extends LocationTextExtractionStrategy {
         private float spaceCharWidthFactor;
@@ -99,24 +104,47 @@ class PostbankPDFParser {
 
         boolean foundStart = false;
 
-        BookingItem item = null;
+        BookingItem currentItem = null;
         List<BookingItem> items = new ArrayList<>();
+
+        DecimalFormatSymbols bookingSymbols = new DecimalFormatSymbols(Locale.GERMAN);
+        DecimalFormat bookingFormat = new DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols);
+
+        Float sumIn = null, sumOut = null;
 
         Iterator<String> i = lines.iterator();
         while (i.hasNext()) {
             String line = i.next();
 
             if (!foundStart) {
-                if (!line.equals(BOOKING_TABLE_HEADER)) {
-                    continue;
-                } else {
+                if (line.equals(BOOKING_TABLE_HEADER)) {
                     foundStart = true;
-                    continue;
                 }
-            } else if (line.equals(BOOKING_PAGE_HEADER)) {
+
+                continue;
+            }
+
+            if (line.equals(BOOKING_PAGE_HEADER)) {
                 i.next();
                 foundStart = false;
+
                 continue;
+            } else if (line.equals(BOOKING_SUMMARY_IN)) {
+                Matcher m = BOOKING_SUMMARY_PATTERN.matcher(i.next());
+                if (m.matches()) {
+                    String amountStr = m.group(2);
+                    sumIn = bookingFormat.parse(amountStr).floatValue();
+                }
+
+                continue;
+            } else if (line.equals(BOOKING_SUMMARY_OUT)) {
+                Matcher m = BOOKING_SUMMARY_PATTERN.matcher(i.next());
+                if (m.matches()) {
+                    String amountStr = m.group(2);
+                    sumOut = bookingFormat.parse(amountStr).floatValue();
+                }
+
+                break;
             }
 
             Matcher m = BOOKING_ITEM_PATTERN.matcher(line);
@@ -125,19 +153,33 @@ class PostbankPDFParser {
                 LocalDate date = LocalDate.parse(m.group(1) + "2016", BOOKING_DATE_FORMATTER);
                 LocalDate valueDate = LocalDate.parse(m.group(2) + "2016", BOOKING_DATE_FORMATTER);
 
-                DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.GERMAN);
-                DecimalFormat format = new DecimalFormat("+ 0,000.#;- 0,000.#", symbols);
-
                 String amountStr = m.group(4);
-                float amount = format.parse(amountStr).floatValue();
+                float amount = bookingFormat.parse(amountStr).floatValue();
 
-                item = new BookingItem(date, valueDate, m.group(3), amount);
-                items.add(item);
+                currentItem = new BookingItem(date, valueDate, m.group(3), amount);
+                items.add(currentItem);
             } else {
-                if (item != null) {
-                    item.info.add(line);
+                if (currentItem != null) {
+                    currentItem.info.add(line);
                 }
             }
+        }
+
+        if (sumIn == null || sumOut == null) {
+            return null;
+        }
+
+        float calcIn = 0, calcOut = 0;
+        for (BookingItem item : items) {
+            if (item.amount > 0) {
+                calcIn += item.amount;
+            } else {
+                calcOut += item.amount;
+            }
+        }
+
+        if (Math.abs(calcIn - sumIn) >= 0.01 || Math.abs(calcOut - sumOut) >= 0.01) {
+            return null;
         }
 
         return items;
