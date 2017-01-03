@@ -23,13 +23,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class PostbankPDFParser {
     private static String BOOKING_PAGE_HEADER = "Auszug Seite IBAN BIC (SWIFT)";
     private static String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
-    private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\+-]) ([\\d\\.,]+)$");
+    private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\+-] [\\d\\.,]+)$");
     private static DateTimeFormatter BOOKING_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private static class MyLocationTextExtractionStrategy extends LocationTextExtractionStrategy {
@@ -124,18 +125,10 @@ class PostbankPDFParser {
                 LocalDate date = LocalDate.parse(m.group(1) + "2016", BOOKING_DATE_FORMATTER);
                 LocalDate valueDate = LocalDate.parse(m.group(2) + "2016", BOOKING_DATE_FORMATTER);
 
-                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                symbols.setDecimalSeparator(',');
-                DecimalFormat format = new DecimalFormat("0.#");
-                format.setDecimalFormatSymbols(symbols);
+                DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.GERMAN);
+                DecimalFormat format = new DecimalFormat("+ 0,000.#;- 0,000.#", symbols);
 
-                String sign = m.group(4);
-                String amountStr;
-                if (!sign.equals("+")) {
-                    amountStr = sign + m.group(5);
-                } else {
-                    amountStr = m.group(5);
-                }
+                String amountStr = m.group(4);
                 float amount = format.parse(amountStr).floatValue();
 
                 item = new BookingItem(date, valueDate, m.group(3), amount);
