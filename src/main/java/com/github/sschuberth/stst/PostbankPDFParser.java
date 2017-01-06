@@ -141,7 +141,17 @@ class PostbankPDFParser {
                 foundStart = false;
 
                 continue;
-            } else if (line.equals(BOOKING_SUMMARY_IN)) {
+            } else if (BOOKING_SUMMARY_IN.startsWith(line)) {
+                // Allow the incoming booking summary to span multiple lines.
+                String in = BOOKING_SUMMARY_IN;
+                do {
+                    in = in.replaceFirst(line + "\\s?", "");
+                    if (in.isEmpty()) {
+                        break;
+                    }
+                    line = i.next();
+                } while (in.startsWith(line));
+
                 // Extract the incoming sum from the next line.
                 Matcher m = BOOKING_SUMMARY_PATTERN.matcher(i.next());
                 if (!m.matches()) {
@@ -152,7 +162,17 @@ class PostbankPDFParser {
                 sumIn = bookingFormat.parse(amountStr).floatValue();
 
                 continue;
-            } else if (line.equals(BOOKING_SUMMARY_OUT)) {
+            } else if (BOOKING_SUMMARY_OUT.startsWith(line)) {
+                // Allow the outgoing booking summary to span multiple lines.
+                String out = BOOKING_SUMMARY_OUT;
+                do {
+                    out = out.replaceFirst(line + "\\s?", "");
+                    if (out.isEmpty()) {
+                        break;
+                    }
+                    line = i.next();
+                } while (out.startsWith(line));
+
                 // Extract the outgoing sum from the next line.
                 Matcher m = BOOKING_SUMMARY_PATTERN.matcher(i.next());
                 if (!m.matches()) {
