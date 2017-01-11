@@ -28,11 +28,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class PostbankPDFParser {
+    private static Pattern STATEMENT_DATE_PATTERN = Pattern.compile("^Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)$");
+    private static DateTimeFormatter STATEMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
     private static String BOOKING_PAGE_HEADER = "Auszug Seite IBAN BIC (SWIFT)";
     private static String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
     private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\+-] [\\d\\.,]+)$");
-
-    private static DateTimeFormatter BOOKING_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private static String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
     private static String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
@@ -120,12 +121,26 @@ class PostbankPDFParser {
         DecimalFormatSymbols bookingSymbols = new DecimalFormatSymbols(Locale.GERMAN);
         DecimalFormat bookingFormat = new DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols);
 
+        LocalDate stFrom = null, stTo = null;
         String accIban = null, accBic = null;
         Float sumIn = null, sumOut = null;
 
         ListIterator<String> it = lines.listIterator();
         while (it.hasNext()) {
             String line = it.next();
+
+            Matcher m = STATEMENT_DATE_PATTERN.matcher(line);
+            if (m.matches()) {
+                if (stFrom != null) {
+                    throw new ParseException("Multiple statement start dates found", it.nextIndex());
+                }
+                stFrom = LocalDate.parse(m.group(2), STATEMENT_DATE_FORMATTER);
+
+                if (stTo != null) {
+                    throw new ParseException("Multiple statement end dates found", it.nextIndex());
+                }
+                stTo = LocalDate.parse(m.group(3), STATEMENT_DATE_FORMATTER);
+            }
 
             // Loop until the booking table header is found, and then skip it.
             if (!foundStart) {
@@ -174,7 +189,7 @@ class PostbankPDFParser {
                 } while (in.startsWith(line));
 
                 // Extract the incoming sum from the next line.
-                Matcher m = BOOKING_SUMMARY_PATTERN.matcher(it.next());
+                m = BOOKING_SUMMARY_PATTERN.matcher(it.next());
                 if (!m.matches()) {
                     throw new ParseException("Error parsing incoming booking summary", it.nextIndex());
                 }
@@ -195,7 +210,7 @@ class PostbankPDFParser {
                 } while (out.startsWith(line));
 
                 // Extract the outgoing sum from the next line.
-                Matcher m = BOOKING_SUMMARY_PATTERN.matcher(it.next());
+                m = BOOKING_SUMMARY_PATTERN.matcher(it.next());
                 if (!m.matches()) {
                     throw new ParseException("Error parsing outgoing booking summary", it.nextIndex());
                 }
@@ -207,11 +222,11 @@ class PostbankPDFParser {
             }
 
             // A matching pattern creates a new booking item.
-            Matcher m = BOOKING_ITEM_PATTERN.matcher(line);
+            m = BOOKING_ITEM_PATTERN.matcher(line);
             if (m.matches()) {
                 // TODO: Do not assume year 2016.
-                LocalDate date = LocalDate.parse(m.group(1) + "2016", BOOKING_DATE_FORMATTER);
-                LocalDate valueDate = LocalDate.parse(m.group(2) + "2016", BOOKING_DATE_FORMATTER);
+                LocalDate date = LocalDate.parse(m.group(1) + "2016", STATEMENT_DATE_FORMATTER);
+                LocalDate valueDate = LocalDate.parse(m.group(2) + "2016", STATEMENT_DATE_FORMATTER);
 
                 String amountStr = m.group(4);
                 float amount = bookingFormat.parse(amountStr).floatValue();
@@ -224,6 +239,13 @@ class PostbankPDFParser {
                     currentItem.info.add(line);
                 }
             }
+        }
+
+        if (stFrom == null) {
+            throw new ParseException("No statement start date found", it.nextIndex());
+        }
+        if (stTo == null) {
+            throw new ParseException("No statement end date found", it.nextIndex());
         }
 
         if (accIban == null) {
@@ -257,6 +279,6 @@ class PostbankPDFParser {
             throw new ParseException("Sanity check on outgoing booking summary failed", it.nextIndex());
         }
 
-        return new Statement(accBic, accIban, items);
+        return new Statement(accBic, accIban, stFrom, stTo, items);
     }
 }
