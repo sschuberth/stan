@@ -62,7 +62,7 @@ class PostbankPDFParser {
         }
     }
 
-    public static List<BookingItem> parse(String filename) throws ParseException {
+    public static Statement parse(String filename) throws ParseException {
         StringBuilder text = new StringBuilder();
 
         try {
@@ -120,6 +120,7 @@ class PostbankPDFParser {
         DecimalFormatSymbols bookingSymbols = new DecimalFormatSymbols(Locale.GERMAN);
         DecimalFormat bookingFormat = new DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols);
 
+        String accIban = null, accBic = null;
         Float sumIn = null, sumOut = null;
 
         ListIterator<String> it = lines.listIterator();
@@ -136,8 +137,28 @@ class PostbankPDFParser {
             }
 
             if (line.equals(BOOKING_PAGE_HEADER)) {
-                // Skip the booking page header and the following line to start looking for the table header again.
-                it.next();
+                // Read the IBAN and BIC from the page header.
+                StringBuilder pageIban = new StringBuilder(22);
+
+                String[] info = it.next().split(" ");
+
+                if (info.length == 9) {
+                    if (accBic != null && !accBic.equals(info[8])) {
+                        throw new ParseException("Inconsistent BIC", it.nextIndex());
+                    }
+                    accBic = info[8];
+
+                    for (int i = 2; i < 8; ++i) {
+                        pageIban.append(info[i]);
+                    }
+
+                    if (accIban != null && !accIban.equals(pageIban.toString())) {
+                        throw new ParseException("Inconsistent IBAN", it.nextIndex());
+                    }
+                    accIban = pageIban.toString();
+                }
+
+                // Start looking for the table header again.
                 foundStart = false;
 
                 continue;
@@ -205,6 +226,13 @@ class PostbankPDFParser {
             }
         }
 
+        if (accIban == null) {
+            throw new ParseException("No IBAN found", it.nextIndex());
+        }
+        if (accBic == null) {
+            throw new ParseException("No BIC found", it.nextIndex());
+        }
+
         if (sumIn == null) {
             throw new ParseException("No incoming booking summary found", it.nextIndex());
         }
@@ -229,6 +257,6 @@ class PostbankPDFParser {
             throw new ParseException("Sanity check on outgoing booking summary failed", it.nextIndex());
         }
 
-        return items;
+        return new Statement(accBic, accIban, items);
     }
 }
