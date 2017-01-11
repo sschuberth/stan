@@ -122,9 +122,9 @@ class PostbankPDFParser {
 
         Float sumIn = null, sumOut = null;
 
-        ListIterator<String> i = lines.listIterator();
-        while (i.hasNext()) {
-            String line = i.next();
+        ListIterator<String> it = lines.listIterator();
+        while (it.hasNext()) {
+            String line = it.next();
 
             // Loop until the booking table header is found, and then skip it.
             if (!foundStart) {
@@ -137,7 +137,7 @@ class PostbankPDFParser {
 
             if (line.equals(BOOKING_PAGE_HEADER)) {
                 // Skip the booking page header and the following line to start looking for the table header again.
-                i.next();
+                it.next();
                 foundStart = false;
 
                 continue;
@@ -149,13 +149,13 @@ class PostbankPDFParser {
                     if (in.isEmpty()) {
                         break;
                     }
-                    line = i.next();
+                    line = it.next();
                 } while (in.startsWith(line));
 
                 // Extract the incoming sum from the next line.
-                Matcher m = BOOKING_SUMMARY_PATTERN.matcher(i.next());
+                Matcher m = BOOKING_SUMMARY_PATTERN.matcher(it.next());
                 if (!m.matches()) {
-                    throw new ParseException("Error parsing incoming booking summary", i.nextIndex());
+                    throw new ParseException("Error parsing incoming booking summary", it.nextIndex());
                 }
 
                 String amountStr = m.group(2);
@@ -170,13 +170,13 @@ class PostbankPDFParser {
                     if (out.isEmpty()) {
                         break;
                     }
-                    line = i.next();
+                    line = it.next();
                 } while (out.startsWith(line));
 
                 // Extract the outgoing sum from the next line.
-                Matcher m = BOOKING_SUMMARY_PATTERN.matcher(i.next());
+                Matcher m = BOOKING_SUMMARY_PATTERN.matcher(it.next());
                 if (!m.matches()) {
-                    throw new ParseException("Error parsing outgoing booking summary", i.nextIndex());
+                    throw new ParseException("Error parsing outgoing booking summary", it.nextIndex());
                 }
 
                 String amountStr = m.group(2);
@@ -206,10 +206,10 @@ class PostbankPDFParser {
         }
 
         if (sumIn == null) {
-            throw new ParseException("No incoming booking summary found", i.nextIndex());
+            throw new ParseException("No incoming booking summary found", it.nextIndex());
         }
         if (sumOut == null) {
-            throw new ParseException("No outgoing booking summary found", i.nextIndex());
+            throw new ParseException("No outgoing booking summary found", it.nextIndex());
         }
 
         float calcIn = 0, calcOut = 0;
@@ -222,11 +222,11 @@ class PostbankPDFParser {
         }
 
         if (Math.abs(calcIn - sumIn) >= 0.01) {
-            throw new ParseException("Sanity check on incoming booking summary failed", i.nextIndex());
+            throw new ParseException("Sanity check on incoming booking summary failed", it.nextIndex());
         }
 
         if (Math.abs(calcOut - sumOut) >= 0.01) {
-            throw new ParseException("Sanity check on outgoing booking summary failed", i.nextIndex());
+            throw new ParseException("Sanity check on outgoing booking summary failed", it.nextIndex());
         }
 
         return items;
