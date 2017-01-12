@@ -122,6 +122,7 @@ class PostbankPDFParser {
         DecimalFormat bookingFormat = new DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols);
 
         LocalDate stFrom = null, stTo = null;
+        int postYear = LocalDate.now().getYear(), valueYear = LocalDate.now().getYear();
         String accIban = null, accBic = null;
         Float sumIn = null, sumOut = null;
 
@@ -140,6 +141,8 @@ class PostbankPDFParser {
                     throw new ParseException("Multiple statement end dates found", it.nextIndex());
                 }
                 stTo = LocalDate.parse(m.group(3), STATEMENT_DATE_FORMATTER);
+
+                postYear = valueYear = stFrom.getYear();
             }
 
             // Loop until the booking table header is found, and then skip it.
@@ -224,14 +227,24 @@ class PostbankPDFParser {
             // A matching pattern creates a new booking item.
             m = BOOKING_ITEM_PATTERN.matcher(line);
             if (m.matches()) {
-                // TODO: Do not assume year 2016.
-                LocalDate date = LocalDate.parse(m.group(1) + "2016", STATEMENT_DATE_FORMATTER);
-                LocalDate valueDate = LocalDate.parse(m.group(2) + "2016", STATEMENT_DATE_FORMATTER);
+                LocalDate postDate = LocalDate.parse(m.group(1) + postYear, STATEMENT_DATE_FORMATTER);
+                LocalDate valueDate = LocalDate.parse(m.group(2) + valueYear, STATEMENT_DATE_FORMATTER);
+
+                if (currentItem != null) {
+                    // If there is a wrap-around in the month, increase the year.
+                    if (postDate.getMonth().getValue() < currentItem.postDate.getMonth().getValue()) {
+                        postDate = postDate.withYear(++postYear);
+                    }
+
+                    if (valueDate.getMonth().getValue() < currentItem.valueDate.getMonth().getValue()) {
+                        valueDate = valueDate.withYear(++valueYear);
+                    }
+                }
 
                 String amountStr = m.group(4);
                 float amount = bookingFormat.parse(amountStr).floatValue();
 
-                currentItem = new BookingItem(date, valueDate, m.group(3), amount);
+                currentItem = new BookingItem(postDate, valueDate, m.group(3), amount);
                 items.add(currentItem);
             } else {
                 // Add the line as info to the current booking item, if any.

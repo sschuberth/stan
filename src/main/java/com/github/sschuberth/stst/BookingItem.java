@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookingItem {
-    public LocalDate date;
+    public LocalDate postDate;
     public LocalDate valueDate;
     public List<String> info;
     public float amount;
 
-    public BookingItem(LocalDate date, LocalDate valueDate, String info, float amount) {
-        this.date = date;
+    public BookingItem(LocalDate postDate, LocalDate valueDate, String info, float amount) {
+        this.postDate = postDate;
         this.valueDate = valueDate;
         this.info = new ArrayList<>();
         this.info.add(info);
@@ -24,7 +24,7 @@ public class BookingItem {
 
         s.append("{\n");
 
-        s.append("\t\"date\": \"").append(date).append("\",\n");
+        s.append("\t\"postDate\": \"").append(postDate).append("\",\n");
         s.append("\t\"valueDate\": \"").append(valueDate).append("\",\n");
         s.append("\t\"amount\": \"").append(amount).append("\",\n");
 
