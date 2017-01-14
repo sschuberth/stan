@@ -37,6 +37,7 @@ class PostbankPDFParser {
 
     private static String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
     private static String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
+    private static String BOOKING_SUMMARY_BALANCE = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand";
 
     private static DecimalFormatSymbols BOOKING_SYMBOLS = new DecimalFormatSymbols(Locale.GERMAN);
     private static DecimalFormat BOOKING_FORMAT = new DecimalFormat("+ 0,000.#;- 0,000.#", BOOKING_SYMBOLS);
@@ -141,7 +142,7 @@ class PostbankPDFParser {
         LocalDate stFrom = null, stTo = null;
         int postYear = LocalDate.now().getYear(), valueYear = LocalDate.now().getYear();
         String accIban = null, accBic = null;
-        Float sumIn = null, sumOut = null;
+        Float sumIn = null, sumOut = null, balance = null;
 
         ListIterator<String> it = lines.listIterator();
         while (it.hasNext()) {
@@ -202,6 +203,12 @@ class PostbankPDFParser {
                 continue;
             } else if (BOOKING_SUMMARY_OUT.startsWith(line)) {
                 sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT, line, it);
+                continue;
+            } else if (BOOKING_SUMMARY_BALANCE.startsWith(line)) {
+                balance = parseBookingSummary(BOOKING_SUMMARY_BALANCE, line, it);
+
+                // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
+                // to filter out coming unwanted stuff.
                 break;
             }
 
@@ -255,6 +262,9 @@ class PostbankPDFParser {
         if (sumOut == null) {
             throw new ParseException("No outgoing booking summary found", it.nextIndex());
         }
+        if (balance == null) {
+            throw new ParseException("No balance booking summary found", it.nextIndex());
+        }
 
         float calcIn = 0, calcOut = 0;
         for (BookingItem item : items) {
@@ -273,6 +283,6 @@ class PostbankPDFParser {
             throw new ParseException("Sanity check on outgoing booking summary failed", it.nextIndex());
         }
 
-        return new Statement(accBic, accIban, stFrom, stTo, items);
+        return new Statement(accBic, accIban, stFrom, stTo, items, balance);
     }
 }
