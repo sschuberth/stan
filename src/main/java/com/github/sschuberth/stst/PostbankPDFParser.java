@@ -37,6 +37,9 @@ class PostbankPDFParser {
 
     private static String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
     private static String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
+
+    private static DecimalFormatSymbols BOOKING_SYMBOLS = new DecimalFormatSymbols(Locale.GERMAN);
+    private static DecimalFormat BOOKING_FORMAT = new DecimalFormat("+ 0,000.#;- 0,000.#", BOOKING_SYMBOLS);
     private static Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) EUR ([\\+-] [\\d\\.,]+)$");
 
     /*
@@ -61,6 +64,23 @@ class PostbankPDFParser {
             float dist = chunk.getLocation().distParallelStart() - previousChunk.getLocation().distParallelEnd();
             return dist < -width || dist > width * spaceCharWidthFactor;
         }
+    }
+
+    private static Float parseBookingSummary(String marker, String line, ListIterator<String> it) throws ParseException {
+        do {
+            marker = marker.replaceFirst(line + "\\s?", "");
+            if (marker.isEmpty()) {
+                break;
+            }
+            line = it.next();
+        } while (marker.startsWith(line));
+
+        Matcher m = BOOKING_SUMMARY_PATTERN.matcher(it.next());
+        if (!m.matches()) {
+            throw new ParseException("Error parsing booking summary", it.nextIndex());
+        }
+
+        return BOOKING_FORMAT.parse(m.group(2)).floatValue();
     }
 
     public static Statement parse(String filename) throws ParseException {
@@ -117,9 +137,6 @@ class PostbankPDFParser {
 
         BookingItem currentItem = null;
         List<BookingItem> items = new ArrayList<>();
-
-        DecimalFormatSymbols bookingSymbols = new DecimalFormatSymbols(Locale.GERMAN);
-        DecimalFormat bookingFormat = new DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols);
 
         LocalDate stFrom = null, stTo = null;
         int postYear = LocalDate.now().getYear(), valueYear = LocalDate.now().getYear();
@@ -181,46 +198,10 @@ class PostbankPDFParser {
 
                 continue;
             } else if (BOOKING_SUMMARY_IN.startsWith(line)) {
-                // Allow the incoming booking summary to span multiple lines.
-                String in = BOOKING_SUMMARY_IN;
-                do {
-                    in = in.replaceFirst(line + "\\s?", "");
-                    if (in.isEmpty()) {
-                        break;
-                    }
-                    line = it.next();
-                } while (in.startsWith(line));
-
-                // Extract the incoming sum from the next line.
-                m = BOOKING_SUMMARY_PATTERN.matcher(it.next());
-                if (!m.matches()) {
-                    throw new ParseException("Error parsing incoming booking summary", it.nextIndex());
-                }
-
-                String amountStr = m.group(2);
-                sumIn = bookingFormat.parse(amountStr).floatValue();
-
+                sumIn = parseBookingSummary(BOOKING_SUMMARY_IN, line, it);
                 continue;
             } else if (BOOKING_SUMMARY_OUT.startsWith(line)) {
-                // Allow the outgoing booking summary to span multiple lines.
-                String out = BOOKING_SUMMARY_OUT;
-                do {
-                    out = out.replaceFirst(line + "\\s?", "");
-                    if (out.isEmpty()) {
-                        break;
-                    }
-                    line = it.next();
-                } while (out.startsWith(line));
-
-                // Extract the outgoing sum from the next line.
-                m = BOOKING_SUMMARY_PATTERN.matcher(it.next());
-                if (!m.matches()) {
-                    throw new ParseException("Error parsing outgoing booking summary", it.nextIndex());
-                }
-
-                String amountStr = m.group(2);
-                sumOut = bookingFormat.parse(amountStr).floatValue();
-
+                sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT, line, it);
                 break;
             }
 
@@ -242,7 +223,7 @@ class PostbankPDFParser {
                 }
 
                 String amountStr = m.group(4);
-                float amount = bookingFormat.parse(amountStr).floatValue();
+                float amount = BOOKING_FORMAT.parse(amountStr).floatValue();
 
                 currentItem = new BookingItem(postDate, valueDate, m.group(3), amount);
                 items.add(currentItem);
