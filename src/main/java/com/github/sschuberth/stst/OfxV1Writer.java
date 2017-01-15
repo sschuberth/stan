@@ -70,6 +70,8 @@ public enum OfxV1Writer {
     }
 
     public void write(Statement st, String name, Locale locale, Currency currency) throws IOException {
+        // It usually is bad practice to write a static field from an instance method, but the convention for this class
+        // is to only use the enum's "OFX" instance.
         writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name), StandardCharsets.UTF_8));
 
         writer.write(String.join("\n", HEADER) + "\n\n");
