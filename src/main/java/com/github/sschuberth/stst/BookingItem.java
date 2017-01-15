@@ -20,7 +20,7 @@ public class BookingItem {
 
     @Override
     public String toString() {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
 
         s.append("{\n");
 
