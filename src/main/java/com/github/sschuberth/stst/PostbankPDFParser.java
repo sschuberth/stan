@@ -87,49 +87,55 @@ class PostbankPDFParser {
     public static Statement parse(String filename) throws ParseException {
         StringBuilder text = new StringBuilder();
 
+        PdfReader reader;
         try {
-            PdfReader reader = new PdfReader(filename);
-            for (int i = 1; i <= reader.getNumberOfPages(); ++i) {
-                PdfDictionary pageResources = reader.getPageResources(i);
-                if (pageResources == null) {
-                    continue;
-                }
-
-                PdfDictionary pageFonts = pageResources.getAsDict(PdfName.FONT);
-                if (pageFonts == null) {
-                    continue;
-                }
-
-                // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
-                // http://stackoverflow.com/a/37786643/1127485.
-                for (PdfName key : pageFonts.getKeys()) {
-                    PdfDictionary fontDictionary = pageFonts.getAsDict(key);
-                    fontDictionary.put(PdfName.TOUNICODE, null);
-                }
-
-                // Create a filter to ignore vertical text.
-                RenderFilter filter = new RenderFilter() {
-                    @Override
-                    public boolean allowText(TextRenderInfo renderInfo) {
-                        LineSegment line = renderInfo.getBaseline();
-                        return line.getStartPoint().get(Vector.I1) != line.getEndPoint().get(Vector.I1);
-                    }
-
-                    @Override
-                    public boolean allowImage(ImageRenderInfo renderInfo) {
-                        return false;
-                    }
-                };
-
-                // For some reason we must not share the strategy across pages to get correct results.
-                TextExtractionStrategy strategy = new FilteredTextRenderListener(new MyLocationTextExtractionStrategy(0.3f), filter);
-                text.append(PdfTextExtractor.getTextFromPage(reader, i, strategy));
-
-                // Ensure text from each page ends with a new-line to separate from the first line on the next page.
-                text.append("\n");
-            }
+            reader = new PdfReader(filename);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ParseException("Error opening file", 0);
+        }
+
+        for (int i = 1; i <= reader.getNumberOfPages(); ++i) {
+            PdfDictionary pageResources = reader.getPageResources(i);
+            if (pageResources == null) {
+                continue;
+            }
+
+            PdfDictionary pageFonts = pageResources.getAsDict(PdfName.FONT);
+            if (pageFonts == null) {
+                continue;
+            }
+
+            // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
+            // http://stackoverflow.com/a/37786643/1127485.
+            for (PdfName key : pageFonts.getKeys()) {
+                PdfDictionary fontDictionary = pageFonts.getAsDict(key);
+                fontDictionary.put(PdfName.TOUNICODE, null);
+            }
+
+            // Create a filter to ignore vertical text.
+            RenderFilter filter = new RenderFilter() {
+                @Override
+                public boolean allowText(TextRenderInfo renderInfo) {
+                    LineSegment line = renderInfo.getBaseline();
+                    return line.getStartPoint().get(Vector.I1) != line.getEndPoint().get(Vector.I1);
+                }
+
+                @Override
+                public boolean allowImage(ImageRenderInfo renderInfo) {
+                    return false;
+                }
+            };
+
+            // For some reason we must not share the strategy across pages to get correct results.
+            TextExtractionStrategy strategy = new FilteredTextRenderListener(new MyLocationTextExtractionStrategy(0.3f), filter);
+            try {
+                text.append(PdfTextExtractor.getTextFromPage(reader, i, strategy));
+            } catch (IOException e) {
+                throw new ParseException("Error extracting text from page", i);
+            }
+
+            // Ensure text from each page ends with a new-line to separate from the first line on the next page.
+            text.append("\n");
         }
 
         List<String> lines = Arrays.asList(text.toString().split("\\n"));
