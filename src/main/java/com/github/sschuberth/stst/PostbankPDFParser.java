@@ -33,7 +33,7 @@ class PostbankPDFParser {
 
     private static String BOOKING_PAGE_HEADER = "Auszug Seite IBAN BIC (SWIFT)";
     private static String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
-    private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\+-] [\\d\\.,]+)$");
+    private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([+-] [\\d.,]+)$");
 
     private static String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
     private static String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
@@ -41,7 +41,7 @@ class PostbankPDFParser {
 
     private static DecimalFormatSymbols BOOKING_SYMBOLS = new DecimalFormatSymbols(Locale.GERMAN);
     private static DecimalFormat BOOKING_FORMAT = new DecimalFormat("+ 0,000.#;- 0,000.#", BOOKING_SYMBOLS);
-    private static Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) EUR ([\\+-] [\\d\\.,]+)$");
+    private static Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) EUR ([+-] [\\d.,]+)$");
 
     /*
      * Use an extraction strategy that allow to customize the ratio between the regular character width and the space
