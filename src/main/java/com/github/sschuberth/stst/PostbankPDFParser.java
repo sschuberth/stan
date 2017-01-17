@@ -76,9 +76,15 @@ class PostbankPDFParser {
             line = it.next();
         } while (marker.startsWith(line));
 
-        Matcher m = BOOKING_SUMMARY_PATTERN.matcher(it.next());
+        line = it.next();
+        Matcher m = BOOKING_SUMMARY_PATTERN.matcher(line);
         if (!m.matches()) {
-            throw new ParseException("Error parsing booking summary", it.nextIndex());
+            // Try appending the next line before we fail.
+            line = line.trim() + " " + it.next().trim();
+            m = BOOKING_SUMMARY_PATTERN.matcher(line);
+            if (!m.matches()) {
+                throw new ParseException("Error parsing booking summary", it.nextIndex());
+            }
         }
 
         return BOOKING_FORMAT.parse(m.group(2)).floatValue();
