@@ -302,6 +302,6 @@ class PostbankPDFParser {
             throw new ParseException("Sanity check on outgoing booking summary failed", it.nextIndex());
         }
 
-        return new Statement(accBic, accIban, stFrom, stTo, items, balance);
+        return new Statement(filename, accBic, accIban, stFrom, stTo, items, balance);
     }
 }

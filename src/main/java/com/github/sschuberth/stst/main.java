@@ -6,6 +6,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static java.nio.file.Files.newDirectoryStream;
@@ -31,6 +33,26 @@ class Main {
             } catch (IOException e) {
                 System.err.println("Error opening '" + arg + "'.");
             }
+        }
+
+        Collections.sort(statements);
+
+        Iterator<Statement> it = statements.iterator();
+        if (!it.hasNext()) {
+            System.err.println("No statements found.");
+            System.exit(1);
+        }
+
+        Statement curr = it.next(), next;
+        while (it.hasNext()) {
+             next = it.next();
+
+             if (!curr.toDate.plusDays(1).equals(next.fromDate)) {
+                 System.err.println("Statements '" + curr.filename + "' and '" + next.filename + "' are not consecutive.");
+                 System.exit(1);
+             }
+
+             curr = next;
         }
     }
 }
