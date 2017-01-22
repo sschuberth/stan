@@ -10,17 +10,19 @@ public class Statement implements Comparable<Statement> {
     public String accountId;
     public LocalDate fromDate;
     public LocalDate toDate;
+    public float balanceOld;
+    public float balanceNew;
     public List<BookingItem> bookings = new ArrayList<>();
-    public float balance;
 
-    public Statement(String filename, String bankId, String accountId, LocalDate fromDate, LocalDate toDate, List<BookingItem> bookings, float balance) {
+    public Statement(String filename, String bankId, String accountId, LocalDate fromDate, LocalDate toDate, float balanceOld, float balanceNew, List<BookingItem> bookings) {
         this.filename = filename;
         this.bankId = bankId;
         this.accountId = accountId;
         this.fromDate = fromDate;
         this.toDate = toDate;
+        this.balanceOld = balanceOld;
+        this.balanceNew = balanceNew;
         this.bookings = bookings;
-        this.balance = balance;
     }
 
     @Override

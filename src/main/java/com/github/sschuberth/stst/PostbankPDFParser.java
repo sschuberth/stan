@@ -32,6 +32,7 @@ class PostbankPDFParser {
     private static DateTimeFormatter STATEMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private static String BOOKING_PAGE_HEADER = "Auszug Seite IBAN BIC (SWIFT)";
+    private static String BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand";
     private static String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
     private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([+-] [\\d.,]+)$");
 
@@ -155,11 +156,15 @@ class PostbankPDFParser {
         LocalDate stFrom = null, stTo = null;
         int postYear = LocalDate.now().getYear(), valueYear = LocalDate.now().getYear();
         String accIban = null, accBic = null;
-        Float sumIn = null, sumOut = null, balance = null;
+        Float sumIn = null, sumOut = null;
+        Float balanceOld = null, balanceNew = null;
 
         ListIterator<String> it = lines.listIterator();
         while (it.hasNext()) {
             String line = it.next();
+
+            // Uncomment for debugging.
+            //System.out.println(line);
 
             Matcher m = STATEMENT_DATE_PATTERN.matcher(line);
             if (m.matches()) {
@@ -174,24 +179,13 @@ class PostbankPDFParser {
                 stTo = LocalDate.parse(m.group(3), STATEMENT_DATE_FORMATTER);
 
                 postYear = valueYear = stFrom.getYear();
-            }
-
-            // Loop until the booking table header is found, and then skip it.
-            if (!foundStart) {
-                if (line.equals(BOOKING_TABLE_HEADER)) {
-                    foundStart = true;
-                }
-
-                continue;
-            }
-
-            if (line.equals(BOOKING_PAGE_HEADER)) {
+            } else if (line.startsWith(BOOKING_PAGE_HEADER)) {
                 // Read the IBAN and BIC from the page header.
                 StringBuilder pageIban = new StringBuilder(22);
 
                 String[] info = it.next().split(" ");
 
-                if (info.length == 9) {
+                if (info.length >= 9) {
                     if (accBic != null && !accBic.equals(info[8])) {
                         throw new ParseException("Inconsistent BIC", it.nextIndex());
                     }
@@ -207,6 +201,10 @@ class PostbankPDFParser {
                     accIban = pageIban.toString();
                 }
 
+                if (line.endsWith(BOOKING_PAGE_HEADER_BALANCE_OLD) && info.length == 12) {
+                    balanceOld = BOOKING_FORMAT.parse(String.join(" ", info[10], info[11])).floatValue();
+                }
+
                 // Start looking for the table header again.
                 foundStart = false;
 
@@ -218,20 +216,29 @@ class PostbankPDFParser {
                 sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT, line, it);
                 continue;
             } else if (BOOKING_SUMMARY_BALANCE_SINGULAR.startsWith(line)) {
-                balance = parseBookingSummary(BOOKING_SUMMARY_BALANCE_SINGULAR, line, it);
+                balanceNew = parseBookingSummary(BOOKING_SUMMARY_BALANCE_SINGULAR, line, it);
 
                 // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
                 // to filter out coming unwanted stuff.
                 break;
             } else if (BOOKING_SUMMARY_BALANCE_PLURAL.startsWith(line)) {
-                balance = parseBookingSummary(BOOKING_SUMMARY_BALANCE_PLURAL, line, it);
+                balanceNew = parseBookingSummary(BOOKING_SUMMARY_BALANCE_PLURAL, line, it);
 
                 // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
                 // to filter out coming unwanted stuff.
                 break;
             }
 
-            // A matching pattern creates a new booking item.
+            // Loop until the booking table header is found, and then skip it.
+            if (!foundStart) {
+                if (line.equals(BOOKING_TABLE_HEADER)) {
+                    foundStart = true;
+                }
+
+                continue;
+            }
+
+            // Within the booking table, a matching pattern creates a new booking item.
             m = BOOKING_ITEM_PATTERN.matcher(line);
             if (m.matches()) {
                 LocalDate postDate = LocalDate.parse(m.group(1) + postYear, STATEMENT_DATE_FORMATTER);
@@ -281,8 +288,12 @@ class PostbankPDFParser {
         if (sumOut == null) {
             throw new ParseException("No outgoing booking summary found", it.nextIndex());
         }
-        if (balance == null) {
-            throw new ParseException("No balance booking summary found", it.nextIndex());
+
+        if (balanceOld == null) {
+            throw new ParseException("No old balance found", it.nextIndex());
+        }
+        if (balanceNew == null) {
+            throw new ParseException("No new balance found", it.nextIndex());
         }
 
         float calcIn = 0, calcOut = 0;
@@ -302,6 +313,11 @@ class PostbankPDFParser {
             throw new ParseException("Sanity check on outgoing booking summary failed", it.nextIndex());
         }
 
-        return new Statement(filename, accBic, accIban, stFrom, stTo, items, balance);
+        float balanceCalc = balanceOld + sumIn + sumOut;
+        if (Math.abs(balanceCalc - balanceNew) >= 0.01) {
+            throw new ParseException("Sanity check on balances failed", it.nextIndex());
+        }
+
+        return new Statement(filename, accBic, accIban, stFrom, stTo, balanceOld, balanceNew, items);
     }
 }

@@ -52,6 +52,11 @@ class Main {
                  System.exit(1);
              }
 
+             if (curr.balanceNew != next.balanceOld) {
+                 System.err.println("Balances of statements '" + curr.filename + "' and '" + next.filename + "' do not match.");
+                 System.exit(1);
+             }
+
              curr = next;
         }
     }

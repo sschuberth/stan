@@ -107,7 +107,7 @@ public enum OfxV1Writer {
                             }
                         BANKTRANLIST.end();
                         LEDGERBAL.begin();
-                            BALAMT.data(st.balance);
+                            BALAMT.data(st.balanceNew);
                             DTASOF.data(toDateStr);
                         LEDGERBAL.end();
                     STMTRS.end();
