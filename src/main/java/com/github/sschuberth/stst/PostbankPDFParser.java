@@ -318,6 +318,6 @@ class PostbankPDFParser {
             throw new ParseException("Sanity check on balances failed", it.nextIndex());
         }
 
-        return new Statement(filename, accBic, accIban, stFrom, stTo, balanceOld, balanceNew, items);
+        return new Statement(filename, accBic, accIban, stFrom, stTo, balanceOld, balanceNew, sumIn, sumOut, items);
     }
 }

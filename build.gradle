@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-mainClassName = 'com.github.sschuberth.stst.Main'
+mainClassName = 'com.github.sschuberth.stst.Statistics'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
