@@ -44,8 +44,10 @@ public class Statistics extends Application {
     }
 
     private final CategoryAxis xAxis = new CategoryAxis();
-    private final NumberAxis yAxis = new NumberAxis();
+    private final NumberAxis yAxis = new NumberAxis(-10000.0, 80000.0, 10000.0);
     private final MyStackedBarChart<String, Number> chart = new MyStackedBarChart<>(xAxis, yAxis);
+
+    private final XYChart.Series<String, Number> balance = new XYChart.Series<>();
     private final XYChart.Series<String, Number> incoming = new XYChart.Series<>();
     private final XYChart.Series<String, Number> outgoing = new XYChart.Series<>();
 
@@ -72,6 +74,11 @@ public class Statistics extends Application {
 
         yAxis.setLabel("€");
 
+        balance.setName("Balance");
+        for (int i = 0; i < statementsTotalMonths; ++i) {
+            balance.getData().add(new XYChart.Data<>(statementsMonthNames.get(i), statements.get(i).balanceOld));
+        }
+
         incoming.setName("Incoming");
         for (int i = 0; i < statementsTotalMonths; ++i) {
             incoming.getData().add(new XYChart.Data<>(statementsMonthNames.get(i), statements.get(i).sumIn));
@@ -82,7 +89,7 @@ public class Statistics extends Application {
             outgoing.getData().add(new XYChart.Data<>(statementsMonthNames.get(i), statements.get(i).sumOut));
         }
 
-        chart.getData().addAll(incoming, outgoing);
+        chart.getData().addAll(balance, incoming, outgoing);
 
         Scene scene = new Scene(chart, 800, 600);
         stage.setScene(scene);
@@ -90,10 +97,15 @@ public class Statistics extends Application {
 
         // Apply an offset along the y-axis to all bars of the second series. For details see
         // http://stackoverflow.com/a/41904147/1127485.
-        int dataSize = incoming.getData().size();
+        int dataSize = balance.getData().size();
         for (int i = 0; i < dataSize; ++i) {
-            Node positiveBar = chart.getPlotChildren().get(i);
-            chart.getPlotChildren().get(i + dataSize).setLayoutY(positiveBar.getLayoutY() - 1);
+            Node balanceBar = chart.getPlotChildren().get(i);
+            Node incomingBar = chart.getPlotChildren().get(dataSize + i);
+            Node outgoingBar = chart.getPlotChildren().get(dataSize * 2 + i);
+
+            double balanceBarHeight = balanceBar.getLayoutBounds().getHeight();
+            incomingBar.setTranslateY(-balanceBarHeight);
+            outgoingBar.setLayoutY(incomingBar.getLayoutY() - 1 - balanceBarHeight);
         }
     }
 
