@@ -43,9 +43,7 @@ public class Statistics extends Application {
         }
     }
 
-    private final CategoryAxis xAxis = new CategoryAxis();
-    private final NumberAxis yAxis = new NumberAxis(-10000.0, 80000.0, 10000.0);
-    private final MyStackedBarChart<String, Number> chart = new MyStackedBarChart<>(xAxis, yAxis);
+    private MyStackedBarChart<String, Number> chart = null;
 
     private final XYChart.Series<String, Number> balance = new XYChart.Series<>();
     private final XYChart.Series<String, Number> incoming = new XYChart.Series<>();
@@ -53,6 +51,8 @@ public class Statistics extends Application {
 
     @Override
     public void start(Stage stage) {
+        stage.setTitle("Statement Statistics");
+
         List<Statement> statements = loadStatements();
 
         LocalDate firstStatementFromDate = statements.get(0).fromDate;
@@ -65,30 +65,50 @@ public class Statistics extends Application {
             statementsMonthNames.add(MONTH_NAMES[(firstStatementFromDate.getMonthValue() + i) % 12]);
         }
 
-        stage.setTitle("Statement Statistics");
-
-        chart.setTitle("Monthly Payments");
-
-        xAxis.setLabel("Month");
-        xAxis.setCategories(FXCollections.observableArrayList(statementsMonthNames));
-
-        yAxis.setLabel("€");
-
         balance.setName("Balance");
         for (int i = 0; i < statementsTotalMonths; ++i) {
             balance.getData().add(new XYChart.Data<>(statementsMonthNames.get(i), statements.get(i).balanceOld));
         }
 
+        float upperBound = 0;
         incoming.setName("Incoming");
         for (int i = 0; i < statementsTotalMonths; ++i) {
-            incoming.getData().add(new XYChart.Data<>(statementsMonthNames.get(i), statements.get(i).sumIn));
+            float value = statements.get(i).sumIn;
+            incoming.getData().add(new XYChart.Data<>(statementsMonthNames.get(i), value));
+            value += statements.get(i).balanceOld;
+            if (value > upperBound) {
+                upperBound = value;
+            }
         }
 
+        float lowerBound = 0;
         outgoing.setName("Outgoing");
         for (int i = 0; i < statementsTotalMonths; ++i) {
-            outgoing.getData().add(new XYChart.Data<>(statementsMonthNames.get(i), statements.get(i).sumOut));
+            float value = statements.get(i).sumOut;
+            outgoing.getData().add(new XYChart.Data<>(statementsMonthNames.get(i), value));
+
+            value = statements.get(i).balanceOld;
+            if (value < lowerBound) {
+                lowerBound = value;
+            }
+
+            value += statements.get(i).sumIn + statements.get(i).sumOut;
+            if (value < lowerBound) {
+                lowerBound = value;
+            }
         }
 
+        float range = upperBound - lowerBound;
+        float margin = range * 0.1f;
+        float tickUnit = roundTo(range * 0.2f, 5000);
+
+        CategoryAxis xAxis = new CategoryAxis(FXCollections.observableArrayList(statementsMonthNames));
+        xAxis.setLabel("Month");
+
+        NumberAxis yAxis = new NumberAxis("€", roundTo(lowerBound - margin, 1000), roundTo(upperBound + margin, 1000), tickUnit);
+
+        chart = new MyStackedBarChart<>(xAxis, yAxis);
+        chart.setTitle("Monthly Payments");
         chart.getData().addAll(balance, incoming, outgoing);
 
         Scene scene = new Scene(chart, 800, 600);
@@ -167,6 +187,10 @@ public class Statistics extends Application {
         //}
 
         return statements;
+    }
+
+    private long roundTo(double i, long v) {
+        return Math.round(i / v) * v;
     }
 
     public static void main(String[] args) {
