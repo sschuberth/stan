@@ -104,8 +104,11 @@ public class Statistics extends Application {
             Node outgoingBar = chart.getPlotChildren().get(dataSize * 2 + i);
 
             double balanceBarHeight = balanceBar.getLayoutBounds().getHeight();
-            incomingBar.setTranslateY(-balanceBarHeight);
-            outgoingBar.setLayoutY(incomingBar.getLayoutY() - 1 - balanceBarHeight);
+            double incomingBarTranslate = statements.get(i).balanceOld < 0 ? balanceBarHeight : -balanceBarHeight;
+            incomingBar.setTranslateY(incomingBarTranslate);
+
+            double incomingBarHeight = incomingBar.getLayoutBounds().getHeight();
+            outgoingBar.setTranslateY(incomingBarTranslate - incomingBarHeight - 1);
         }
     }
 
