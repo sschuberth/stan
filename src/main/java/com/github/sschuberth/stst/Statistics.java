@@ -62,7 +62,7 @@ public class Statistics extends Application {
         int statementsTotalMonths = (int) period.toTotalMonths();
         List<String> statementsMonthNames = new ArrayList<>(statementsTotalMonths);
         for (int i = 0; i < statementsTotalMonths; ++i) {
-            statementsMonthNames.add(MONTH_NAMES[(firstStatementFromDate.getMonthValue() + i) % 12]);
+            statementsMonthNames.add(MONTH_NAMES[(firstStatementFromDate.getMonthValue() + i) % MONTH_NAMES.length]);
         }
 
         balance.setName("Balance");
