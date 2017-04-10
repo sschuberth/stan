@@ -205,7 +205,16 @@ class PostbankPDFParser {
                 }
 
                 if (line.endsWith(BOOKING_PAGE_HEADER_BALANCE_OLD) && info.length == 12) {
-                    balanceOld = BOOKING_FORMAT.parse(String.join(" ", info[10], info[11])).floatValue();
+                    // Work around a period being used instead of comma.
+                    String signStr = info[10], amountStr = info[11];
+                    char[] amountChars = amountStr.toCharArray();
+                    int index = amountStr.length() - 3;
+                    if (amountChars[index] == '.') {
+                        amountChars[index] = ',';
+                        amountStr = String.valueOf(amountChars);
+                    }
+
+                    balanceOld = BOOKING_FORMAT.parse(signStr + " " + amountStr).floatValue();
                 }
 
                 // Start looking for the table header again.
