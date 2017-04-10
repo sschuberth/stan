@@ -59,7 +59,7 @@ public class Statistics extends Application {
         LocalDate lastStatementToDate = statements.get(statements.size() - 1).toDate;
         Period period = firstStatementFromDate.until(lastStatementToDate);
 
-        int statementsTotalMonths = (int) period.toTotalMonths();
+        int statementsTotalMonths = statements.size();
         List<String> statementsMonthNames = new ArrayList<>(statementsTotalMonths);
         for (int i = 0; i < statementsTotalMonths; ++i) {
             statementsMonthNames.add(MONTH_NAMES[(firstStatementFromDate.getMonthValue() + i) % MONTH_NAMES.length]);
