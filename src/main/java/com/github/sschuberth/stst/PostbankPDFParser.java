@@ -35,6 +35,7 @@ class PostbankPDFParser {
     private static String BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand";
     private static String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
     private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([+-] [\\d.,]+)$");
+    private static Pattern BOOKING_ITEM_PATTERN_NO_SIGN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)$");
 
     private static String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
     private static String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
@@ -159,6 +160,8 @@ class PostbankPDFParser {
         Float sumIn = null, sumOut = null;
         Float balanceOld = null, balanceNew = null;
 
+        String signLine = null;
+
         ListIterator<String> it = lines.listIterator();
         while (it.hasNext()) {
             String line = it.next();
@@ -227,6 +230,9 @@ class PostbankPDFParser {
                 // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
                 // to filter out coming unwanted stuff.
                 break;
+            } if (line.equals("+") || line.equals("-")) {
+                signLine = line;
+                continue;
             }
 
             // Loop until the booking table header is found, and then skip it.
@@ -238,8 +244,18 @@ class PostbankPDFParser {
                 continue;
             }
 
-            // Within the booking table, a matching pattern creates a new booking item.
+            // Work around the sign being present on the previous line.
             m = BOOKING_ITEM_PATTERN.matcher(line);
+            if (!m.matches()) {
+                m = BOOKING_ITEM_PATTERN_NO_SIGN.matcher(line);
+                if (m.matches() && signLine != null) {
+                    line = String.join(" ", m.group(1), m.group(2), m.group(3), signLine, m.group(4));
+                    signLine = null;
+                    m = BOOKING_ITEM_PATTERN.matcher(line);
+                }
+            }
+
+            // Within the booking table, a matching pattern creates a new booking item.
             if (m.matches()) {
                 LocalDate postDate = LocalDate.parse(m.group(1) + postYear, STATEMENT_DATE_FORMATTER);
                 LocalDate valueDate = LocalDate.parse(m.group(2) + valueYear, STATEMENT_DATE_FORMATTER);
