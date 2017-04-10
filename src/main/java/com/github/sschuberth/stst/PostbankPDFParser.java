@@ -34,7 +34,7 @@ class PostbankPDFParser {
     private static String BOOKING_PAGE_HEADER = "Auszug Seite IBAN BIC (SWIFT)";
     private static String BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand";
     private static String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
-    private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([+-] [\\d.,]+)$");
+    private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)$");
     private static Pattern BOOKING_ITEM_PATTERN_NO_SIGN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)$");
 
     private static String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
@@ -272,6 +272,13 @@ class PostbankPDFParser {
                 }
 
                 String amountStr = m.group(4);
+
+                // Work around a missing space before the amount.
+                if (amountStr.charAt(1) != ' ') {
+                    String[] a = amountStr.split("", 2);
+                    amountStr = a[0] + " " + a[1];
+                }
+
                 float amount = BOOKING_FORMAT.parse(amountStr).floatValue();
 
                 currentItem = new BookingItem(postDate, valueDate, m.group(3), amount);
