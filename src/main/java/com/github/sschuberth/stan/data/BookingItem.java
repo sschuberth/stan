@@ -2,6 +2,7 @@ package com.github.sschuberth.stan.data;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class BookingItem {
@@ -29,14 +30,24 @@ public class BookingItem {
         s.append("\t\"amount\": \"").append(amount).append("\",\n");
 
         s.append("\t\"info\": [\n");
-        for (String line : info) {
-            s.append("\t\t\"");
-            s.append(line);
-            s.append("\",\n");
-        }
-        s.append("\t],\n");
+        Iterator<String> infoIterator = info.iterator();
+        while (infoIterator.hasNext()) {
+            s.append("\t\t");
 
-        s.append("},\n");
+            // Quote the info line.
+            s.append("\"");
+            s.append(infoIterator.next());
+            s.append("\"");
+
+            if (infoIterator.hasNext()) {
+                s.append(",");
+            }
+
+            s.append("\n");
+        }
+        s.append("\t]\n");
+
+        s.append("}");
 
         return s.toString();
     }

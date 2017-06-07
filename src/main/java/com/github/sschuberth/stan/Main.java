@@ -41,15 +41,15 @@ public class Main {
 
         Collections.sort(statements);
 
-        Iterator<Statement> it = statements.iterator();
-        if (!it.hasNext()) {
+        Iterator<Statement> statementIterator = statements.iterator();
+        if (!statementIterator.hasNext()) {
             System.err.println("No statements found.");
             System.exit(1);
         }
 
-        Statement curr = it.next(), next;
-        while (it.hasNext()) {
-            next = it.next();
+        Statement curr = statementIterator.next(), next;
+        while (statementIterator.hasNext()) {
+            next = statementIterator.next();
 
             if (!curr.toDate.plusDays(1).equals(next.fromDate)) {
                 System.err.println("Statements '" + curr.filename + "' and '" + next.filename + "' are not consecutive.");
@@ -64,11 +64,17 @@ public class Main {
             curr = next;
         }
 
-        it = statements.iterator();
-        while (it.hasNext()) {
-            for (BookingItem item : it.next().bookings) {
-                System.out.println(item);
+        statementIterator = statements.iterator();
+        while (statementIterator.hasNext()) {
+            System.out.println("[");
+
+            Iterator<BookingItem> bookingItemIterator = statementIterator.next().bookings.iterator();
+            while (bookingItemIterator.hasNext()) {
+                BookingItem item = bookingItemIterator.next();
+                System.out.println(item + (bookingItemIterator.hasNext() ? "," : ""));
             }
+
+            System.out.println("]");
         }
     }
 }
