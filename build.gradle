@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.itextpdf:itextpdf:5.5.10'
+    compile 'com.itextpdf:itextpdf:5.5.11'
 }
 
 jar {
