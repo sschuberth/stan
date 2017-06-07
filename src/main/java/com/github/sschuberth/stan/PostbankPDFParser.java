@@ -1,4 +1,4 @@
-package com.github.sschuberth.stst;
+package com.github.sschuberth.stan;
 
 import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfName;
