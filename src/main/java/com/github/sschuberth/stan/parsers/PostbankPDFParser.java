@@ -1,4 +1,7 @@
-package com.github.sschuberth.stan;
+package com.github.sschuberth.stan.parsers;
+
+import com.github.sschuberth.stan.data.BookingItem;
+import com.github.sschuberth.stan.data.Statement;
 
 import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfName;
@@ -27,7 +30,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class PostbankPDFParser {
+public class PostbankPDFParser {
     private static Pattern STATEMENT_DATE_PATTERN = Pattern.compile("^Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)$");
     private static DateTimeFormatter STATEMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 

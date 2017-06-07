@@ -1,4 +1,7 @@
-package com.github.sschuberth.stan;
+package com.github.sschuberth.stan.exporters;
+
+import com.github.sschuberth.stan.data.BookingItem;
+import com.github.sschuberth.stan.data.Statement;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -11,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Currency;
 import java.util.Locale;
 
-public enum OfxV1Writer {
+public enum OfxV1Exporter {
     OFX,
 
     ACCTID,

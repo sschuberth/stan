@@ -1,5 +1,8 @@
 package com.github.sschuberth.stan;
 
+import com.github.sschuberth.stan.parsers.PostbankPDFParser;
+import com.github.sschuberth.stan.data.Statement;
+
 import javafx.application.Application;
 import javafx.beans.NamedArg;
 import javafx.collections.FXCollections;
