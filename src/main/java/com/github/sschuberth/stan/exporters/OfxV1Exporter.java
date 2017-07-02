@@ -68,11 +68,7 @@ public enum OfxV1Exporter {
     private static Writer writer;
     private static StringBuilder indentation = new StringBuilder(INDENTATION_SIZE * 5);
 
-    public void write(Statement st, String name, Locale locale) throws IOException {
-        write(st, name, locale, Currency.getInstance(locale));
-    }
-
-    public void write(Statement st, String name, Locale locale, Currency currency) throws IOException {
+    public void write(Statement st, String name) throws IOException {
         // It usually is bad practice to write a static field from an instance method, but the convention for this class
         // is to only use the enum's "OFX" instance.
         writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name), StandardCharsets.UTF_8));
@@ -87,7 +83,7 @@ public enum OfxV1Exporter {
                 SONRS.begin();
                     writeStatusAggregate(0, "INFO");
                     DTSERVER.data(LocalDateTime.now().format(FORMATTER));
-                    LANGUAGE.data(locale.getISO3Language().toUpperCase());
+                    LANGUAGE.data(st.locale.getISO3Language().toUpperCase());
                 SONRS.end();
             SIGNONMSGSRSV1.end();
 
@@ -96,7 +92,7 @@ public enum OfxV1Exporter {
                     TRNUID.data(0);
                     writeStatusAggregate(0, "INFO");
                     STMTRS.begin();
-                        CURDEF.data(currency.toString());
+                        CURDEF.data(Currency.getInstance(st.locale).toString());
                         BANKACCTFROM.begin();
                             BANKID.data(st.bankId);
                             ACCTID.data(st.accountId);

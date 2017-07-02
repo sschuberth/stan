@@ -3,9 +3,11 @@ package com.github.sschuberth.stan.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Statement implements Comparable<Statement> {
     public String filename;
+    public Locale locale;
     public String bankId;
     public String accountId;
     public LocalDate fromDate;
@@ -16,8 +18,9 @@ public class Statement implements Comparable<Statement> {
     public float sumOut;
     public List<BookingItem> bookings = new ArrayList<>();
 
-    public Statement(String filename, String bankId, String accountId, LocalDate fromDate, LocalDate toDate, float balanceOld, float balanceNew, float sumIn, float sumOut, List<BookingItem> bookings) {
+    public Statement(String filename, Locale locale, String bankId, String accountId, LocalDate fromDate, LocalDate toDate, float balanceOld, float balanceNew, float sumIn, float sumOut, List<BookingItem> bookings) {
         this.filename = filename;
+        this.locale = locale;
         this.bankId = bankId;
         this.accountId = accountId;
         this.fromDate = fromDate;
