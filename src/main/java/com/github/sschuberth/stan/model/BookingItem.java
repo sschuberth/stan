@@ -1,4 +1,4 @@
-package com.github.sschuberth.stan.data;
+package com.github.sschuberth.stan.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

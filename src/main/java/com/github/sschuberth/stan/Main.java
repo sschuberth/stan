@@ -1,7 +1,7 @@
 package com.github.sschuberth.stan;
 
-import com.github.sschuberth.stan.data.BookingItem;
-import com.github.sschuberth.stan.data.Statement;
+import com.github.sschuberth.stan.model.BookingItem;
+import com.github.sschuberth.stan.model.Statement;
 import com.github.sschuberth.stan.parsers.PostbankPDFParser;
 
 import java.io.File;
