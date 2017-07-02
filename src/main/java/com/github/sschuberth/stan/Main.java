@@ -66,15 +66,7 @@ public class Main {
 
         statementIterator = statements.iterator();
         while (statementIterator.hasNext()) {
-            System.out.println("[");
-
-            Iterator<BookingItem> bookingItemIterator = statementIterator.next().bookings.iterator();
-            while (bookingItemIterator.hasNext()) {
-                BookingItem item = bookingItemIterator.next();
-                System.out.println(item + (bookingItemIterator.hasNext() ? "," : ""));
-            }
-
-            System.out.println("]");
+            System.out.println(statementIterator.next().toString());
         }
     }
 }

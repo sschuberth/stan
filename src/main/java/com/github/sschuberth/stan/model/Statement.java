@@ -2,6 +2,7 @@ package com.github.sschuberth.stan.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,5 +36,24 @@ public class Statement implements Comparable<Statement> {
     @Override
     public int compareTo(Statement st) {
         return fromDate.compareTo(st.fromDate);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder("[\n");
+
+        Iterator<BookingItem> bookingItemIterator = bookings.iterator();
+        while (bookingItemIterator.hasNext()) {
+            BookingItem item = bookingItemIterator.next();
+            result.append(item);
+            if (bookingItemIterator.hasNext()) {
+                result.append(",");
+            }
+            result.append("\n");
+        }
+
+        result.append("]\n");
+
+        return result.toString();
     }
 }

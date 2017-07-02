@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Currency;
 import java.util.Locale;
 
-public enum OfxV1Exporter {
+public enum OfxV1Exporter implements Exporter {
     OFX,
 
     ACCTID,
@@ -68,10 +68,11 @@ public enum OfxV1Exporter {
     private static Writer writer;
     private static StringBuilder indentation = new StringBuilder(INDENTATION_SIZE * 5);
 
-    public void write(Statement st, String name) throws IOException {
+    @Override
+    public void write(Statement st, String filename) throws IOException {
         // It usually is bad practice to write a static field from an instance method, but the convention for this class
         // is to only use the enum's "OFX" instance.
-        writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name), StandardCharsets.UTF_8));
+        writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), StandardCharsets.UTF_8));
 
         writer.write(String.join("\n", HEADER) + "\n\n");
 
