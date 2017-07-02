@@ -47,7 +47,7 @@ public class PostbankPDFParser {
 
     private static DecimalFormatSymbols BOOKING_SYMBOLS = new DecimalFormatSymbols(Locale.GERMAN);
     private static DecimalFormat BOOKING_FORMAT = new DecimalFormat("+ 0,000.#;- 0,000.#", BOOKING_SYMBOLS);
-    private static Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) EUR ([+-] [\\d.,]+)$");
+    private static Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) (EUR) ([+-] [\\d.,]+)$");
 
     /*
      * Use an extraction strategy that allow to customize the ratio between the regular character width and the space
@@ -73,7 +73,7 @@ public class PostbankPDFParser {
         }
     }
 
-    private static Float parseBookingSummary(String marker, String line, ListIterator<String> it) throws ParseException {
+    private static float parseBookingSummary(String marker, String line, ListIterator<String> it) throws ParseException {
         do {
             marker = marker.replaceFirst(line + "\\s?", "");
             if (marker.isEmpty()) {
@@ -93,7 +93,7 @@ public class PostbankPDFParser {
             }
         }
 
-        return BOOKING_FORMAT.parse(m.group(2)).floatValue();
+        return BOOKING_FORMAT.parse(m.group(3)).floatValue();
     }
 
     public static Statement parse(String filename) throws ParseException {
