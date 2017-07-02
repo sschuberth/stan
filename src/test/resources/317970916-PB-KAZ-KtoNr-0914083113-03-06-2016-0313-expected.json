@@ -1,0 +1,25 @@
+[
+{
+	"postDate": "2016-05-27",
+	"valueDate": "2016-05-27",
+	"amount": "968.0",
+	"info": [
+		"Gutschr.SEPA",
+		"GORAN BOLSEC Verwendungszweck INTERNAL",
+		"TRANSFER SALLARY GORAN BOLSEC"
+	]
+},
+{
+	"postDate": "2016-05-30",
+	"valueDate": "2016-05-30",
+	"amount": "-900.0",
+	"info": [
+		"Auszahlung Geldautomat",
+		"DEUTSCHE BANK Referenz",
+		"03204718088636270516113921 Mandat 969148 Einrei-",
+		"cher-ID DE7600200000132558 HUECKELHOV//Hückel-",
+		"hoven/DE Terminal 03204718 2016-05-27T11:39:21 Fol-",
+		"genr. 000 Verfalld. 2012"
+	]
+}
+]
