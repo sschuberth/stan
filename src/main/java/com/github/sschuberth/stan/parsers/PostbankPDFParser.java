@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
@@ -31,24 +32,29 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PostbankPDFParser {
+    private static final DateTimeFormatter PDF_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private static final Pattern STATEMENT_DATE_PATTERN = Pattern.compile("^Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)$");
     private static final DateTimeFormatter STATEMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final String STATEMENT_BIC_HEADER_2017 = "BIC (SWIFT):";
 
-    private static final String BOOKING_PAGE_HEADER = "Auszug Seite IBAN BIC (SWIFT)";
+    private static final String BOOKING_PAGE_HEADER_2014 = "Auszug Seite IBAN BIC (SWIFT)";
+    private static final String BOOKING_PAGE_HEADER_2017 = "Auszug Jahr Seite von IBAN";
     private static final String BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand";
-    private static final String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
-    private static final Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)$");
-    private static final Pattern BOOKING_ITEM_PATTERN_NO_SIGN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)$");
+
+    private static final String BOOKING_TABLE_HEADER = "Buchung( |/)Wert Vorgang/Buchungsinformation Soll Haben";
+
+    private static final Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.)( |/)(\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)$");
+    private static final Pattern BOOKING_ITEM_PATTERN_NO_SIGN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.)( |/)(\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)$");
 
     private static final String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
     private static final String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
     private static final String BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand";
     private static final String BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand";
+    private static final Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) ?(EUR) ([+-] [\\d.,]+)$");
 
     private static final DecimalFormatSymbols BOOKING_SYMBOLS = new DecimalFormatSymbols(Locale.GERMAN);
     private static final DecimalFormat BOOKING_FORMAT = new DecimalFormat("+ 0,000.#;- 0,000.#", BOOKING_SYMBOLS);
-    private static final Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) (EUR) ([+-] [\\d.,]+)$");
 
     /*
      * Use an extraction strategy that allow to customize the ratio between the regular character width and the space
@@ -78,7 +84,7 @@ public class PostbankPDFParser {
         // Allow the marker to span multiple lines by incrementally
         // removing the current line from the beginning of the marker.
         do {
-            marker = marker.replaceFirst("^" + line + "\\s?", "");
+            marker = marker.replaceFirst("^" + line + " ?", "");
 
             if (marker.isEmpty()) {
                 // Full marker match, next line is the one we are interested in.
@@ -113,6 +119,15 @@ public class PostbankPDFParser {
             throw new ParseException("Error opening file", 0);
         }
 
+        HashMap<String, String> pdfInfo = reader.getInfo();
+        LocalDate pdfCreationDate = LocalDate.parse(pdfInfo.get("CreationDate").substring(2, 16), PDF_DATE_FORMATTER);
+
+        if (pdfCreationDate.isBefore(LocalDate.of(2014, 7, 1))) {
+            throw new ParseException("Unsupported statement format", 0);
+        }
+
+        final boolean isFormat2014 = pdfCreationDate.isBefore(LocalDate.of(2017, 6, 1));
+
         for (int i = 1; i <= reader.getNumberOfPages(); ++i) {
             PdfDictionary pageResources = reader.getPageResources(i);
             if (pageResources == null) {
@@ -124,11 +139,13 @@ public class PostbankPDFParser {
                 continue;
             }
 
-            // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
-            // http://stackoverflow.com/a/37786643/1127485.
-            for (PdfName key : pageFonts.getKeys()) {
-                PdfDictionary fontDictionary = pageFonts.getAsDict(key);
-                fontDictionary.put(PdfName.TOUNICODE, null);
+            if (isFormat2014) {
+                // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
+                // http://stackoverflow.com/a/37786643/1127485.
+                for (PdfName key : pageFonts.getKeys()) {
+                    PdfDictionary fontDictionary = pageFonts.getAsDict(key);
+                    fontDictionary.put(PdfName.TOUNICODE, null);
+                }
             }
 
             // Create a filter to ignore vertical text.
@@ -172,6 +189,8 @@ public class PostbankPDFParser {
 
         String signLine = null;
 
+        final String bookingPageHeader = isFormat2014 ? BOOKING_PAGE_HEADER_2014 : BOOKING_PAGE_HEADER_2017;
+
         ListIterator<String> it = lines.listIterator();
         while (it.hasNext()) {
             String line = it.next();
@@ -192,20 +211,26 @@ public class PostbankPDFParser {
                 stTo = LocalDate.parse(m.group(3), STATEMENT_DATE_FORMATTER);
 
                 postYear = valueYear = stFrom.getYear();
-            } else if (line.startsWith(BOOKING_PAGE_HEADER)) {
+            } else if (!isFormat2014 && line.startsWith(STATEMENT_BIC_HEADER_2017)) {
+                accBic = line.replaceFirst(STATEMENT_BIC_HEADER_2017, "").trim();
+            } else if (line.startsWith(bookingPageHeader)) {
                 // Read the IBAN and BIC from the page header.
                 StringBuilder pageIban = new StringBuilder(22);
 
                 String[] info = it.next().split(" ");
 
                 if (info.length >= 9) {
-                    if (accBic != null && !accBic.equals(info[8])) {
-                        throw new ParseException("Inconsistent BIC", it.nextIndex());
+                    // Only the 2014 format has the BIC in the page header.
+                    if (isFormat2014) {
+                        if (accBic != null && !accBic.equals(info[8])) {
+                            throw new ParseException("Inconsistent BIC", it.nextIndex());
+                        }
+                        accBic = info[8];
                     }
-                    accBic = info[8];
 
-                    for (int i = 2; i < 8; ++i) {
-                        pageIban.append(info[i]);
+                    final int ibanOffset = isFormat2014 ? 2 : 4;
+                    for (int i = 0; i < 6; ++i) {
+                        pageIban.append(info[ibanOffset + i]);
                     }
 
                     if (accIban != null && !accIban.equals(pageIban.toString())) {
@@ -214,9 +239,11 @@ public class PostbankPDFParser {
                     accIban = pageIban.toString();
                 }
 
-                if (line.endsWith(BOOKING_PAGE_HEADER_BALANCE_OLD) && info.length == 12) {
+                final int oldBalanceOffset = isFormat2014 ? 10 : 11;
+                if (line.endsWith(BOOKING_PAGE_HEADER_BALANCE_OLD) && info.length == oldBalanceOffset + 2) {
+                    String signStr = info[oldBalanceOffset], amountStr = info[oldBalanceOffset + 1];
+
                     // Work around a period being used instead of comma.
-                    String signStr = info[10], amountStr = info[11];
                     char[] amountChars = amountStr.toCharArray();
                     int index = amountStr.length() - 3;
                     if (amountChars[index] == '.') {
@@ -256,19 +283,20 @@ public class PostbankPDFParser {
 
             // Loop until the booking table header is found, and then skip it.
             if (!foundStart) {
-                if (line.equals(BOOKING_TABLE_HEADER)) {
+                if (line.matches(BOOKING_TABLE_HEADER)) {
                     foundStart = true;
                 }
 
                 continue;
             }
 
-            // Work around the sign being present on the previous line.
             m = BOOKING_ITEM_PATTERN.matcher(line);
+
             if (!m.matches()) {
+                // Work around the sign being present on the previous line.
                 m = BOOKING_ITEM_PATTERN_NO_SIGN.matcher(line);
                 if (m.matches() && signLine != null) {
-                    line = String.join(" ", m.group(1), m.group(2), m.group(3), signLine, m.group(4));
+                    line = String.join(" ", m.group(1), m.group(3), m.group(4), signLine, m.group(5));
                     signLine = null;
                     m = BOOKING_ITEM_PATTERN.matcher(line);
                 }
@@ -277,7 +305,7 @@ public class PostbankPDFParser {
             // Within the booking table, a matching pattern creates a new booking item.
             if (m.matches()) {
                 LocalDate postDate = LocalDate.parse(m.group(1) + postYear, STATEMENT_DATE_FORMATTER);
-                LocalDate valueDate = LocalDate.parse(m.group(2) + valueYear, STATEMENT_DATE_FORMATTER);
+                LocalDate valueDate = LocalDate.parse(m.group(3) + valueYear, STATEMENT_DATE_FORMATTER);
 
                 if (currentItem != null) {
                     // If there is a wrap-around in the month, increase the year.
@@ -290,7 +318,7 @@ public class PostbankPDFParser {
                     }
                 }
 
-                String amountStr = m.group(4);
+                String amountStr = m.group(5);
 
                 // Work around a missing space before the amount.
                 if (amountStr.charAt(1) != ' ') {
@@ -300,7 +328,7 @@ public class PostbankPDFParser {
 
                 float amount = BOOKING_FORMAT.parse(amountStr).floatValue();
 
-                currentItem = new BookingItem(postDate, valueDate, m.group(3), amount);
+                currentItem = new BookingItem(postDate, valueDate, m.group(4), amount);
                 items.add(currentItem);
             } else {
                 // Add the line as info to the current booking item, if any.

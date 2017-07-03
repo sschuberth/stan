@@ -6,9 +6,9 @@ Stan is both a library and command line tool to convert and analyze bank account
 
 ## What statement files are supported?
 
-- [Postbank PDF version 2014](https://www.postbank.de/privatkunden/docs/Kontoauszug_A4_Privatkunden.pdf)
+- [Postbank PDF](https://www.postbank.de/privatkunden/docs/Kontoauszug_A4_Privatkunden.pdf)
 
-  The Postbank has changed the format for PDF account statements multiple times. The only supported format is the one introduced in July 2014.
+  The Postbank has changed the format for PDF account statements multiple times. The supported formats are the ones introduced in July 2014 and in June 2017, respectively.
 
 ## What file formats can be exported to?
 
