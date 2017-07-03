@@ -31,23 +31,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PostbankPDFParser {
-    private static Pattern STATEMENT_DATE_PATTERN = Pattern.compile("^Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)$");
-    private static DateTimeFormatter STATEMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    private static String BOOKING_PAGE_HEADER = "Auszug Seite IBAN BIC (SWIFT)";
-    private static String BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand";
-    private static String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
-    private static Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)$");
-    private static Pattern BOOKING_ITEM_PATTERN_NO_SIGN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)$");
+    private static final Pattern STATEMENT_DATE_PATTERN = Pattern.compile("^Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)$");
+    private static final DateTimeFormatter STATEMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    private static String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
-    private static String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
-    private static String BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand";
-    private static String BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand";
+    private static final String BOOKING_PAGE_HEADER = "Auszug Seite IBAN BIC (SWIFT)";
+    private static final String BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand";
+    private static final String BOOKING_TABLE_HEADER = "Buchung Wert Vorgang/Buchungsinformation Soll Haben";
+    private static final Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)$");
+    private static final Pattern BOOKING_ITEM_PATTERN_NO_SIGN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.) (\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)$");
 
-    private static DecimalFormatSymbols BOOKING_SYMBOLS = new DecimalFormatSymbols(Locale.GERMAN);
-    private static DecimalFormat BOOKING_FORMAT = new DecimalFormat("+ 0,000.#;- 0,000.#", BOOKING_SYMBOLS);
-    private static Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) (EUR) ([+-] [\\d.,]+)$");
+    private static final String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
+    private static final String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
+    private static final String BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand";
+    private static final String BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand";
+
+    private static final DecimalFormatSymbols BOOKING_SYMBOLS = new DecimalFormatSymbols(Locale.GERMAN);
+    private static final DecimalFormat BOOKING_FORMAT = new DecimalFormat("+ 0,000.#;- 0,000.#", BOOKING_SYMBOLS);
+    private static final Pattern BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) (EUR) ([+-] [\\d.,]+)$");
 
     /*
      * Use an extraction strategy that allow to customize the ratio between the regular character width and the space
