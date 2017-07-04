@@ -27,7 +27,7 @@ public class Main {
                 stream.forEach(filename -> {
                     try {
                         Statement st = PostbankPDFParser.parse(filename.toString());
-                        System.out.println("Successfully parsed statement '" + file.getName() + "' dated from " + st.fromDate + " to " + st.toDate + ".");
+                        System.out.println("Successfully parsed statement '" + filename + "' dated from " + st.fromDate + " to " + st.toDate + ".");
                         statements.add(st);
                     } catch (ParseException e) {
                         System.err.println("Error parsing '" + filename + "'.");
