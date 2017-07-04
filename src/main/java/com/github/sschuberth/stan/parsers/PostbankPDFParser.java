@@ -75,15 +75,21 @@ public class PostbankPDFParser {
     }
 
     private static float parseBookingSummary(String marker, String line, ListIterator<String> it) throws ParseException {
+        // Allow the marker to span multiple lines by incrementally
+        // removing the current line from the beginning of the marker.
         do {
-            marker = marker.replaceFirst(line + "\\s?", "");
+            marker = marker.replaceFirst("^" + line + "\\s?", "");
+
             if (marker.isEmpty()) {
+                // Full marker match, next line is the one we are interested in.
+                line = it.next();
                 break;
             }
+
+            // No match yet, take the next line into consideration.
             line = it.next();
         } while (marker.startsWith(line));
 
-        line = it.next();
         Matcher m = BOOKING_SUMMARY_PATTERN.matcher(line);
         if (!m.matches()) {
             // Try appending the next line before we fail.
