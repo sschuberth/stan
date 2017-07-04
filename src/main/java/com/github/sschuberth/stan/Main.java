@@ -34,6 +34,7 @@ public class Main {
                         e.printStackTrace();
                     }
                 });
+                System.out.println("Parsed " + statements.size() + " statement(s) in total.");
             } catch (IOException e) {
                 System.err.println("Error opening '" + arg + "'.");
             }
