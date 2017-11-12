@@ -76,15 +76,15 @@ public enum OfxV1Exporter implements Exporter {
 
         writer.write(String.join("\n", HEADER) + "\n\n");
 
-        final String fromDateStr = st.fromDate.format(DateTimeFormatter.BASIC_ISO_DATE);
-        final String toDateStr = st.toDate.format(DateTimeFormatter.BASIC_ISO_DATE);
+        final String fromDateStr = st.getFromDate().format(DateTimeFormatter.BASIC_ISO_DATE);
+        final String toDateStr = st.getToDate().format(DateTimeFormatter.BASIC_ISO_DATE);
 
         OFX.begin();
             SIGNONMSGSRSV1.begin();
                 SONRS.begin();
                     writeStatusAggregate(0, "INFO");
                     DTSERVER.data(LocalDateTime.now().format(FORMATTER));
-                    LANGUAGE.data(st.locale.getISO3Language().toUpperCase());
+                    LANGUAGE.data(st.getLocale().getISO3Language().toUpperCase());
                 SONRS.end();
             SIGNONMSGSRSV1.end();
 
@@ -93,21 +93,21 @@ public enum OfxV1Exporter implements Exporter {
                     TRNUID.data(0);
                     writeStatusAggregate(0, "INFO");
                     STMTRS.begin();
-                        CURDEF.data(Currency.getInstance(st.locale).toString());
+                        CURDEF.data(Currency.getInstance(st.getLocale()).toString());
                         BANKACCTFROM.begin();
-                            BANKID.data(st.bankId);
-                            ACCTID.data(st.accountId);
+                            BANKID.data(st.getBankId());
+                            ACCTID.data(st.getAccountId());
                             ACCTTYPE.data("CHECKING");
                         BANKACCTFROM.end();
                         BANKTRANLIST.begin();
                             DTSTART.data(fromDateStr);
                             DTEND.data(toDateStr);
-                            for (BookingItem item : st.bookings) {
+                            for (BookingItem item : st.getBookings()) {
                                 writeStatementTransAction(item);
                             }
                         BANKTRANLIST.end();
                         LEDGERBAL.begin();
-                            BALAMT.data(st.balanceNew);
+                            BALAMT.data(st.getBalanceNew());
                             DTASOF.data(toDateStr);
                         LEDGERBAL.end();
                     STMTRS.end();

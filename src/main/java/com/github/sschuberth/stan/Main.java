@@ -27,7 +27,7 @@ public class Main {
                 stream.forEach(filename -> {
                     try {
                         Statement st = PostbankPDFParser.parse(filename.toString());
-                        System.out.println("Successfully parsed statement '" + filename + "' dated from " + st.fromDate + " to " + st.toDate + ".");
+                        System.out.println("Successfully parsed statement '" + filename + "' dated from " + st.getFromDate() + " to " + st.getToDate() + ".");
                         statements.add(st);
                     } catch (ParseException e) {
                         System.err.println("Error parsing '" + filename + "'.");
@@ -52,13 +52,13 @@ public class Main {
         while (statementIterator.hasNext()) {
             next = statementIterator.next();
 
-            if (!curr.toDate.plusDays(1).equals(next.fromDate)) {
-                System.err.println("Statements '" + curr.filename + "' and '" + next.filename + "' are not consecutive.");
+            if (!curr.getToDate().plusDays(1).equals(next.getFromDate())) {
+                System.err.println("Statements '" + curr.getFilename() + "' and '" + next.getFilename() + "' are not consecutive.");
                 System.exit(1);
             }
 
-            if (curr.balanceNew != next.balanceOld) {
-                System.err.println("Balances of statements '" + curr.filename + "' and '" + next.filename + "' are not consistent.");
+            if (curr.getBalanceNew() != next.getBalanceOld()) {
+                System.err.println("Balances of statements '" + curr.getFilename() + "' and '" + next.getFilename() + "' are not consistent.");
                 System.exit(1);
             }
 
