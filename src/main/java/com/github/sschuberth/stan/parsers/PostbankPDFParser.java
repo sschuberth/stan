@@ -309,11 +309,11 @@ public class PostbankPDFParser {
 
                 if (currentItem != null) {
                     // If there is a wrap-around in the month, increase the year.
-                    if (postDate.getMonth().getValue() < currentItem.postDate.getMonth().getValue()) {
+                    if (postDate.getMonth().getValue() < currentItem.getPostDate().getMonth().getValue()) {
                         postDate = postDate.withYear(++postYear);
                     }
 
-                    if (valueDate.getMonth().getValue() < currentItem.valueDate.getMonth().getValue()) {
+                    if (valueDate.getMonth().getValue() < currentItem.getValueDate().getMonth().getValue()) {
                         valueDate = valueDate.withYear(++valueYear);
                     }
                 }
@@ -333,7 +333,7 @@ public class PostbankPDFParser {
             } else {
                 // Add the line as info to the current booking item, if any.
                 if (currentItem != null) {
-                    currentItem.info.add(line);
+                    currentItem.getInfo().add(line);
                 }
             }
         }
@@ -368,10 +368,10 @@ public class PostbankPDFParser {
 
         float calcIn = 0, calcOut = 0;
         for (BookingItem item : items) {
-            if (item.amount > 0) {
-                calcIn += item.amount;
+            if (item.getAmount() > 0) {
+                calcIn += item.getAmount();
             } else {
-                calcOut += item.amount;
+                calcOut += item.getAmount();
             }
         }
 

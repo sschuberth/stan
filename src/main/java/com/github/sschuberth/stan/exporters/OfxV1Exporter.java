@@ -127,9 +127,9 @@ public enum OfxV1Exporter implements Exporter {
 
     private void writeStatementTransAction(BookingItem item) throws IOException {
         STMTTRN.begin();
-            TRNTYPE.data(item.amount > 0 ? "CREDIT" : "DEBIT");
-            DTPOSTED.data(item.postDate.format(DateTimeFormatter.BASIC_ISO_DATE));
-            TRNAMT.data(item.amount);
+            TRNTYPE.data(item.getAmount() > 0 ? "CREDIT" : "DEBIT");
+            DTPOSTED.data(item.getPostDate().format(DateTimeFormatter.BASIC_ISO_DATE));
+            TRNAMT.data(item.getAmount());
         STMTTRN.end();
     }
 
