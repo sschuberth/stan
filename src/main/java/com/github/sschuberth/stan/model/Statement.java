@@ -45,14 +45,14 @@ public class Statement implements Comparable<Statement> {
         Iterator<BookingItem> bookingItemIterator = bookings.iterator();
         while (bookingItemIterator.hasNext()) {
             BookingItem item = bookingItemIterator.next();
-            result.append(item);
+            result.append(item.toString().replaceAll("(?m)^", "  "));
             if (bookingItemIterator.hasNext()) {
                 result.append(",");
             }
             result.append("\n");
         }
 
-        result.append("]\n");
+        result.append("]");
 
         return result.toString();
     }

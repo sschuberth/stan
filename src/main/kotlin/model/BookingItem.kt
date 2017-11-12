@@ -13,17 +13,17 @@ class BookingItem(
     override fun toString(): String {
         val s = StringBuilder("""
             {
-            	"postDate": "$postDate",
-            	"valueDate": "$valueDate",
-            	"amount": "$amount",
-            	"info": [
+              "postDate": "$postDate",
+              "valueDate": "$valueDate",
+              "amount": "$amount",
+              "info": [
 
             """.trimIndent()
         )
 
         val infoIterator = info.iterator()
         while (infoIterator.hasNext()) {
-            s.append("\t\t")
+            s.append("    ")
 
             // Quote the info line.
             s.append("\"")
@@ -37,7 +37,7 @@ class BookingItem(
             s.append("\n")
         }
 
-        s.append("\t]\n")
+        s.append("  ]\n")
         s.append("}")
 
         return s.toString()
