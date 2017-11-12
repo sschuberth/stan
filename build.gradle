@@ -19,8 +19,8 @@ repositories {
 
 sourceSets {
     funTest {
-        kotlin.srcDir 'src/funTest/kotlin'
-        resources.srcDir 'src/funTest/resources'
+        kotlin.srcDirs 'src/funTest/kotlin'
+        resources.srcDirs 'src/funTest/resources'
     }
 }
 
