@@ -42,10 +42,10 @@ public class PostbankPDFParser {
     private static final String BOOKING_PAGE_HEADER_2017 = "Auszug Jahr Seite von IBAN";
     private static final String BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand";
 
-    private static final String BOOKING_TABLE_HEADER = "Buchung( |/)Wert Vorgang/Buchungsinformation Soll Haben";
+    private static final String BOOKING_TABLE_HEADER = "Buchung[ /]Wert Vorgang/Buchungsinformation Soll Haben";
 
-    private static final Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.)( |/)(\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)$");
-    private static final Pattern BOOKING_ITEM_PATTERN_NO_SIGN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.)( |/)(\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)$");
+    private static final Pattern BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)$");
+    private static final Pattern BOOKING_ITEM_PATTERN_NO_SIGN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)$");
 
     private static final String BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge";
     private static final String BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge";
@@ -296,7 +296,7 @@ public class PostbankPDFParser {
                 // Work around the sign being present on the previous line.
                 m = BOOKING_ITEM_PATTERN_NO_SIGN.matcher(line);
                 if (m.matches() && signLine != null) {
-                    line = String.join(" ", m.group(1), m.group(3), m.group(4), signLine, m.group(5));
+                    line = String.join(" ", m.group(1), m.group(2), m.group(3), signLine, m.group(4));
                     signLine = null;
                     m = BOOKING_ITEM_PATTERN.matcher(line);
                 }
@@ -305,7 +305,7 @@ public class PostbankPDFParser {
             // Within the booking table, a matching pattern creates a new booking item.
             if (m.matches()) {
                 LocalDate postDate = LocalDate.parse(m.group(1) + postYear, STATEMENT_DATE_FORMATTER);
-                LocalDate valueDate = LocalDate.parse(m.group(3) + valueYear, STATEMENT_DATE_FORMATTER);
+                LocalDate valueDate = LocalDate.parse(m.group(2) + valueYear, STATEMENT_DATE_FORMATTER);
 
                 if (currentItem != null) {
                     // If there is a wrap-around in the month, increase the year.
@@ -318,7 +318,7 @@ public class PostbankPDFParser {
                     }
                 }
 
-                String amountStr = m.group(5);
+                String amountStr = m.group(4);
 
                 // Work around a missing space before the amount.
                 if (amountStr.charAt(1) != ' ') {
@@ -328,7 +328,7 @@ public class PostbankPDFParser {
 
                 float amount = BOOKING_FORMAT.parse(amountStr).floatValue();
 
-                currentItem = new BookingItem(postDate, valueDate, m.group(4), amount);
+                currentItem = new BookingItem(postDate, valueDate, m.group(3), amount);
                 items.add(currentItem);
             } else {
                 // Add the line as info to the current booking item, if any.
