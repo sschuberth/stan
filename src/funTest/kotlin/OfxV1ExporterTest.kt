@@ -17,7 +17,7 @@ class OfxV1ExporterTest : StringSpec({
 
         val ofx = File.createTempFile(baseName, "ofx")
         val statement = PostbankPDFParser.parse("$baseName.pdf")
-        OfxV1Exporter.OFX.write(statement, ofx.path)
+        OfxV1Exporter().write(statement, ofx.path)
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
         ofx.delete() shouldBe true
@@ -32,7 +32,7 @@ class OfxV1ExporterTest : StringSpec({
 
         val ofx = File.createTempFile(baseName, "ofx")
         val statement = PostbankPDFParser.parse("$baseName.pdf")
-        OfxV1Exporter.OFX.write(statement, ofx.path)
+        OfxV1Exporter().write(statement, ofx.path)
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
         ofx.delete() shouldBe true
