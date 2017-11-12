@@ -13,19 +13,23 @@ class PostbankTest : StringSpec({
     val gson = GsonBuilder().setPrettyPrinting().create()
 
     "Demokonto account statement is parsed correctly" {
-        val expectedText = readResource("/PB_KAZ_KtoNr_9999999999_06-04-2017_1200-expected.json")
+        val baseName = "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
+
+        val expectedText = readResource("/$baseName-expected.json")
         val expectedJson = gson.toJson(gson.fromJson<JsonArray>(expectedText))
 
-        val actualJson = PostbankPDFParser.parse("PB_KAZ_KtoNr_9999999999_06-04-2017_1200.pdf").toString()
+        val actualJson = PostbankPDFParser.parse("$baseName.pdf").toString()
 
         actualJson shouldBe expectedJson
     }
 
     "Goran Bolsec account statement is parsed correctly" {
-        val expectedText = readResource("/317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313-expected.json")
+        val baseName = "317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313"
+
+        val expectedText = readResource("/$baseName-expected.json")
         val expectedJson = gson.toJson(gson.fromJson<JsonArray>(expectedText))
 
-        val actualJson = PostbankPDFParser.parse("317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313.pdf").toString()
+        val actualJson = PostbankPDFParser.parse("$baseName.pdf").toString()
 
         actualJson shouldBe expectedJson
     }
