@@ -65,7 +65,7 @@ public enum OfxV1Exporter implements Exporter {
     private static final int INDENTATION_SIZE = 4;
 
     private static Writer writer;
-    private static StringBuilder indentation = new StringBuilder(INDENTATION_SIZE * 5);
+    private static final StringBuilder indentation = new StringBuilder(INDENTATION_SIZE * 5);
 
     @Override
     public void write(Statement st, String filename) throws IOException {
