@@ -3,6 +3,8 @@ plugins {
     // We need to hard-code the version here because of
     // https://github.com/gradle/gradle/issues/1697
     id 'org.jetbrains.kotlin.jvm' version '1.1.51'
+
+    id 'com.github.ben-manes.versions' version '0.17.0'
 }
 
 // Apply core plugins.
@@ -37,6 +39,20 @@ dependencies {
 
     funTestCompile 'io.kotlintest:kotlintest:2.0.3'
     funTestCompile 'com.github.salomonbrys.kotson:kotson:2.5.0'
+}
+
+dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            boolean isNonFinalVersion = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+
+            if (isNonFinalVersion) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
 }
 
 jar {
