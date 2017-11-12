@@ -29,7 +29,7 @@ sourceSets {
 dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.51'
 
-    compile 'com.itextpdf:itextpdf:5.5.11'
+    compile 'com.itextpdf:itextpdf:5.5.12'
 
     // See https://github.com/gradle/gradle/blob/master/subprojects/docs/src/samples/java/withIntegrationTests/build.gradle.
     funTestCompile sourceSets.main.output
