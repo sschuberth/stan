@@ -1,5 +1,11 @@
 package com.github.sschuberth.stan
 
+import com.beust.jcommander.JCommander
+import com.beust.jcommander.Parameter
+
+import com.github.sschuberth.stan.exporters.Exporter
+import com.github.sschuberth.stan.exporters.JsonExporter
+import com.github.sschuberth.stan.exporters.OfxV1Exporter
 import com.github.sschuberth.stan.model.Statement
 import com.github.sschuberth.stan.parsers.PostbankPDFParser
 
@@ -9,14 +15,44 @@ import java.nio.file.Files.newDirectoryStream
 import java.text.ParseException
 import java.util.Collections
 
+import kotlin.system.exitProcess
+
 object Main {
+    enum class ExportFormat(val exporter: Exporter) {
+        JSON(JsonExporter()),
+        OFX(OfxV1Exporter());
+
+        override fun toString() = name.toLowerCase()
+    }
+
+    @Parameter
+    private var statementFiles = mutableListOf<File>()
+
+    @Parameter(description = "The data format used for dependency information.",
+            names = arrayOf("--export-format", "-f"),
+            order = 0)
+    private var exportFormat: ExportFormat? = null
+
+    @Parameter(description = "Display the command line help.",
+            names = arrayOf("--help", "-h"),
+            help = true,
+            order = 100)
+    private var help = false
+
     @JvmStatic
     fun main(args: Array<String>) {
+        val jc = JCommander(this)
+        jc.parse(*args)
+        jc.programName = "stan"
+
+        if (help) {
+            jc.usage()
+            exitProcess(1)
+        }
+
         val statements = mutableListOf<Statement>()
 
-        args.forEach { arg ->
-            val file = File(arg)
-
+        statementFiles.forEach { file ->
             try {
                 newDirectoryStream(file.absoluteFile.parentFile.toPath(), file.name).use { stream ->
                     stream.forEach { filename ->
@@ -32,7 +68,7 @@ object Main {
                     println("Parsed " + statements.size + " statement(s) in total.")
                 }
             } catch (e: IOException) {
-                System.err.println("Error opening '$arg'.")
+                System.err.println("Error opening '$file'.")
             }
         }
 
@@ -62,9 +98,18 @@ object Main {
             curr = next
         }
 
-        statementIterator = statements.iterator()
-        while (statementIterator.hasNext()) {
-            println(statementIterator.next().toString())
+        println("Consistency checks passed successfully.")
+
+        exportFormat?.let {
+            statementIterator = statements.iterator()
+            while (statementIterator.hasNext()) {
+                val statement = statementIterator.next()
+                val exportName = statement.filename.substringBeforeLast(".") + "." + exportFormat.toString()
+
+                println("Exporting\n    ${statement.filename}\nto\n    $exportName")
+                it.exporter.write(statement, exportName)
+                println("done.")
+            }
         }
     }
 }

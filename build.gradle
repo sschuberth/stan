@@ -26,6 +26,7 @@ sourceSets {
 dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.60'
 
+    compile 'com.beust:jcommander:1.72'
     compile 'com.itextpdf:itextpdf:5.5.12'
 
     // See https://github.com/gradle/gradle/blob/master/subprojects/docs/src/samples/java/withIntegrationTests/build.gradle.
