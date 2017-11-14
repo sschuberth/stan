@@ -18,7 +18,7 @@ object Main {
             val file = File(arg)
 
             try {
-                newDirectoryStream(file.parentFile.toPath(), file.name).use { stream ->
+                newDirectoryStream(file.absoluteFile.parentFile.toPath(), file.name).use { stream ->
                     stream.forEach { filename ->
                         try {
                             val st = PostbankPDFParser.parse(filename.toString())
