@@ -10,6 +10,4 @@ internal object Resources
  * @param path The path to the resource file.
  * @return The text file content as a strings.
  */
-fun readResource(path: String): String {
-    return File(Resources.javaClass.getResource(path).toURI()).readText()
-}
+fun readResource(path: String) = File(Resources.javaClass.getResource(path).toURI()).readText()
