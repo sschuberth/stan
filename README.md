@@ -21,6 +21,10 @@ Stan is both a library and command line tool to convert and analyze bank account
 
 ## What file formats can be exported to?
 
+- Custom [JSON](https://www.json.org/)
+
+  The JSON files offer a generic way to further process the statement data.
+
 - [OFX version 1](http://www.ofx.net/downloads.html)
 
   The OXF files can then be imported in finance applications like [jGnash](https://ccavanaugh.github.io/jgnash/) or [GnuCash](https://www.gnucash.org/).
