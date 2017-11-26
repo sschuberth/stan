@@ -64,7 +64,7 @@ class OfxV1Exporter : Exporter {
                             tag("BANKTRANLIST",
                                 data("DTSTART", fromDateStr),
                                 data("DTEND", toDateStr),
-                                statement.bookings.joinToString("\n") { writeStatementTransAction(it) }
+                                statement.bookings.joinToString("\n") { writeStatementTransaction(it) }
                             ),
                             tag("LEDGERBAL",
                                 data("BALAMT", statement.balanceNew),
@@ -89,7 +89,7 @@ class OfxV1Exporter : Exporter {
     private fun writeStatusAggregate(code: Int, severity: String) =
         tag("STATUS", "<CODE>$code", "<SEVERITY>$severity")
 
-    private fun writeStatementTransAction(item: BookingItem) =
+    private fun writeStatementTransaction(item: BookingItem) =
         tag("STMTTRN",
             data("TRNTYPE", if (item.amount > 0) "CREDIT" else "DEBIT"),
             data("DTPOSTED", item.postDate.format(DateTimeFormatter.BASIC_ISO_DATE)),
