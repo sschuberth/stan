@@ -1,2 +1,3 @@
-*expected*.json	text eol=lf
-*expected*.ofx	text eol=lf
+*expected*.json	eol=lf
+*expected*.ofx	eol=lf
+*expected*.qif	eol=lf

@@ -27,4 +27,8 @@ Stan is both a library and command line tool to convert and analyze bank account
 
 - [OFX version 1](http://www.ofx.net/downloads.html)
 
-  The OXF files can then be imported in finance applications like [jGnash](https://ccavanaugh.github.io/jgnash/) or [GnuCash](https://www.gnucash.org/).
+  The OXF files can then be imported into finance applications like [GnuCash](https://www.gnucash.org/), [HomeBank](http://homebank.free.fr/en/index.php) or [jGnash](https://ccavanaugh.github.io/jgnash/).
+
+- [QIF](https://en.wikipedia.org/wiki/Quicken_Interchange_Format)
+
+  The QIF files can then be imported into finance applications like [GnuCash](https://www.gnucash.org/), [HomeBank](http://homebank.free.fr/en/index.php), [jGnash](https://ccavanaugh.github.io/jgnash/) or [Money Manager Ex](https://www.moneymanagerex.org/).
