@@ -34,8 +34,6 @@ class OfxV1Exporter : Exporter {
     }
 
     override fun write(statement: Statement, filename: String) {
-        // It usually is bad practice to write a static field from an instance method, but the convention for this class
-        // is to only use the enum's "OFX" instance.
         val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(filename), StandardCharsets.UTF_8))
 
         writer.write(HEADER.joinToString("\n") + "\n\n")
