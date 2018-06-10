@@ -28,7 +28,7 @@ dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jre8'
 
     compile 'com.beust:jcommander:1.74'
-    compile 'com.itextpdf:itextpdf:5.5.12'
+    compile 'com.itextpdf:itextpdf:5.5.13'
 
     // See https://github.com/gradle/gradle/blob/master/subprojects/docs/src/samples/java/withIntegrationTests/build.gradle.
     funTestCompile sourceSets.main.output
