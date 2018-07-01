@@ -57,7 +57,7 @@ object Main {
                 newDirectoryStream(file.absoluteFile.parentFile.toPath(), file.name).use { stream ->
                     stream.forEach { filename ->
                         try {
-                            val st = PostbankPDFParser.parse(filename.toString())
+                            val st = PostbankPDFParser.parse(filename.toFile())
                             println("Successfully parsed statement '" + filename + "' dated from " + st.fromDate + " to " + st.toDate + ".")
                             statements.add(st)
                         } catch (e: ParseException) {

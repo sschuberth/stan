@@ -13,6 +13,7 @@ import com.itextpdf.text.pdf.parser.RenderFilter
 import com.itextpdf.text.pdf.parser.TextRenderInfo
 import com.itextpdf.text.pdf.parser.Vector
 
+import java.io.File
 import java.io.IOException
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -97,14 +98,13 @@ object PostbankPDFParser : Parser {
         return BOOKING_FORMAT.parse(m.group(3)).toFloat()
     }
 
-    override fun parse(filename: String): Statement {
-        val text = StringBuilder()
+    override fun parse(statementFile: File): Statement {
+        val filename = statementFile.absolutePath
 
-        val reader: PdfReader
-        try {
-            reader = PdfReader(filename)
+        val reader = try {
+            PdfReader(filename)
         } catch (e: IOException) {
-            throw ParseException("Error opening file", 0)
+            throw ParseException("Error opening file '$filename'.", 0)
         }
 
         val pdfInfo = reader.info
@@ -117,6 +117,7 @@ object PostbankPDFParser : Parser {
         }
 
         val isFormat2014 = pdfCreationDate?.isBefore(LocalDate.of(2017, 6, 1)) ?: false
+        val text = StringBuilder()
 
         for (i in 1..reader.numberOfPages) {
             val pageResources = reader.getPageResources(i) ?: continue
