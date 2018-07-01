@@ -22,7 +22,7 @@ class JsonExporterTest : StringSpec({
         val expectedJson = gson.toJson(gson.fromJson<JsonArray>(expectedText))
 
         val json = File.createTempFile(baseName, "json")
-        val statement = PostbankPDFParser.parse("$baseName.pdf")
+        val statement = PostbankPDFParser.parse(File("src/funTest/resources/$baseName.pdf"))
         JsonExporter().write(statement, json.path)
         val actualJson = json.readText()
 
@@ -37,7 +37,7 @@ class JsonExporterTest : StringSpec({
         val expectedJson = gson.toJson(gson.fromJson<JsonArray>(expectedText))
 
         val json = File.createTempFile(baseName, "json")
-        val statement = PostbankPDFParser.parse("$baseName.pdf")
+        val statement = PostbankPDFParser.parse(File("src/funTest/resources/$baseName.pdf"))
         JsonExporter().write(statement, json.path)
         val actualJson = json.readText()
 

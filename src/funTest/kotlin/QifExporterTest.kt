@@ -15,7 +15,7 @@ class QifExporterTest : StringSpec({
         val expectedQif = readResource("/$baseName-expected.qif")
 
         val qif = File.createTempFile(baseName, "qif")
-        val statement = PostbankPDFParser.parse("$baseName.pdf")
+        val statement = PostbankPDFParser.parse(File("src/funTest/resources/$baseName.pdf"))
         QifExporter().write(statement, qif.path)
         val actualQif = qif.readText()
 
@@ -29,7 +29,7 @@ class QifExporterTest : StringSpec({
         val expectedQif = readResource("/$baseName-expected.qif")
 
         val qif = File.createTempFile(baseName, "qif")
-        val statement = PostbankPDFParser.parse("$baseName.pdf")
+        val statement = PostbankPDFParser.parse(File("src/funTest/resources/$baseName.pdf"))
         QifExporter().write(statement, qif.path)
         val actualQif = qif.readText()
 
