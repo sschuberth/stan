@@ -30,21 +30,21 @@ object PostbankPDFParser : Parser {
 
     private val STATEMENT_DATE_PATTERN = Pattern.compile("^Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)$")
     private val STATEMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-    private val STATEMENT_BIC_HEADER_2017 = "BIC (SWIFT):"
+    private const val STATEMENT_BIC_HEADER_2017 = "BIC (SWIFT):"
 
-    private val BOOKING_PAGE_HEADER_2014 = "Auszug Seite IBAN BIC (SWIFT)"
-    private val BOOKING_PAGE_HEADER_2017 = "Auszug Jahr Seite von IBAN"
-    private val BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand"
+    private const val BOOKING_PAGE_HEADER_2014 = "Auszug Seite IBAN BIC (SWIFT)"
+    private const val BOOKING_PAGE_HEADER_2017 = "Auszug Jahr Seite von IBAN"
+    private const val BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand"
 
-    private val BOOKING_TABLE_HEADER = "Buchung[ /]Wert Vorgang/Buchungsinformation Soll Haben"
+    private const val BOOKING_TABLE_HEADER = "Buchung[ /]Wert Vorgang/Buchungsinformation Soll Haben"
 
     private val BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)$")
     private val BOOKING_ITEM_PATTERN_NO_SIGN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)$")
 
-    private val BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge"
-    private val BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge"
-    private val BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand"
-    private val BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand"
+    private const val BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge"
+    private const val BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge"
+    private const val BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand"
+    private const val BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand"
     private val BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) ?(EUR) ([+-] [\\d.,]+)$")
 
     private val BOOKING_SYMBOLS = DecimalFormatSymbols(Locale.GERMAN)
@@ -237,7 +237,7 @@ object PostbankPDFParser : Parser {
                         amountStr = String(amountChars)
                     }
 
-                    balanceOld = BOOKING_FORMAT.parse(signStr + " " + amountStr).toFloat()
+                    balanceOld = BOOKING_FORMAT.parse("$signStr $amountStr").toFloat()
                 }
 
                 // Start looking for the table header again.
@@ -310,7 +310,7 @@ object PostbankPDFParser : Parser {
                 // Work around a missing space before the amount.
                 if (amountStr[1] != ' ') {
                     val a = amountStr.split("".toRegex(), 2).toTypedArray()
-                    amountStr = a[0] + " " + a[1]
+                    amountStr = "${a[0]} ${a[1]}"
                 }
 
                 val amount = BOOKING_FORMAT.parse(amountStr).toFloat()
@@ -319,9 +319,7 @@ object PostbankPDFParser : Parser {
                 items.add(currentItem)
             } else {
                 // Add the line as info to the current booking item, if any.
-                if (currentItem != null) {
-                    currentItem.info.add(line)
-                }
+                currentItem?.info?.add(line)
             }
         }
 

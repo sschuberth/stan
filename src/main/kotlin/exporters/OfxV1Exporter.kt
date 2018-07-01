@@ -26,8 +26,7 @@ class OfxV1Exporter : Exporter {
                 "NEWFILEUID:NONE"
         )
 
-        @JvmField
-        val INDENTATION_STRING = "    "
+        const val INDENTATION_STRING = "    "
 
         @JvmField
         val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")!!
