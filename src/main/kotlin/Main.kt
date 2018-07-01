@@ -13,7 +13,6 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Files.newDirectoryStream
 import java.text.ParseException
-import java.util.Collections
 
 import kotlin.system.exitProcess
 
@@ -29,12 +28,12 @@ object Main {
     private var statementFiles = mutableListOf<File>()
 
     @Parameter(description = "The data format used for dependency information.",
-            names = arrayOf("--export-format", "-f"),
+            names = ["--export-format", "-f"],
             order = 0)
     private var exportFormat: ExportFormat? = null
 
     @Parameter(description = "Display the command line help.",
-            names = arrayOf("--help", "-h"),
+            names = ["--help", "-h"],
             help = true,
             order = 100)
     private var help = false
@@ -58,21 +57,21 @@ object Main {
                     stream.forEach { filename ->
                         try {
                             val st = PostbankPDFParser.parse(filename.toFile())
-                            println("Successfully parsed statement '" + filename + "' dated from " + st.fromDate + " to " + st.toDate + ".")
+                            println("Successfully parsed statement '$filename' dated from ${st.fromDate} to ${st.toDate}.")
                             statements.add(st)
                         } catch (e: ParseException) {
                             System.err.println("Error parsing '$filename'.")
                             e.printStackTrace()
                         }
                     }
-                    println("Parsed " + statements.size + " statement(s) in total.")
+                    println("Parsed ${statements.size} statement(s) in total.")
                 }
             } catch (e: IOException) {
                 System.err.println("Error opening '$file'.")
             }
         }
 
-        Collections.sort(statements)
+        statements.sort()
 
         var statementIterator = statements.iterator()
         if (!statementIterator.hasNext()) {
@@ -86,12 +85,12 @@ object Main {
             next = statementIterator.next()
 
             if (curr.toDate.plusDays(1) != next.fromDate) {
-                System.err.println("Statements '" + curr.filename + "' and '" + next.filename + "' are not consecutive.")
+                System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
                 System.exit(1)
             }
 
             if (curr.balanceNew != next.balanceOld) {
-                System.err.println("Balances of statements '" + curr.filename + "' and '" + next.filename + "' are not consistent.")
+                System.err.println("Balances of statements '${curr.filename}' and '${next.filename}' are not consistent.")
                 System.exit(1)
             }
 
