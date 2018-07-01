@@ -12,10 +12,10 @@ class QifExporterTest : StringSpec({
     "Demokonto account statement is exported correctly" {
         val baseName = "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
 
-        val expectedQif = readResource("/$baseName-expected.qif")
+        val expectedQif = File("src/funTest/assets/$baseName-expected.qif").readText()
 
         val qif = File.createTempFile(baseName, "qif")
-        val statement = PostbankPDFParser.parse(File("src/funTest/resources/$baseName.pdf"))
+        val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
         QifExporter().write(statement, qif.path)
         val actualQif = qif.readText()
 
@@ -26,10 +26,10 @@ class QifExporterTest : StringSpec({
     "Goran Bolsec account statement is exported correctly" {
         val baseName = "317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313"
 
-        val expectedQif = readResource("/$baseName-expected.qif")
+        val expectedQif = File("src/funTest/assets/$baseName-expected.qif").readText()
 
         val qif = File.createTempFile(baseName, "qif")
-        val statement = PostbankPDFParser.parse(File("src/funTest/resources/$baseName.pdf"))
+        val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
         QifExporter().write(statement, qif.path)
         val actualQif = qif.readText()
 

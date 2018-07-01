@@ -18,11 +18,11 @@ class JsonExporterTest : StringSpec({
     "Demokonto account statement is exported correctly" {
         val baseName = "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
 
-        val expectedText = readResource("/$baseName-expected.json")
+        val expectedText = File("src/funTest/assets/$baseName-expected.json").readText()
         val expectedJson = gson.toJson(gson.fromJson<JsonArray>(expectedText))
 
         val json = File.createTempFile(baseName, "json")
-        val statement = PostbankPDFParser.parse(File("src/funTest/resources/$baseName.pdf"))
+        val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
         JsonExporter().write(statement, json.path)
         val actualJson = json.readText()
 
@@ -33,11 +33,11 @@ class JsonExporterTest : StringSpec({
     "Goran Bolsec account statement is exported correctly" {
         val baseName = "317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313"
 
-        val expectedText = readResource("/$baseName-expected.json")
+        val expectedText = File("src/funTest/assets/$baseName-expected.json").readText()
         val expectedJson = gson.toJson(gson.fromJson<JsonArray>(expectedText))
 
         val json = File.createTempFile(baseName, "json")
-        val statement = PostbankPDFParser.parse(File("src/funTest/resources/$baseName.pdf"))
+        val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
         JsonExporter().write(statement, json.path)
         val actualJson = json.readText()
 
