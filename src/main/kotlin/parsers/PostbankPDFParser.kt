@@ -28,7 +28,7 @@ import java.util.regex.Pattern
 object PostbankPDFParser : Parser {
     private val PDF_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
 
-    private val STATEMENT_DATE_PATTERN = Pattern.compile("^Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)$")
+    private val STATEMENT_DATE_PATTERN = Regex("Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)")
     private val STATEMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     private const val STATEMENT_BIC_HEADER_2017 = "BIC (SWIFT):"
 
@@ -36,17 +36,17 @@ object PostbankPDFParser : Parser {
     private const val BOOKING_PAGE_HEADER_2017 = "Auszug Jahr Seite von IBAN"
     private const val BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand"
 
-    private const val BOOKING_TABLE_HEADER = "Buchung[ /]Wert Vorgang/Buchungsinformation Soll Haben"
+    private val BOOKING_TABLE_HEADER = Regex("Buchung[ /]Wert Vorgang/Buchungsinformation Soll Haben")
 
-    private val BOOKING_ITEM_PATTERN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)$")
-    private val BOOKING_ITEM_PATTERN_NO_SIGN = Pattern.compile("^(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)$")
+    private val BOOKING_ITEM_PATTERN = Regex("(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)")
+    private val BOOKING_ITEM_PATTERN_NO_SIGN = Regex("(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)")
 
     private const val BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge"
     private const val BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge"
     private const val BOOKING_SUMMARY_OUT_ALT = "Eingeräumte Kontoüberziehung Zinssatz für eingeräumte Kontoüberziehung Summe Zahlungsausgänge"
     private const val BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand"
     private const val BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand"
-    private val BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) ?(EUR) ([+-] [\\d.,]+)$")
+    private val BOOKING_SUMMARY_PATTERN = Regex("(.*) ?(EUR) ([+-] [\\d.,]+)")
 
     private val BOOKING_SYMBOLS = DecimalFormatSymbols(Locale.GERMAN)
     private val BOOKING_FORMAT = DecimalFormat("+ 0,000.#;- 0,000.#", BOOKING_SYMBOLS)
@@ -74,7 +74,7 @@ object PostbankPDFParser : Parser {
         // Allow the marker to span multiple lines by incrementally
         // removing the current line from the beginning of the marker.
         do {
-            marker = marker.replaceFirst("^$line ?".toRegex(), "")
+            marker = marker.replaceFirst(Regex("^$line ?"), "")
 
             if (it.hasNext()) line = it.next()
 
@@ -86,20 +86,20 @@ object PostbankPDFParser : Parser {
             // No match yet, take the next line into consideration.
         } while (marker.startsWith(line))
 
-        var m = BOOKING_SUMMARY_PATTERN.matcher(line)
-        if (!m.matches()) {
+        var m = BOOKING_SUMMARY_PATTERN.matchEntire(line)
+        if (m == null) {
             // Try appending the next line before we fail.
             if (it.hasNext()) {
                 line = line.trim { it <= ' ' } + " " + it.next().trim { it <= ' ' }
-                m = BOOKING_SUMMARY_PATTERN.matcher(line)
+                m = BOOKING_SUMMARY_PATTERN.matchEntire(line)
             }
 
-            if (!m.matches()) {
+            if (m == null) {
                 throw ParseException("Error parsing booking summary", it.nextIndex())
             }
         }
 
-        return BOOKING_FORMAT.parse(m.group(3)).toFloat()
+        return BOOKING_FORMAT.parse(m.groupValues[3]).toFloat()
     }
 
     override fun parse(statementFile: File): Statement {
@@ -186,17 +186,17 @@ object PostbankPDFParser : Parser {
             // Uncomment for debugging.
             //System.out.println(line);
 
-            var m = STATEMENT_DATE_PATTERN.matcher(line)
-            if (m.matches()) {
+            var m = STATEMENT_DATE_PATTERN.matchEntire(line)
+            if (m != null) {
                 if (stFrom != null) {
                     throw ParseException("Multiple statement start dates found", it.nextIndex())
                 }
-                stFrom = LocalDate.parse(m.group(2), STATEMENT_DATE_FORMATTER)
+                stFrom = LocalDate.parse(m.groupValues[2], STATEMENT_DATE_FORMATTER)
 
                 if (stTo != null) {
                     throw ParseException("Multiple statement end dates found", it.nextIndex())
                 }
-                stTo = LocalDate.parse(m.group(3), STATEMENT_DATE_FORMATTER)
+                stTo = LocalDate.parse(m.groupValues[3], STATEMENT_DATE_FORMATTER)
 
                 valueYear = stFrom!!.year
                 postYear = valueYear
@@ -277,29 +277,29 @@ object PostbankPDFParser : Parser {
 
             // Loop until the booking table header is found, and then skip it.
             if (!foundStart) {
-                if (line.matches(BOOKING_TABLE_HEADER.toRegex())) {
+                if (line.matches(BOOKING_TABLE_HEADER)) {
                     foundStart = true
                 }
 
                 continue
             }
 
-            m = BOOKING_ITEM_PATTERN.matcher(line)
+            m = BOOKING_ITEM_PATTERN.matchEntire(line)
 
-            if (!m.matches()) {
+            if (m == null) {
                 // Work around the sign being present on the previous line.
-                m = BOOKING_ITEM_PATTERN_NO_SIGN.matcher(line)
-                if (m.matches() && signLine != null) {
-                    line = arrayOf(m.group(1), m.group(2), m.group(3), signLine, m.group(4)).joinToString(" ")
+                m = BOOKING_ITEM_PATTERN_NO_SIGN.matchEntire(line)
+                if (m != null && signLine != null) {
+                    line = listOf(m.groupValues[1], m.groupValues[2], m.groupValues[3], signLine, m.groupValues[4]).joinToString(" ")
                     signLine = null
-                    m = BOOKING_ITEM_PATTERN.matcher(line)
+                    m = BOOKING_ITEM_PATTERN.matchEntire(line)
                 }
             }
 
             // Within the booking table, a matching pattern creates a new booking item.
-            if (m.matches()) {
-                var postDate = LocalDate.parse(m.group(1) + postYear, STATEMENT_DATE_FORMATTER)
-                var valueDate = LocalDate.parse(m.group(2) + valueYear, STATEMENT_DATE_FORMATTER)
+            if (m != null) {
+                var postDate = LocalDate.parse(m.groupValues[1] + postYear, STATEMENT_DATE_FORMATTER)
+                var valueDate = LocalDate.parse(m.groupValues[2] + valueYear, STATEMENT_DATE_FORMATTER)
 
                 if (currentItem != null) {
                     // If there is a wrap-around in the month, increase the year.
@@ -312,7 +312,7 @@ object PostbankPDFParser : Parser {
                     }
                 }
 
-                var amountStr = m.group(4)
+                var amountStr = m.groupValues[4]
 
                 // Work around a missing space before the amount.
                 if (amountStr[1] != ' ') {
@@ -321,7 +321,7 @@ object PostbankPDFParser : Parser {
 
                 val amount = BOOKING_FORMAT.parse(amountStr).toFloat()
 
-                currentItem = BookingItem(postDate, valueDate, m.group(3), amount)
+                currentItem = BookingItem(postDate, valueDate, m.groupValues[3], amount)
                 items.add(currentItem)
             } else {
                 // Add the line as info to the current booking item, if any.
