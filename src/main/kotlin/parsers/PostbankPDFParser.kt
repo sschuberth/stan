@@ -43,6 +43,7 @@ object PostbankPDFParser : Parser {
 
     private const val BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge"
     private const val BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge"
+    private const val BOOKING_SUMMARY_OUT_ALT = "Eingeräumte Kontoüberziehung Zinssatz für eingeräumte Kontoüberziehung Summe Zahlungsausgänge"
     private const val BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand"
     private const val BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand"
     private val BOOKING_SUMMARY_PATTERN = Pattern.compile("^(.*) ?(EUR) ([+-] [\\d.,]+)$")
@@ -252,6 +253,9 @@ object PostbankPDFParser : Parser {
                 continue
             } else if (BOOKING_SUMMARY_OUT.startsWith(line)) {
                 sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT, line, it)
+                continue
+            } else if (BOOKING_SUMMARY_OUT_ALT.startsWith(line)) {
+                sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT_ALT, line, it)
                 continue
             } else if (BOOKING_SUMMARY_BALANCE_SINGULAR.startsWith(line)) {
                 balanceNew = parseBookingSummary(BOOKING_SUMMARY_BALANCE_SINGULAR, line, it)
