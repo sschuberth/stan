@@ -201,7 +201,7 @@ object PostbankPDFParser : Parser {
                 valueYear = stFrom!!.year
                 postYear = valueYear
             } else if (!isFormat2014 && line.startsWith(STATEMENT_BIC_HEADER_2017)) {
-                accBic = line.replaceFirst(STATEMENT_BIC_HEADER_2017.toRegex(), "").trim { it <= ' ' }
+                accBic = line.removePrefix(STATEMENT_BIC_HEADER_2017).trim { it <= ' ' }
             } else if (line.startsWith(bookingPageHeader) && it.hasNext()) {
                 // Read the IBAN and BIC from the page header.
                 val pageIban = StringBuilder(22)
