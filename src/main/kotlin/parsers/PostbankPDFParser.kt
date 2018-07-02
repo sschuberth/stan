@@ -90,7 +90,7 @@ object PostbankPDFParser : Parser {
         if (m == null) {
             // Try appending the next line before we fail.
             if (it.hasNext()) {
-                line = line.trim { it <= ' ' } + " " + it.next().trim { it <= ' ' }
+                line = line.trim() + " " + it.next().trim()
                 m = BOOKING_SUMMARY_PATTERN.matchEntire(line)
             }
 
@@ -201,7 +201,7 @@ object PostbankPDFParser : Parser {
                 valueYear = stFrom!!.year
                 postYear = valueYear
             } else if (!isFormat2014 && line.startsWith(STATEMENT_BIC_HEADER_2017)) {
-                accBic = line.removePrefix(STATEMENT_BIC_HEADER_2017).trim { it <= ' ' }
+                accBic = line.removePrefix(STATEMENT_BIC_HEADER_2017).trim()
             } else if (line.startsWith(bookingPageHeader) && it.hasNext()) {
                 // Read the IBAN and BIC from the page header.
                 val pageIban = StringBuilder(22)
