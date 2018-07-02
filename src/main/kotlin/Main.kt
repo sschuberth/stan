@@ -10,11 +10,19 @@ import com.github.sschuberth.stan.model.Statement
 import com.github.sschuberth.stan.parsers.PostbankPDFParser
 
 import java.io.File
-import java.io.IOException
-import java.nio.file.Files.newDirectoryStream
+import java.nio.file.FileSystems
+import java.nio.file.Files
 import java.text.ParseException
 
 import kotlin.system.exitProcess
+
+fun File.getExisting(): File? {
+    var current = absoluteFile
+    while (current != null && !current.exists()) {
+        current = current.parentFile
+    }
+    return current
+}
 
 object Main {
     enum class ExportFormat(val exporter: Exporter) {
@@ -49,27 +57,34 @@ object Main {
             exitProcess(1)
         }
 
+        if (statementFiles.isEmpty()) {
+            System.err.println("No statement file(s) specified.")
+            exitProcess(1)
+        }
+
         val statements = mutableListOf<Statement>()
 
         statementFiles.forEach { file ->
-            try {
-                newDirectoryStream(file.absoluteFile.parentFile.toPath(), file.name).use { stream ->
-                    stream.forEach { filename ->
-                        try {
-                            val st = PostbankPDFParser.parse(filename.toFile())
-                            println("Successfully parsed statement '$filename' dated from ${st.fromDate} to ${st.toDate}.")
-                            statements.add(st)
-                        } catch (e: ParseException) {
-                            System.err.println("Error parsing '$filename'.")
-                            e.printStackTrace()
-                        }
+            val startPath = file.getExisting()?.toPath()
+            if (startPath != null) {
+                val globPath = file.absoluteFile.invariantSeparatorsPath
+                val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
+                Files.walk(startPath).filter {
+                    matcher.matches(it)
+                }.forEach {
+                    try {
+                        val st = PostbankPDFParser.parse(it.toFile())
+                        println("Successfully parsed statement '$it' dated from ${st.fromDate} to ${st.toDate}.")
+                        statements.add(st)
+                    } catch (e: ParseException) {
+                        System.err.println("Error parsing '$it'.")
+                        e.printStackTrace()
                     }
-                    println("Parsed ${statements.size} statement(s) in total.")
                 }
-            } catch (e: IOException) {
-                System.err.println("Error opening '$file'.")
             }
         }
+
+        println("Parsed ${statements.size} statement(s) in total.")
 
         statements.sort()
 
