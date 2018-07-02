@@ -90,8 +90,14 @@ object PostbankPDFParser : Parser {
         if (m == null) {
             // Try appending the next line before we fail.
             if (it.hasNext()) {
-                line = line.trim() + " " + it.next().trim()
-                m = BOOKING_SUMMARY_PATTERN.matchEntire(line)
+                var twoLines = line.trim() + " " + it.next().trim()
+                m = BOOKING_SUMMARY_PATTERN.matchEntire(twoLines)
+
+                // Try prepending the next line before we fail.
+                if (m == null) {
+                    twoLines = it.previous().trim() + " " + line.trim()
+                    m = BOOKING_SUMMARY_PATTERN.matchEntire(twoLines)
+                }
             }
 
             if (m == null) {
