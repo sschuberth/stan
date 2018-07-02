@@ -157,7 +157,7 @@ object PostbankPDFParser : Parser {
             text.append("\n")
         }
 
-        val lines = Arrays.asList(*text.toString().split("\\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
+        val lines = text.lines().dropLastWhile { it.isBlank() }
 
         var foundStart = false
 
@@ -206,7 +206,7 @@ object PostbankPDFParser : Parser {
                 // Read the IBAN and BIC from the page header.
                 val pageIban = StringBuilder(22)
 
-                val info = it.next().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                val info = it.next().split(" ").dropLastWhile { it.isBlank() }
 
                 if (info.size >= 9) {
                     // Only the 2014 format has the BIC in the page header.
