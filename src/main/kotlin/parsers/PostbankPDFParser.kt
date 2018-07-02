@@ -316,8 +316,7 @@ object PostbankPDFParser : Parser {
 
                 // Work around a missing space before the amount.
                 if (amountStr[1] != ' ') {
-                    val a = amountStr.split("".toRegex(), 2).toTypedArray()
-                    amountStr = "${a[0]} ${a[1]}"
+                    amountStr = "${amountStr.take(1)} ${amountStr.drop(1)}"
                 }
 
                 val amount = BOOKING_FORMAT.parse(amountStr).toFloat()
