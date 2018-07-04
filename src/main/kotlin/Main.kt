@@ -64,22 +64,20 @@ object Main {
 
         val statements = mutableListOf<Statement>()
 
-        statementFiles.forEach { file ->
-            val startPath = file.getExisting()?.toPath()
-            if (startPath != null) {
-                val globPath = file.absoluteFile.invariantSeparatorsPath
-                val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
-                Files.walk(startPath).filter {
-                    matcher.matches(it)
-                }.forEach {
-                    try {
-                        val st = PostbankPDFParser.parse(it.toFile())
-                        println("Successfully parsed statement '$it' dated from ${st.fromDate} to ${st.toDate}.")
-                        statements.add(st)
-                    } catch (e: ParseException) {
-                        System.err.println("Error parsing '$it'.")
-                        e.printStackTrace()
-                    }
+        statementFiles.forEach { glob ->
+            val globPath = glob.absoluteFile.invariantSeparatorsPath
+            val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
+
+            glob.getExisting()?.walkBottomUp()?.filter {
+                matcher.matches(it.toPath())
+            }?.forEach {
+                try {
+                    val st = PostbankPDFParser.parse(it)
+                    println("Successfully parsed statement '$it' dated from ${st.fromDate} to ${st.toDate}.")
+                    statements.add(st)
+                } catch (e: ParseException) {
+                    System.err.println("Error parsing '$it'.")
+                    e.printStackTrace()
                 }
             }
         }
