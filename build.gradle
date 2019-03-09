@@ -2,9 +2,9 @@
 plugins {
     // We need to hard-code the version here because of
     // https://github.com/gradle/gradle/issues/1697
-    id 'org.jetbrains.kotlin.jvm' version '1.2.51'
+    id 'org.jetbrains.kotlin.jvm'
 
-    id 'com.github.ben-manes.versions' version '0.20.0'
+    id 'com.github.ben-manes.versions'
 }
 
 // Apply core plugins.
@@ -27,8 +27,8 @@ dependencies {
     // By default, the same version as the plugin gets resolved.
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 
-    compile 'com.beust:jcommander:1.74'
-    compile 'com.itextpdf:itextpdf:5.5.13'
+    compile "com.beust:jcommander:$jcommanderVersion"
+    compile "com.itextpdf:itextpdf:$itextpdfVersion"
 
     // See https://github.com/gradle/gradle/blob/master/subprojects/docs/src/samples/java/withIntegrationTests/build.gradle.
     funTestCompile sourceSets.main.output
@@ -36,8 +36,8 @@ dependencies {
     funTestCompile configurations.testCompile
     funTestRuntime configurations.testRuntime
 
-    funTestCompile 'io.kotlintest:kotlintest:2.0.7'
-    funTestCompile 'com.github.salomonbrys.kotson:kotson:2.5.0'
+    funTestCompile "io.kotlintest:kotlintest:$kotlintestVersion"
+    funTestCompile "com.github.salomonbrys.kotson:kotson:$kotsonVersion"
 }
 
 dependencyUpdates.resolutionStrategy = {
