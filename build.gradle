@@ -40,15 +40,19 @@ dependencies {
     funTestCompile "com.github.salomonbrys.kotson:kotson:$kotsonVersion"
 }
 
-dependencyUpdates.resolutionStrategy = {
-    componentSelection { rules ->
-        rules.all { ComponentSelection selection ->
-            boolean isNonFinalVersion = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
-                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-            }
+dependencyUpdates {
+    gradleReleaseChannel = 'current'
 
-            if (isNonFinalVersion) {
-                selection.reject('Release candidate')
+    resolutionStrategy = {
+        componentSelection { rules ->
+            rules.all { ComponentSelection selection ->
+                boolean isNonFinalVersion = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
+                    selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+                }
+
+                if (isNonFinalVersion) {
+                    selection.reject('Release candidate')
+                }
             }
         }
     }
