@@ -64,6 +64,13 @@ jar {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        // Ensure that all transitive versions of "kotlin-reflect" match our version of "kotlin-stdlib".
+        force "org.jetbrains.kotlin:kotlin-reflect:$kotlinPluginVersion"
+    }
+}
+
 compileKotlin {
     kotlinOptions {
         allWarningsAsErrors = true
