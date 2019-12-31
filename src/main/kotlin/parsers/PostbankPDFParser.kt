@@ -118,8 +118,8 @@ object PostbankPDFParser : Parser {
         }
 
         val pdfInfo = reader.info
-        val pdfCreationDate = pdfInfo["CreationDate"]?.let {
-            LocalDate.parse(it.substring(2, 16), PDF_DATE_FORMATTER).also {
+        val pdfCreationDate = pdfInfo["CreationDate"]?.let { creationDate ->
+            LocalDate.parse(creationDate.substring(2, 16), PDF_DATE_FORMATTER).also {
                 if (it.isBefore(LocalDate.of(2014, 7, 1))) {
                     throw ParseException("Unsupported statement format", 0)
                 }
