@@ -88,7 +88,7 @@ object Main {
         var statementIterator = statements.iterator()
         if (!statementIterator.hasNext()) {
             System.err.println("No statements found.")
-            System.exit(1)
+            exitProcess(1)
         }
 
         var curr = statementIterator.next()
@@ -98,12 +98,12 @@ object Main {
 
             if (curr.toDate.plusDays(1) != next.fromDate) {
                 System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
-                System.exit(1)
+                exitProcess(1)
             }
 
             if (curr.balanceNew != next.balanceOld) {
                 System.err.println("Balances of statements '${curr.filename}' and '${next.filename}' are not consistent.")
-                System.exit(1)
+                exitProcess(1)
             }
 
             curr = next

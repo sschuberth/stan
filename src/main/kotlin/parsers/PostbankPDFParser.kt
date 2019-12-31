@@ -23,6 +23,8 @@ import java.time.format.DateTimeFormatter
 import java.util.ArrayList
 import java.util.Locale
 
+import kotlin.math.abs
+
 object PostbankPDFParser : Parser {
     private val PDF_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
 
@@ -371,16 +373,16 @@ object PostbankPDFParser : Parser {
             }
         }
 
-        if (Math.abs(calcIn - sumIn) >= 0.01) {
+        if (abs(calcIn - sumIn) >= 0.01) {
             throw ParseException("Sanity check on incoming booking summary failed", it.nextIndex())
         }
 
-        if (Math.abs(calcOut - sumOut) >= 0.01) {
+        if (abs(calcOut - sumOut) >= 0.01) {
             throw ParseException("Sanity check on outgoing booking summary failed", it.nextIndex())
         }
 
         val balanceCalc = balanceOld + sumIn + sumOut
-        if (Math.abs(balanceCalc - balanceNew) >= 0.01) {
+        if (abs(balanceCalc - balanceNew) >= 0.01) {
             throw ParseException("Sanity check on balances failed", it.nextIndex())
         }
 
