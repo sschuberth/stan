@@ -56,7 +56,7 @@ object PostbankPDFParser : Parser {
      * character width to tweak recognition of word boundaries. Inspired by http://stackoverflow.com/a/13645183/1127485.
      */
     private class MyLocationTextExtractionStrategy(private val spaceCharWidthFactor: Float) : LocationTextExtractionStrategy() {
-        override fun isChunkAtWordBoundary(chunk: LocationTextExtractionStrategy.TextChunk, previousChunk: LocationTextExtractionStrategy.TextChunk): Boolean {
+        override fun isChunkAtWordBoundary(chunk: TextChunk, previousChunk: TextChunk): Boolean {
             val width = chunk.location.charSpaceWidth
             if (width < 0.1f) {
                 return false
