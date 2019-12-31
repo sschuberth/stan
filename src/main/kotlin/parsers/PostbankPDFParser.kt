@@ -21,9 +21,7 @@ import java.text.ParseException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.ArrayList
-import java.util.Arrays
 import java.util.Locale
-import java.util.regex.Pattern
 
 object PostbankPDFParser : Parser {
     private val PDF_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
