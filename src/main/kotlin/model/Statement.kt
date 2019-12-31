@@ -16,7 +16,7 @@ class Statement(
         val sumOut: Float,
         val bookings: MutableList<BookingItem>
 ) : Comparable<Statement> {
-    override fun compareTo(other: Statement)= fromDate.compareTo(other.fromDate)
+    override fun compareTo(other: Statement) = fromDate.compareTo(other.fromDate)
 
     override fun toString(): String {
         val result = StringBuilder("[\n")

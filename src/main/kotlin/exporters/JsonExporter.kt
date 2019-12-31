@@ -6,5 +6,5 @@ import java.io.File
 
 class JsonExporter : Exporter {
     override fun write(statement: Statement, filename: String) =
-        File(filename).writeText(statement.toString())
+            File(filename).writeText(statement.toString())
 }
