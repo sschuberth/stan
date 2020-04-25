@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val itextpdfVersion: String by project
 val jcommanderVersion: String by project
-val kotlintestVersion: String by project
+val kotestVersion: String by project
 val kotsonVersion: String by project
 
 plugins {
@@ -45,7 +45,8 @@ dependencies {
     // See https://github.com/gradle/gradle/blob/master/subprojects/docs/src/samples/java/withIntegrationTests/build.gradle.
     "funTestImplementation"(sourceSets["main"].output)
 
-    "funTestImplementation"("io.kotlintest:kotlintest:$kotlintestVersion")
+    "funTestImplementation"("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
+    "funTestImplementation"("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
     "funTestImplementation"("com.github.salomonbrys.kotson:kotson:$kotsonVersion")
 }
 
@@ -71,6 +72,10 @@ tasks.withType<KotlinCompile>().configureEach {
         jvmTarget = "1.8"
         apiVersion = "1.3"
     }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 val funTest by tasks.registering(Test::class) {

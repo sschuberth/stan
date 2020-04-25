@@ -7,8 +7,8 @@ import com.github.sschuberth.stan.parsers.PostbankPDFParser
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 
-import io.kotlintest.matchers.shouldBe
-import io.kotlintest.specs.StringSpec
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 
 import java.io.File
 

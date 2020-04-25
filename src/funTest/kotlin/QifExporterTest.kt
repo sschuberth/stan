@@ -3,8 +3,8 @@ package com.github.sschuberth.stan.functionaltest
 import com.github.sschuberth.stan.exporters.QifExporter
 import com.github.sschuberth.stan.parsers.PostbankPDFParser
 
-import io.kotlintest.matchers.shouldBe
-import io.kotlintest.specs.StringSpec
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 
 import java.io.File
 
