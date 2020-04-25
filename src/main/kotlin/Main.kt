@@ -1,7 +1,12 @@
 package com.github.sschuberth.stan
 
-import com.beust.jcommander.JCommander
-import com.beust.jcommander.Parameter
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.UsageError
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.enum
+import com.github.ajalt.clikt.parameters.types.file
 
 import com.github.sschuberth.stan.exporters.Exporter
 import com.github.sschuberth.stan.exporters.JsonExporter
@@ -23,7 +28,7 @@ fun File.getExisting(): File? {
     return current
 }
 
-object Main {
+class Stan : CliktCommand() {
     enum class ExportFormat(val exporter: Exporter) {
         JSON(JsonExporter()),
         OFX(OfxV1Exporter());
@@ -31,35 +36,17 @@ object Main {
         override fun toString() = name.toLowerCase()
     }
 
-    @Parameter
-    private var statementFiles = mutableListOf<File>()
+    private val statementFiles by argument()
+            .file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
+            .multiple()
 
-    @Parameter(description = "The data format used for dependency information.",
-            names = ["--export-format", "-f"],
-            order = 0)
-    private var exportFormat: ExportFormat? = null
+    private val exportFormat by option(
+            "--export-format", "-f",
+            help = "The data format used for dependency information."
+    ).enum<ExportFormat>()
 
-    @Parameter(description = "Display the command line help.",
-            names = ["--help", "-h"],
-            help = true,
-            order = 100)
-    private var help = false
-
-    @JvmStatic
-    fun main(args: Array<String>) {
-        val jc = JCommander(this)
-        jc.parse(*args)
-        jc.programName = "stan"
-
-        if (help) {
-            jc.usage()
-            exitProcess(1)
-        }
-
-        if (statementFiles.isEmpty()) {
-            System.err.println("No statement file(s) specified.")
-            exitProcess(1)
-        }
+    override fun run() {
+        if (statementFiles.isEmpty()) throw UsageError("No statement file(s) specified.", statusCode = 1)
 
         val statements = mutableListOf<Statement>()
 
@@ -124,3 +111,5 @@ object Main {
         }
     }
 }
+
+fun main(args: Array<String>) = Stan().main(args)

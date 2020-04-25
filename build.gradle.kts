@@ -6,8 +6,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val cliktVersion: String by project
 val itextpdfVersion: String by project
-val jcommanderVersion: String by project
 val kotestVersion: String by project
 val kotsonVersion: String by project
 
@@ -21,7 +21,7 @@ plugins {
 }
 
 application {
-    mainClassName = "com.github.sschuberth.stan.Main"
+    mainClassName = "com.github.sschuberth.stan.MainKt"
 }
 
 repositories {
@@ -39,7 +39,7 @@ dependencies {
     // By default, the same version as the plugin gets resolved.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    implementation("com.beust:jcommander:$jcommanderVersion")
+    implementation("com.github.ajalt:clikt:$cliktVersion")
     implementation("com.itextpdf:itextpdf:$itextpdfVersion")
 
     // See https://github.com/gradle/gradle/blob/master/subprojects/docs/src/samples/java/withIntegrationTests/build.gradle.
