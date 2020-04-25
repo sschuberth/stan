@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val cliktVersion: String by project
 val itextpdfVersion: String by project
 val kotestVersion: String by project
-val kotsonVersion: String by project
+val kotlinxSerializationVersion: String by project
 
 plugins {
     // Apply core plugins.
@@ -17,6 +17,8 @@ plugins {
 
     // Apply third-party plugins.
     kotlin("jvm")
+    kotlin("plugin.serialization")
+
     id("com.github.ben-manes.versions")
 }
 
@@ -47,7 +49,7 @@ dependencies {
 
     "funTestImplementation"("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
     "funTestImplementation"("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
-    "funTestImplementation"("com.github.salomonbrys.kotson:kotson:$kotsonVersion")
+    "funTestImplementation"("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinxSerializationVersion")
 }
 
 configurations["funTestImplementation"].extendsFrom(configurations["testImplementation"])
