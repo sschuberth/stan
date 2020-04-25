@@ -4,7 +4,7 @@ import com.github.sschuberth.stan.model.BookingItem
 import com.github.sschuberth.stan.model.Statement
 
 import java.io.BufferedWriter
-import java.io.FileOutputStream
+import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
@@ -32,51 +32,50 @@ class OfxV1Exporter : Exporter {
         val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")!!
     }
 
-    override fun write(statement: Statement, filename: String) {
-        val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(filename), StandardCharsets.UTF_8))
+    override fun write(statement: Statement, output: OutputStream) {
+        BufferedWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
+            writer.write(HEADER.joinToString("\n") + "\n\n")
 
-        writer.write(HEADER.joinToString("\n") + "\n\n")
+            val fromDateStr = statement.fromDate.format(DateTimeFormatter.BASIC_ISO_DATE)
+            val toDateStr = statement.toDate.format(DateTimeFormatter.BASIC_ISO_DATE)
 
-        val fromDateStr = statement.fromDate.format(DateTimeFormatter.BASIC_ISO_DATE)
-        val toDateStr = statement.toDate.format(DateTimeFormatter.BASIC_ISO_DATE)
-
-        writer.write(
-            tag("OFX",
-                tag("SIGNONMSGSRSV1",
-                    tag("SONRS",
-                        writeStatusAggregate(0, "INFO"),
-                        data("DTSERVER", LocalDateTime.now().format(DATE_FORMATTER)),
-                        data("LANGUAGE", statement.locale.getISO3Language().toUpperCase())
-                    )
-                ),
-                tag("BANKMSGSRSV1",
-                    tag("STMTTRNRS",
-                        data("TRNUID",0),
-                        writeStatusAggregate(0, "INFO"),
-                        tag("STMTRS",
-                            data("CURDEF", Currency.getInstance(statement.locale).toString()),
-                            tag("BANKACCTFROM",
-                                data("BANKID", statement.bankId),
-                                data("ACCTID", statement.accountId),
-                                data("ACCTTYPE", "CHECKING")
-                            ),
-                            tag("BANKTRANLIST",
-                                data("DTSTART", fromDateStr),
-                                data("DTEND", toDateStr),
-                                statement.bookings.joinToString("\n") { writeStatementTransaction(it) }
-                            ),
-                            tag("LEDGERBAL",
-                                data("BALAMT", statement.balanceNew),
-                                data("DTASOF", toDateStr)
+            writer.write(
+                tag("OFX",
+                    tag("SIGNONMSGSRSV1",
+                        tag("SONRS",
+                            writeStatusAggregate(0, "INFO"),
+                            data("DTSERVER", LocalDateTime.now().format(DATE_FORMATTER)),
+                            data("LANGUAGE", statement.locale.getISO3Language().toUpperCase())
+                        )
+                    ),
+                    tag("BANKMSGSRSV1",
+                        tag("STMTTRNRS",
+                            data("TRNUID", 0),
+                            writeStatusAggregate(0, "INFO"),
+                            tag("STMTRS",
+                                data("CURDEF", Currency.getInstance(statement.locale).toString()),
+                                tag("BANKACCTFROM",
+                                    data("BANKID", statement.bankId),
+                                    data("ACCTID", statement.accountId),
+                                    data("ACCTTYPE", "CHECKING")
+                                ),
+                                tag("BANKTRANLIST",
+                                    data("DTSTART", fromDateStr),
+                                    data("DTEND", toDateStr),
+                                    statement.bookings.joinToString("\n") { writeStatementTransaction(it) }
+                                ),
+                                tag("LEDGERBAL",
+                                    data("BALAMT", statement.balanceNew),
+                                    data("DTASOF", toDateStr)
+                                )
                             )
                         )
                     )
                 )
             )
-        )
 
-        writer.write("\n")
-        writer.close()
+            writer.write("\n")
+        }
     }
 
     private fun tag(name: String, vararg contents: String) =

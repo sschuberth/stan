@@ -7,6 +7,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
 import java.io.File
+import java.io.FileOutputStream
 
 class OfxV1ExporterTest : StringSpec({
     "Demokonto account statement is exported correctly" {
@@ -18,7 +19,7 @@ class OfxV1ExporterTest : StringSpec({
 
         val ofx = createTempFile(suffix = ".ofx")
         val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
-        OfxV1Exporter().write(statement, ofx.path)
+        OfxV1Exporter().write(statement, FileOutputStream(ofx.path))
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
         ofx.delete() shouldBe true
@@ -34,7 +35,7 @@ class OfxV1ExporterTest : StringSpec({
 
         val ofx = createTempFile(suffix = ".ofx")
         val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
-        OfxV1Exporter().write(statement, ofx.path)
+        OfxV1Exporter().write(statement, FileOutputStream(ofx.path))
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
         ofx.delete() shouldBe true

@@ -15,6 +15,7 @@ import com.github.sschuberth.stan.model.Statement
 import com.github.sschuberth.stan.parsers.PostbankPDFParser
 
 import java.io.File
+import java.io.FileOutputStream
 import java.nio.file.FileSystems
 import java.text.ParseException
 
@@ -105,7 +106,7 @@ class Stan : CliktCommand() {
                 val exportName = statement.filename.substringBeforeLast(".") + "." + exportFormat.toString()
 
                 println("Exporting\n    ${statement.filename}\nto\n    $exportName")
-                it.exporter.write(statement, exportName)
+                it.exporter.write(statement, FileOutputStream(exportName))
                 println("done.")
             }
         }

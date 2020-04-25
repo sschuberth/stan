@@ -7,6 +7,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
 import java.io.File
+import java.io.FileOutputStream
 
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
@@ -25,7 +26,7 @@ class JsonExporterTest : StringSpec({
 
         val jsonFile = createTempFile(suffix = ".json")
         val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
-        JsonExporter().write(statement, jsonFile.path)
+        JsonExporter().write(statement, FileOutputStream(jsonFile.path))
         val actualJson = jsonFile.readText()
 
         jsonFile.delete() shouldBe true
@@ -40,7 +41,7 @@ class JsonExporterTest : StringSpec({
 
         val jsonFile = createTempFile(suffix = ".json")
         val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
-        JsonExporter().write(statement, jsonFile.path)
+        JsonExporter().write(statement, FileOutputStream(jsonFile.path))
         val actualJson = jsonFile.readText()
 
         jsonFile.delete() shouldBe true

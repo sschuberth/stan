@@ -2,7 +2,7 @@ package com.github.sschuberth.stan.exporters
 
 import com.github.sschuberth.stan.model.Statement
 
-import java.io.FileOutputStream
+import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.io.Writer
@@ -16,34 +16,30 @@ class QifExporter : Exporter {
     }
 
     private class UnixPrintWriter(writer: Writer) : PrintWriter(writer) {
-        override fun println() {
-            write("\n")
-        }
+        override fun println() = write("\n")
     }
 
-    override fun write(statement: Statement, filename: String) {
-        with(UnixPrintWriter(OutputStreamWriter(FileOutputStream(filename), StandardCharsets.UTF_8))) {
+    override fun write(statement: Statement, output: OutputStream) {
+        UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
             val accountType = "Bank"
 
-            println("!Account")
-            println("N${statement.accountId} ${statement.bankId}")
-            println("T$accountType")
-            println("^")
-            println("!Type:$accountType")
+            writer.println("!Account")
+            writer.println("N${statement.accountId} ${statement.bankId}")
+            writer.println("T$accountType")
+            writer.println("^")
+            writer.println("!Type:$accountType")
 
             statement.bookings.forEach {
                 val date = it.valueDate.format(DATE_FORMATTER)
                 val amount = it.amount
                 val memo = it.info.joinToString()
 
-                println("D$date")
-                println("T$amount")
-                println("P$memo")
+                writer.println("D$date")
+                writer.println("T$amount")
+                writer.println("P$memo")
 
-                println("^")
+                writer.println("^")
             }
-
-            close()
         }
     }
 }

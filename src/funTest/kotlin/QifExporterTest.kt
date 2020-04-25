@@ -7,6 +7,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
 import java.io.File
+import java.io.FileOutputStream
 
 class QifExporterTest : StringSpec({
     "Demokonto account statement is exported correctly" {
@@ -16,7 +17,7 @@ class QifExporterTest : StringSpec({
 
         val qif = createTempFile(suffix = ".qif")
         val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
-        QifExporter().write(statement, qif.path)
+        QifExporter().write(statement, FileOutputStream(qif.path))
         val actualQif = qif.readText()
 
         qif.delete() shouldBe true
@@ -30,7 +31,7 @@ class QifExporterTest : StringSpec({
 
         val qif = createTempFile(suffix = ".qif")
         val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
-        QifExporter().write(statement, qif.path)
+        QifExporter().write(statement, FileOutputStream(qif.path))
         val actualQif = qif.readText()
 
         qif.delete() shouldBe true
