@@ -21,3 +21,6 @@ pluginManagement {
         }
     }
 }
+
+include("cli")
+include("lib")
