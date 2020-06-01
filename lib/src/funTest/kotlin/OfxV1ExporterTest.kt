@@ -14,8 +14,8 @@ class OfxV1ExporterTest : StringSpec({
         val baseName = "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
 
         val expectedOfx = File("src/funTest/assets/$baseName-expected.ofx")
-                .readText()
-                .replace(Regex("(<DTSERVER>)\\d+"), "\\1")
+            .readText()
+            .replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
         val ofx = createTempFile(suffix = ".ofx")
         val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
@@ -30,8 +30,8 @@ class OfxV1ExporterTest : StringSpec({
         val baseName = "317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313"
 
         val expectedOfx = File("src/funTest/assets/$baseName-expected.ofx")
-                .readText()
-                .replace(Regex("(<DTSERVER>)\\d+"), "\\1")
+            .readText()
+            .replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
         val ofx = createTempFile(suffix = ".ofx")
         val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))

@@ -137,8 +137,8 @@ object PostbankPDFParser : Parser {
                 // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
                 // http://stackoverflow.com/a/37786643/1127485.
                 pageFonts.keys
-                        .map { pageFonts.getAsDict(it) }
-                        .forEach { it.put(PdfName.TOUNICODE, null) }
+                    .map { pageFonts.getAsDict(it) }
+                    .forEach { it.put(PdfName.TOUNICODE, null) }
             }
 
             // Create a filter to ignore vertical text.

@@ -17,7 +17,7 @@ plugins {
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     val nonFinalQualifiers = listOf(
-            "alpha", "b", "beta", "cr", "ea", "eap", "m", "milestone", "pr", "preview", "rc"
+        "alpha", "b", "beta", "cr", "ea", "eap", "m", "milestone", "pr", "preview", "rc"
     ).joinToString("|", "(", ")")
 
     val nonFinalQualifiersRegex = Regex(".*[.-]$nonFinalQualifiers[.\\d-+]*", RegexOption.IGNORE_CASE)

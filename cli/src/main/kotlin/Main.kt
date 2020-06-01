@@ -38,12 +38,12 @@ class Stan : CliktCommand() {
     }
 
     private val statementFiles by argument()
-            .file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
-            .multiple()
+        .file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
+        .multiple()
 
     private val exportFormat by option(
-            "--export-format", "-f",
-            help = "The data format used for dependency information."
+        "--export-format", "-f",
+        help = "The data format used for dependency information."
     ).enum<ExportFormat>()
 
     override fun run() {

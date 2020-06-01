@@ -15,15 +15,15 @@ class OfxV1Exporter : Exporter {
     companion object {
         @JvmField
         val HEADER = arrayOf(
-                "OFXHEADER:100",
-                "DATA:OFXSGML",
-                "VERSION:160",
-                "SECURITY:NONE",
-                "ENCODING:UTF-8",
-                "CHARSET:NONE",
-                "COMPRESSION:NONE",
-                "OLDFILEUID:NONE",
-                "NEWFILEUID:NONE"
+            "OFXHEADER:100",
+            "DATA:OFXSGML",
+            "VERSION:160",
+            "SECURITY:NONE",
+            "ENCODING:UTF-8",
+            "CHARSET:NONE",
+            "COMPRESSION:NONE",
+            "OLDFILEUID:NONE",
+            "NEWFILEUID:NONE"
         )
 
         const val INDENTATION_STRING = "    "
@@ -41,8 +41,10 @@ class OfxV1Exporter : Exporter {
 
             writer.write(
                 tag("OFX",
-                    tag("SIGNONMSGSRSV1",
-                        tag("SONRS",
+                    tag(
+                        "SIGNONMSGSRSV1",
+                        tag(
+                            "SONRS",
                             writeStatusAggregate(0, "INFO"),
                             data("DTSERVER", LocalDateTime.now().format(DATE_FORMATTER)),
                             data("LANGUAGE", statement.locale.getISO3Language().toUpperCase())
@@ -54,7 +56,8 @@ class OfxV1Exporter : Exporter {
                             writeStatusAggregate(0, "INFO"),
                             tag("STMTRS",
                                 data("CURDEF", Currency.getInstance(statement.locale).toString()),
-                                tag("BANKACCTFROM",
+                                tag(
+                                    "BANKACCTFROM",
                                     data("BANKID", statement.bankId),
                                     data("ACCTID", statement.accountId),
                                     data("ACCTTYPE", "CHECKING")
@@ -64,7 +67,8 @@ class OfxV1Exporter : Exporter {
                                     data("DTEND", toDateStr),
                                     statement.bookings.joinToString("\n") { writeStatementTransaction(it) }
                                 ),
-                                tag("LEDGERBAL",
+                                tag(
+                                    "LEDGERBAL",
                                     data("BALAMT", statement.balanceNew),
                                     data("DTASOF", toDateStr)
                                 )
@@ -82,13 +86,14 @@ class OfxV1Exporter : Exporter {
         "<$name>\n${contents.joinToString("\n").prependIndent(INDENTATION_STRING)}\n</$name>"
 
     private fun data(name: String, value: Any) =
-            "<$name>$value"
+        "<$name>$value"
 
     private fun writeStatusAggregate(code: Int, severity: String) =
         tag("STATUS", "<CODE>$code", "<SEVERITY>$severity")
 
     private fun writeStatementTransaction(item: BookingItem) =
-        tag("STMTTRN",
+        tag(
+            "STMTTRN",
             data("TRNTYPE", if (item.amount > 0) "CREDIT" else "DEBIT"),
             data("DTPOSTED", item.postDate.format(DateTimeFormatter.BASIC_ISO_DATE)),
             data("TRNAMT", item.amount)

@@ -3,15 +3,16 @@ package dev.schuberth.stan.model
 import java.time.LocalDate
 
 class BookingItem(
-        val postDate: LocalDate,
-        val valueDate: LocalDate,
-        infoLine: String,
-        val amount: Float
+    val postDate: LocalDate,
+    val valueDate: LocalDate,
+    infoLine: String,
+    val amount: Float
 ) {
     val info = mutableListOf(infoLine)
 
     override fun toString(): String {
-        val s = StringBuilder("""
+        val s = StringBuilder(
+            """
             {
               "postDate": "$postDate",
               "valueDate": "$valueDate",

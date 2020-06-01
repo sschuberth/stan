@@ -6,5 +6,5 @@ import java.io.OutputStream
 
 class JsonExporter : Exporter {
     override fun write(statement: Statement, output: OutputStream) =
-            output.use { it.write(statement.toString().toByteArray()) }
+        output.use { it.write(statement.toString().toByteArray()) }
 }
