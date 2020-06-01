@@ -1,2 +1,2 @@
-package com.github.sschuberth.stan.model
+package dev.schuberth.stan.model
 

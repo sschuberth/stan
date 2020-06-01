@@ -1,7 +1,7 @@
-package com.github.sschuberth.stan.exporters
+package dev.schuberth.stan.exporters
 
-import com.github.sschuberth.stan.model.BookingItem
-import com.github.sschuberth.stan.model.Statement
+import dev.schuberth.stan.model.BookingItem
+import dev.schuberth.stan.model.Statement
 
 import java.io.BufferedWriter
 import java.io.OutputStream

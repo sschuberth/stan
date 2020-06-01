@@ -1,4 +1,4 @@
-package com.github.sschuberth.stan.model
+package dev.schuberth.stan.model
 
 import java.time.LocalDate
 import java.util.Locale

@@ -1,6 +1,6 @@
-package com.github.sschuberth.stan.parsers
+package dev.schuberth.stan.parsers
 
-import com.github.sschuberth.stan.model.Statement
+import dev.schuberth.stan.model.Statement
 
 import java.io.File
 

@@ -1,4 +1,4 @@
-package com.github.sschuberth.stan
+package dev.schuberth.stan
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.UsageError
@@ -8,11 +8,11 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 
-import com.github.sschuberth.stan.exporters.Exporter
-import com.github.sschuberth.stan.exporters.JsonExporter
-import com.github.sschuberth.stan.exporters.OfxV1Exporter
-import com.github.sschuberth.stan.model.Statement
-import com.github.sschuberth.stan.parsers.PostbankPDFParser
+import dev.schuberth.stan.exporters.Exporter
+import dev.schuberth.stan.exporters.JsonExporter
+import dev.schuberth.stan.exporters.OfxV1Exporter
+import dev.schuberth.stan.model.Statement
+import dev.schuberth.stan.parsers.PostbankPDFParser
 
 import java.io.File
 import java.io.FileOutputStream

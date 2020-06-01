@@ -1,7 +1,7 @@
-package com.github.sschuberth.stan.functionaltest
+package dev.schuberth.stan.functionaltest
 
-import com.github.sschuberth.stan.exporters.OfxV1Exporter
-import com.github.sschuberth.stan.parsers.PostbankPDFParser
+import dev.schuberth.stan.exporters.OfxV1Exporter
+import dev.schuberth.stan.parsers.PostbankPDFParser
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe

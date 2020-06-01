@@ -1,7 +1,7 @@
-package com.github.sschuberth.stan.parsers
+package dev.schuberth.stan.parsers
 
-import com.github.sschuberth.stan.model.BookingItem
-import com.github.sschuberth.stan.model.Statement
+import dev.schuberth.stan.model.BookingItem
+import dev.schuberth.stan.model.Statement
 
 import com.itextpdf.text.pdf.PdfName
 import com.itextpdf.text.pdf.PdfReader
