@@ -6,6 +6,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val detektPluginVersion: String by project
 val kotestVersion: String by project
 
 plugins {
@@ -13,6 +14,7 @@ plugins {
     kotlin("jvm")
 
     id("com.github.ben-manes.versions")
+    id("io.gitlab.arturbosch.detekt")
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
@@ -32,6 +34,23 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
 allprojects {
     repositories {
         jcenter()
+    }
+
+    apply(plugin = "io.gitlab.arturbosch.detekt")
+
+    // Note: Kotlin DSL cannot directly access configurations that are created by applying a plugin in the very same
+    // project, thus put configuration names in quotes to leverage lazy lookup.
+    dependencies {
+        "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:$detektPluginVersion")
+    }
+
+    detekt {
+        // Only configure differences to the default.
+        buildUponDefaultConfig = true
+        config = files("$rootDir/.detekt.yml")
+
+        input = files("$rootDir/buildSrc", "build.gradle.kts", "src/main/kotlin", "src/test/kotlin",
+            "src/funTest/kotlin")
     }
 
     tasks.withType<KotlinCompile>().configureEach {

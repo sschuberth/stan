@@ -1,0 +1,27 @@
+comments:
+  AbsentOrWrongFileLicense:
+    active: false
+
+complexity:
+  ComplexMethod:
+    threshold: 40
+  LongMethod:
+    threshold: 120
+  NestedBlockDepth:
+    threshold: 6
+
+style:
+  LoopWithTooManyJumpStatements:
+    maxJumpCount: 2
+  MagicNumber:
+    active: false
+  ReturnCount:
+    max: 10
+  ThrowsCount:
+    max: 4
+
+# Formatting rules are implemented via the ktlint plugin. As ktlint does not allow exceptions, we need to disable
+# respective rules completely.
+formatting:
+  MaximumLineLength:
+    active: false
