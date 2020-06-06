@@ -25,6 +25,36 @@ import java.util.Locale
 
 import kotlin.math.abs
 
+/*
+ * Use an extraction strategy that allow to customize the ratio between the regular character width and the space
+ * character width to tweak recognition of word boundaries. Inspired by http://stackoverflow.com/a/13645183/1127485.
+ */
+private class MyLocationTextExtractionStrategy(
+    private val spaceCharWidthFactor: Float
+) : LocationTextExtractionStrategy() {
+    override fun isChunkAtWordBoundary(chunk: TextChunk, previousChunk: TextChunk): Boolean {
+        val width = chunk.location.charSpaceWidth
+        if (width < 0.1f) {
+            return false
+        }
+
+        val dist = chunk.location.distParallelStart() - previousChunk.location.distParallelEnd()
+        return dist < -width || dist > width * spaceCharWidthFactor
+    }
+}
+
+/*
+ * A filter to ignore vertical text.
+ */
+private class VerticalTextFilter : RenderFilter() {
+    override fun allowText(renderInfo: TextRenderInfo?): Boolean {
+        val line = renderInfo!!.baseline
+        return line.startPoint.get(Vector.I1) != line.endPoint.get(Vector.I1)
+    }
+
+    override fun allowImage(renderInfo: ImageRenderInfo?) = false
+}
+
 object PostbankPDFParser : Parser {
     private val PDF_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
 
@@ -54,22 +84,229 @@ object PostbankPDFParser : Parser {
     private val BOOKING_SYMBOLS = DecimalFormatSymbols(Locale.GERMAN)
     private val BOOKING_FORMAT = DecimalFormat("+ 0,000.#;- 0,000.#", BOOKING_SYMBOLS)
 
-    /*
-     * Use an extraction strategy that allow to customize the ratio between the regular character width and the space
-     * character width to tweak recognition of word boundaries. Inspired by http://stackoverflow.com/a/13645183/1127485.
-     */
-    private class MyLocationTextExtractionStrategy(
-        private val spaceCharWidthFactor: Float
-    ) : LocationTextExtractionStrategy() {
-        override fun isChunkAtWordBoundary(chunk: TextChunk, previousChunk: TextChunk): Boolean {
-            val width = chunk.location.charSpaceWidth
-            if (width < 0.1f) {
-                return false
+    private fun extractText(filename: String): Pair<StringBuilder, Boolean> {
+        val reader = try {
+            PdfReader(filename)
+        } catch (e: IOException) {
+            throw ParseException("Error opening file '$filename'.", 0)
+        }
+
+        val pdfInfo = reader.info
+        val pdfCreationDate = pdfInfo["CreationDate"]?.let { creationDate ->
+            LocalDate.parse(creationDate.substring(2, 16), PDF_DATE_FORMATTER).also {
+                if (it.isBefore(LocalDate.of(2014, 7, 1))) {
+                    throw ParseException("Unsupported statement format", 0)
+                }
+            }
+        }
+
+        val isFormat2014 = pdfCreationDate?.isBefore(LocalDate.of(2017, 6, 1)) ?: false
+        val text = StringBuilder()
+
+        for (i in 1..reader.numberOfPages) {
+            val pageResources = reader.getPageResources(i) ?: continue
+            val pageFonts = pageResources.getAsDict(PdfName.FONT) ?: continue
+
+            if (isFormat2014) {
+                // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
+                // http://stackoverflow.com/a/37786643/1127485.
+                pageFonts.keys
+                    .map { pageFonts.getAsDict(it) }
+                    .forEach { it.put(PdfName.TOUNICODE, null) }
             }
 
-            val dist = chunk.location.distParallelStart() - previousChunk.location.distParallelEnd()
-            return dist < -width || dist > width * spaceCharWidthFactor
+            // For some reason we must not share the strategy across pages to get correct results.
+            val strategy = MyLocationTextExtractionStrategy(0.3f)
+            val listener = FilteredTextRenderListener(strategy, VerticalTextFilter())
+
+            try {
+                val pageText = PdfTextExtractor.getTextFromPage(reader, i, listener)
+                text.append(pageText)
+            } catch (e: IOException) {
+                throw ParseException("Error extracting text from page", i)
+            }
+
+            // Ensure text from each page ends with a new-line to separate from the first line on the next page.
+            text.append("\n")
         }
+
+        return text to isFormat2014
+    }
+
+    private data class ParsingState(
+        var foundStart: Boolean = false,
+
+        var currentItem: BookingItem? = null,
+        val items: ArrayList<BookingItem> = arrayListOf(),
+
+        var stFrom: LocalDate = LocalDate.EPOCH,
+        var stTo: LocalDate = LocalDate.EPOCH,
+        var postYear: Int = LocalDate.now().year,
+        var valueYear: Int = LocalDate.now().year,
+        var accIban: String = "",
+        var accBic: String = "",
+        var sumIn: Float = Float.NaN,
+        var sumOut: Float = Float.NaN,
+        var balanceOld: Float = Float.NaN,
+        var balanceNew: Float = Float.NaN,
+
+        var signLine: String? = null
+    )
+
+    private fun parseItem(
+        isFormat2014: Boolean,
+        bookingPageHeader: String,
+        state: ParsingState,
+        it: ListIterator<String>
+    ): ParsingState? {
+        var line = it.next()
+
+        var m = STATEMENT_DATE_PATTERN.matchEntire(line)
+        if (m != null) {
+            if (state.stFrom != LocalDate.EPOCH) {
+                throw ParseException("Multiple statement start dates found", it.nextIndex())
+            }
+            state.stFrom = LocalDate.parse(m.groupValues[2], STATEMENT_DATE_FORMATTER)
+
+            if (state.stTo != LocalDate.EPOCH) {
+                throw ParseException("Multiple statement end dates found", it.nextIndex())
+            }
+            state.stTo = LocalDate.parse(m.groupValues[3], STATEMENT_DATE_FORMATTER)
+
+            state.valueYear = state.stFrom.year
+            state.postYear = state.valueYear
+        } else if (!isFormat2014 && line.startsWith(STATEMENT_BIC_HEADER_2017)) {
+            state.accBic = line.removePrefix(STATEMENT_BIC_HEADER_2017).trim()
+        } else if (line.startsWith(bookingPageHeader) && it.hasNext()) {
+            // Read the IBAN and BIC from the page header.
+            val pageIban = StringBuilder(22)
+
+            val info = it.next().split(" ").dropLastWhile { it.isBlank() }
+
+            if (info.size >= 9) {
+                // Only the 2014 format has the BIC in the page header.
+                if (isFormat2014) {
+                    if (state.accBic.isNotEmpty() && state.accBic != info[8]) {
+                        throw ParseException("Inconsistent BIC", it.nextIndex())
+                    }
+                    state.accBic = info[8]
+                }
+
+                val ibanOffset = if (isFormat2014) 2 else 4
+                for (i in 0..5) {
+                    pageIban.append(info[ibanOffset + i])
+                }
+
+                if (state.accIban.isNotEmpty() && state.accIban != pageIban.toString()) {
+                    throw ParseException("Inconsistent IBAN", it.nextIndex())
+                }
+                state.accIban = pageIban.toString()
+            }
+
+            val oldBalanceOffset = if (isFormat2014) 10 else 11
+            if (line.endsWith(BOOKING_PAGE_HEADER_BALANCE_OLD) && info.size == oldBalanceOffset + 2) {
+                val signStr = info[oldBalanceOffset]
+                var amountStr = info[oldBalanceOffset + 1]
+
+                // Work around a period being used instead of comma.
+                val amountChars = amountStr.toCharArray()
+                val index = amountStr.length - 3
+                if (amountChars[index] == '.') {
+                    amountChars[index] = ','
+                    amountStr = String(amountChars)
+                }
+
+                state.balanceOld = BOOKING_FORMAT.parse("$signStr $amountStr").toFloat()
+            }
+
+            // Start looking for the table header again.
+            state.foundStart = false
+
+            return null
+        } else if (BOOKING_SUMMARY_IN.startsWith(line)) {
+            state.sumIn = parseBookingSummary(BOOKING_SUMMARY_IN, line, it)
+            return null
+        } else if (BOOKING_SUMMARY_OUT.startsWith(line)) {
+            state.sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT, line, it)
+            return null
+        } else if (BOOKING_SUMMARY_OUT_ALT.startsWith(line)) {
+            state.sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT_ALT, line, it)
+            return null
+        } else if (BOOKING_SUMMARY_BALANCE_SINGULAR.startsWith(line)) {
+            state.balanceNew = parseBookingSummary(BOOKING_SUMMARY_BALANCE_SINGULAR, line, it)
+
+            // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
+            // to filter out coming unwanted stuff.
+            return state
+        } else if (BOOKING_SUMMARY_BALANCE_PLURAL.startsWith(line)) {
+            state.balanceNew = parseBookingSummary(BOOKING_SUMMARY_BALANCE_PLURAL, line, it)
+
+            // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
+            // to filter out coming unwanted stuff.
+            return state
+        }
+        if (line == "+" || line == "-") {
+            state.signLine = line
+            return null
+        }
+
+        // Loop until the booking table header is found, and then skip it.
+        if (!state.foundStart) {
+            if (line.matches(BOOKING_TABLE_HEADER)) {
+                state.foundStart = true
+            }
+
+            return null
+        }
+
+        m = BOOKING_ITEM_PATTERN.matchEntire(line)
+
+        if (m == null) {
+            // Work around the sign being present on the previous line.
+            m = BOOKING_ITEM_PATTERN_NO_SIGN.matchEntire(line)
+            if (m != null && state.signLine != null) {
+                line = listOf(m.groupValues[1], m.groupValues[2], m.groupValues[3], state.signLine, m.groupValues[4])
+                    .joinToString(" ")
+                state.signLine = null
+                m = BOOKING_ITEM_PATTERN.matchEntire(line)
+            }
+        }
+
+        // Within the booking table, a matching pattern creates a new booking item.
+        if (m != null) {
+            var postDate = LocalDate.parse(m.groupValues[1] + state.postYear, STATEMENT_DATE_FORMATTER)
+            var valueDate = LocalDate.parse(m.groupValues[2] + state.valueYear, STATEMENT_DATE_FORMATTER)
+
+            state.currentItem?.let { item ->
+                // If there is a wrap-around in the month, increase the year.
+                if (postDate.month.value < item.postDate.month.value) {
+                    postDate = postDate.withYear(++state.postYear)
+                }
+
+                if (valueDate.month.value < item.valueDate.month.value) {
+                    valueDate = valueDate.withYear(++state.valueYear)
+                }
+            }
+
+            var amountStr = m.groupValues[4]
+
+            // Work around a missing space before the amount.
+            if (amountStr[1] != ' ') {
+                amountStr = "${amountStr.take(1)} ${amountStr.drop(1)}"
+            }
+
+            val amount = BOOKING_FORMAT.parse(amountStr).toFloat()
+
+            BookingItem(postDate, valueDate, m.groupValues[3], amount).let { item ->
+                state.currentItem = item
+                state.items.add(item)
+            }
+        } else {
+            // Add the line as info to the current booking item, if any.
+            state.currentItem?.info?.add(line)
+        }
+
+        return null
     }
 
     private fun parseBookingSummary(startMarker: String, startLine: String, it: ListIterator<String>): Float {
@@ -115,260 +352,50 @@ object PostbankPDFParser : Parser {
 
     override fun parse(statementFile: File): Statement {
         val filename = statementFile.absolutePath
-
-        val reader = try {
-            PdfReader(filename)
-        } catch (e: IOException) {
-            throw ParseException("Error opening file '$filename'.", 0)
-        }
-
-        val pdfInfo = reader.info
-        val pdfCreationDate = pdfInfo["CreationDate"]?.let { creationDate ->
-            LocalDate.parse(creationDate.substring(2, 16), PDF_DATE_FORMATTER).also {
-                if (it.isBefore(LocalDate.of(2014, 7, 1))) {
-                    throw ParseException("Unsupported statement format", 0)
-                }
-            }
-        }
-
-        val isFormat2014 = pdfCreationDate?.isBefore(LocalDate.of(2017, 6, 1)) ?: false
-        val text = StringBuilder()
-
-        for (i in 1..reader.numberOfPages) {
-            val pageResources = reader.getPageResources(i) ?: continue
-            val pageFonts = pageResources.getAsDict(PdfName.FONT) ?: continue
-
-            if (isFormat2014) {
-                // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
-                // http://stackoverflow.com/a/37786643/1127485.
-                pageFonts.keys
-                    .map { pageFonts.getAsDict(it) }
-                    .forEach { it.put(PdfName.TOUNICODE, null) }
-            }
-
-            // Create a filter to ignore vertical text.
-            val filter = object : RenderFilter() {
-                override fun allowText(renderInfo: TextRenderInfo?): Boolean {
-                    val line = renderInfo!!.baseline
-                    return line.startPoint.get(Vector.I1) != line.endPoint.get(Vector.I1)
-                }
-
-                override fun allowImage(renderInfo: ImageRenderInfo?) = false
-            }
-
-            // For some reason we must not share the strategy across pages to get correct results.
-            val strategy = FilteredTextRenderListener(MyLocationTextExtractionStrategy(0.3f), filter)
-            try {
-                text.append(PdfTextExtractor.getTextFromPage(reader, i, strategy))
-            } catch (e: IOException) {
-                throw ParseException("Error extracting text from page", i)
-            }
-
-            // Ensure text from each page ends with a new-line to separate from the first line on the next page.
-            text.append("\n")
-        }
-
+        val (text, isFormat2014) = extractText(filename)
         val lines = text.lines().dropLastWhile { it.isBlank() }
 
-        var foundStart = false
-
-        var currentItem: BookingItem? = null
-        val items = ArrayList<BookingItem>()
-
-        var stFrom: LocalDate? = null
-        var stTo: LocalDate? = null
-        var postYear = LocalDate.now().year
-        var valueYear = LocalDate.now().year
-        var accIban: String? = null
-        var accBic: String? = null
-        var sumIn: Float? = null
-        var sumOut: Float? = null
-        var balanceOld: Float? = null
-        var balanceNew: Float? = null
-
-        var signLine: String? = null
-
         val bookingPageHeader = if (isFormat2014) BOOKING_PAGE_HEADER_2014 else BOOKING_PAGE_HEADER_2017
-
+        val state = ParsingState()
         val it = lines.listIterator()
+
         while (it.hasNext()) {
-            var line = it.next()
-
-            var m = STATEMENT_DATE_PATTERN.matchEntire(line)
-            if (m != null) {
-                if (stFrom != null) {
-                    throw ParseException("Multiple statement start dates found", it.nextIndex())
-                }
-                stFrom = LocalDate.parse(m.groupValues[2], STATEMENT_DATE_FORMATTER)
-
-                if (stTo != null) {
-                    throw ParseException("Multiple statement end dates found", it.nextIndex())
-                }
-                stTo = LocalDate.parse(m.groupValues[3], STATEMENT_DATE_FORMATTER)
-
-                valueYear = stFrom!!.year
-                postYear = valueYear
-            } else if (!isFormat2014 && line.startsWith(STATEMENT_BIC_HEADER_2017)) {
-                accBic = line.removePrefix(STATEMENT_BIC_HEADER_2017).trim()
-            } else if (line.startsWith(bookingPageHeader) && it.hasNext()) {
-                // Read the IBAN and BIC from the page header.
-                val pageIban = StringBuilder(22)
-
-                val info = it.next().split(" ").dropLastWhile { it.isBlank() }
-
-                if (info.size >= 9) {
-                    // Only the 2014 format has the BIC in the page header.
-                    if (isFormat2014) {
-                        if (accBic != null && accBic != info[8]) {
-                            throw ParseException("Inconsistent BIC", it.nextIndex())
-                        }
-                        accBic = info[8]
-                    }
-
-                    val ibanOffset = if (isFormat2014) 2 else 4
-                    for (i in 0..5) {
-                        pageIban.append(info[ibanOffset + i])
-                    }
-
-                    if (accIban != null && accIban != pageIban.toString()) {
-                        throw ParseException("Inconsistent IBAN", it.nextIndex())
-                    }
-                    accIban = pageIban.toString()
-                }
-
-                val oldBalanceOffset = if (isFormat2014) 10 else 11
-                if (line.endsWith(BOOKING_PAGE_HEADER_BALANCE_OLD) && info.size == oldBalanceOffset + 2) {
-                    val signStr = info[oldBalanceOffset]
-                    var amountStr = info[oldBalanceOffset + 1]
-
-                    // Work around a period being used instead of comma.
-                    val amountChars = amountStr.toCharArray()
-                    val index = amountStr.length - 3
-                    if (amountChars[index] == '.') {
-                        amountChars[index] = ','
-                        amountStr = String(amountChars)
-                    }
-
-                    balanceOld = BOOKING_FORMAT.parse("$signStr $amountStr").toFloat()
-                }
-
-                // Start looking for the table header again.
-                foundStart = false
-
-                continue
-            } else if (BOOKING_SUMMARY_IN.startsWith(line)) {
-                sumIn = parseBookingSummary(BOOKING_SUMMARY_IN, line, it)
-                continue
-            } else if (BOOKING_SUMMARY_OUT.startsWith(line)) {
-                sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT, line, it)
-                continue
-            } else if (BOOKING_SUMMARY_OUT_ALT.startsWith(line)) {
-                sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT_ALT, line, it)
-                continue
-            } else if (BOOKING_SUMMARY_BALANCE_SINGULAR.startsWith(line)) {
-                balanceNew = parseBookingSummary(BOOKING_SUMMARY_BALANCE_SINGULAR, line, it)
-
-                // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
-                // to filter out coming unwanted stuff.
+            if (parseItem(isFormat2014, bookingPageHeader, state, it) != null) {
                 break
-            } else if (BOOKING_SUMMARY_BALANCE_PLURAL.startsWith(line)) {
-                balanceNew = parseBookingSummary(BOOKING_SUMMARY_BALANCE_PLURAL, line, it)
-
-                // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
-                // to filter out coming unwanted stuff.
-                break
-            }
-            if (line == "+" || line == "-") {
-                signLine = line
-                continue
-            }
-
-            // Loop until the booking table header is found, and then skip it.
-            if (!foundStart) {
-                if (line.matches(BOOKING_TABLE_HEADER)) {
-                    foundStart = true
-                }
-
-                continue
-            }
-
-            m = BOOKING_ITEM_PATTERN.matchEntire(line)
-
-            if (m == null) {
-                // Work around the sign being present on the previous line.
-                m = BOOKING_ITEM_PATTERN_NO_SIGN.matchEntire(line)
-                if (m != null && signLine != null) {
-                    line = listOf(m.groupValues[1], m.groupValues[2], m.groupValues[3], signLine, m.groupValues[4])
-                        .joinToString(" ")
-                    signLine = null
-                    m = BOOKING_ITEM_PATTERN.matchEntire(line)
-                }
-            }
-
-            // Within the booking table, a matching pattern creates a new booking item.
-            if (m != null) {
-                var postDate = LocalDate.parse(m.groupValues[1] + postYear, STATEMENT_DATE_FORMATTER)
-                var valueDate = LocalDate.parse(m.groupValues[2] + valueYear, STATEMENT_DATE_FORMATTER)
-
-                if (currentItem != null) {
-                    // If there is a wrap-around in the month, increase the year.
-                    if (postDate.month.value < currentItem.postDate.month.value) {
-                        postDate = postDate.withYear(++postYear)
-                    }
-
-                    if (valueDate.month.value < currentItem.valueDate.month.value) {
-                        valueDate = valueDate.withYear(++valueYear)
-                    }
-                }
-
-                var amountStr = m.groupValues[4]
-
-                // Work around a missing space before the amount.
-                if (amountStr[1] != ' ') {
-                    amountStr = "${amountStr.take(1)} ${amountStr.drop(1)}"
-                }
-
-                val amount = BOOKING_FORMAT.parse(amountStr).toFloat()
-
-                currentItem = BookingItem(postDate, valueDate, m.groupValues[3], amount)
-                items.add(currentItem)
-            } else {
-                // Add the line as info to the current booking item, if any.
-                currentItem?.info?.add(line)
             }
         }
 
-        if (stFrom == null) {
+        if (state.stFrom == LocalDate.EPOCH) {
             throw ParseException("No statement start date found", it.nextIndex())
         }
-        if (stTo == null) {
+        if (state.stTo == LocalDate.EPOCH) {
             throw ParseException("No statement end date found", it.nextIndex())
         }
 
-        if (accIban == null) {
+        if (state.accIban.isEmpty()) {
             throw ParseException("No IBAN found", it.nextIndex())
         }
-        if (accBic == null) {
+        if (state.accBic.isEmpty()) {
             throw ParseException("No BIC found", it.nextIndex())
         }
 
-        if (sumIn == null) {
+        if (state.sumIn.isNaN()) {
             throw ParseException("No incoming booking summary found", it.nextIndex())
         }
-        if (sumOut == null) {
+        if (state.sumOut.isNaN()) {
             throw ParseException("No outgoing booking summary found", it.nextIndex())
         }
 
-        if (balanceOld == null) {
+        if (state.balanceOld.isNaN()) {
             throw ParseException("No old balance found", it.nextIndex())
         }
-        if (balanceNew == null) {
+        if (state.balanceNew.isNaN()) {
             throw ParseException("No new balance found", it.nextIndex())
         }
 
         var calcIn = 0.0f
         var calcOut = 0.0f
-        for (item in items) {
+        for (item in state.items) {
             if (item.amount > 0) {
                 calcIn += item.amount
             } else {
@@ -376,31 +403,31 @@ object PostbankPDFParser : Parser {
             }
         }
 
-        if (abs(calcIn - sumIn) >= 0.01) {
+        if (abs(calcIn - state.sumIn) >= 0.01) {
             throw ParseException("Sanity check on incoming booking summary failed", it.nextIndex())
         }
 
-        if (abs(calcOut - sumOut) >= 0.01) {
+        if (abs(calcOut - state.sumOut) >= 0.01) {
             throw ParseException("Sanity check on outgoing booking summary failed", it.nextIndex())
         }
 
-        val balanceCalc = balanceOld + sumIn + sumOut
-        if (abs(balanceCalc - balanceNew) >= 0.01) {
+        val balanceCalc = state.balanceOld + state.sumIn + state.sumOut
+        if (abs(balanceCalc - state.balanceNew) >= 0.01) {
             throw ParseException("Sanity check on balances failed", it.nextIndex())
         }
 
         return Statement(
             filename = filename,
             locale = Locale.GERMANY,
-            bankId = accBic,
-            accountId = accIban,
-            fromDate = stFrom,
-            toDate = stTo,
-            balanceOld = balanceOld,
-            balanceNew = balanceNew,
-            sumIn = sumIn,
-            sumOut = sumOut,
-            bookings = items
+            bankId = state.accBic,
+            accountId = state.accIban,
+            fromDate = state.stFrom,
+            toDate = state.stTo,
+            balanceOld = state.balanceOld,
+            balanceNew = state.balanceNew,
+            sumIn = state.sumIn,
+            sumOut = state.sumOut,
+            bookings = state.items
         )
     }
 }
