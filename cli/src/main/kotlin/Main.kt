@@ -90,7 +90,9 @@ class Stan : CliktCommand() {
             }
 
             if (curr.balanceNew != next.balanceOld) {
-                System.err.println("Balances of statements '${curr.filename}' and '${next.filename}' are not consistent.")
+                System.err.println(
+                    "Balances of statements '${curr.filename}' and '${next.filename}' are not consistent."
+                )
                 exitProcess(1)
             }
 

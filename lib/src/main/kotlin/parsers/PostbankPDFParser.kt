@@ -28,7 +28,9 @@ import kotlin.math.abs
 object PostbankPDFParser : Parser {
     private val PDF_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
 
-    private val STATEMENT_DATE_PATTERN = Regex("Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)")
+    private val STATEMENT_DATE_PATTERN = Regex(
+        "Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)"
+    )
     private val STATEMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     private const val STATEMENT_BIC_HEADER_2017 = "BIC (SWIFT):"
 
@@ -43,7 +45,8 @@ object PostbankPDFParser : Parser {
 
     private const val BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge"
     private const val BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge"
-    private const val BOOKING_SUMMARY_OUT_ALT = "Eingeräumte Kontoüberziehung Zinssatz für eingeräumte Kontoüberziehung Summe Zahlungsausgänge"
+    private const val BOOKING_SUMMARY_OUT_ALT =
+        "Eingeräumte Kontoüberziehung Zinssatz für eingeräumte Kontoüberziehung Summe Zahlungsausgänge"
     private const val BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand"
     private const val BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand"
     private val BOOKING_SUMMARY_PATTERN = Regex("(.*) ?(EUR) ([+-] [\\d.,]+)")
@@ -55,7 +58,9 @@ object PostbankPDFParser : Parser {
      * Use an extraction strategy that allow to customize the ratio between the regular character width and the space
      * character width to tweak recognition of word boundaries. Inspired by http://stackoverflow.com/a/13645183/1127485.
      */
-    private class MyLocationTextExtractionStrategy(private val spaceCharWidthFactor: Float) : LocationTextExtractionStrategy() {
+    private class MyLocationTextExtractionStrategy(
+        private val spaceCharWidthFactor: Float
+    ) : LocationTextExtractionStrategy() {
         override fun isChunkAtWordBoundary(chunk: TextChunk, previousChunk: TextChunk): Boolean {
             val width = chunk.location.charSpaceWidth
             if (width < 0.1f) {
@@ -296,7 +301,8 @@ object PostbankPDFParser : Parser {
                 // Work around the sign being present on the previous line.
                 m = BOOKING_ITEM_PATTERN_NO_SIGN.matchEntire(line)
                 if (m != null && signLine != null) {
-                    line = listOf(m.groupValues[1], m.groupValues[2], m.groupValues[3], signLine, m.groupValues[4]).joinToString(" ")
+                    line = listOf(m.groupValues[1], m.groupValues[2], m.groupValues[3], signLine, m.groupValues[4])
+                        .joinToString(" ")
                     signLine = null
                     m = BOOKING_ITEM_PATTERN.matchEntire(line)
                 }
@@ -386,6 +392,18 @@ object PostbankPDFParser : Parser {
             throw ParseException("Sanity check on balances failed", it.nextIndex())
         }
 
-        return Statement(filename, Locale.GERMANY, accBic, accIban, stFrom, stTo, balanceOld, balanceNew, sumIn, sumOut, items)
+        return Statement(
+            filename = filename,
+            locale = Locale.GERMANY,
+            bankId = accBic,
+            accountId = accIban,
+            fromDate = stFrom,
+            toDate = stTo,
+            balanceOld = balanceOld,
+            balanceNew = balanceNew,
+            sumIn = sumIn,
+            sumOut = sumOut,
+            bookings = items
+        )
     }
 }
