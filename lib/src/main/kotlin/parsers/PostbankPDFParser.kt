@@ -194,9 +194,6 @@ object PostbankPDFParser : Parser {
         while (it.hasNext()) {
             var line = it.next()
 
-            // Uncomment for debugging.
-            //System.out.println(line);
-
             var m = STATEMENT_DATE_PATTERN.matchEntire(line)
             if (m != null) {
                 if (stFrom != null) {
