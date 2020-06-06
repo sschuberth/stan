@@ -3,6 +3,7 @@ package dev.schuberth.stan.model
 import java.time.LocalDate
 import java.util.Locale
 
+@Suppress("LongParameterList")
 class Statement(
     val filename: String,
     val locale: Locale,
