@@ -8,6 +8,5 @@ plugins {
 
 dependencies {
     implementation("com.itextpdf:itextpdf:$itextpdfVersion")
-
-    funTestImplementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinxSerializationVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinxSerializationVersion")
 }

@@ -296,9 +296,10 @@ object PostbankPDFParser : Parser {
                 amountStr = "${amountStr.take(1)} ${amountStr.drop(1)}"
             }
 
+            val info = mutableListOf(m.groupValues[3])
             val amount = BOOKING_FORMAT.parse(amountStr).toFloat()
 
-            BookingItem(postDate, valueDate, m.groupValues[3], amount).let { item ->
+            BookingItem(postDate, valueDate, info, amount).let { item ->
                 state.currentItem = item
                 state.items.add(item)
             }

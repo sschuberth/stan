@@ -1,8 +1,14 @@
+@file:UseSerializers(LocaleSerializer::class, LocalDateSerializer::class)
+
 package dev.schuberth.stan.model
 
 import java.time.LocalDate
 import java.util.Locale
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
+
+@Serializable
 @Suppress("LongParameterList")
 class Statement(
     val filename: String,
@@ -18,21 +24,4 @@ class Statement(
     val bookings: MutableList<BookingItem>
 ) : Comparable<Statement> {
     override fun compareTo(other: Statement) = fromDate.compareTo(other.fromDate)
-
-    override fun toString() =
-        buildString {
-            append("[\n")
-
-            val bookingItemIterator = bookings.iterator()
-            while (bookingItemIterator.hasNext()) {
-                val item = bookingItemIterator.next()
-                append(item.toString().prependIndent("  "))
-                if (bookingItemIterator.hasNext()) {
-                    append(",")
-                }
-                append("\n")
-            }
-
-            append("]")
-        }
 }

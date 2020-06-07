@@ -1,25 +1,37 @@
-[
 {
-	"postDate": "2016-05-27",
-	"valueDate": "2016-05-27",
-	"amount": "968.0",
-	"info": [
-		"Gutschr.SEPA",
-		"GORAN BOLSEC Verwendungszweck INTERNAL",
-		"TRANSFER SALLARY GORAN BOLSEC"
-	]
-},
-{
-	"postDate": "2016-05-30",
-	"valueDate": "2016-05-30",
-	"amount": "-900.0",
-	"info": [
-		"Auszahlung Geldautomat",
-		"DEUTSCHE BANK Referenz",
-		"03204718088636270516113921 Mandat 969148 Einrei-",
-		"cher-ID DE7600200000132558 HUECKELHOV//Hückel-",
-		"hoven/DE Terminal 03204718 2016-05-27T11:39:21 Fol-",
-		"genr. 000 Verfalld. 2012"
-	]
+  "filename": "317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313.pdf",
+  "locale": "de_DE",
+  "bankId": "PBNKDEFF",
+  "accountId": "DE94100100100914083113",
+  "fromDate": "2016-04-02",
+  "toDate": "2016-06-02",
+  "balanceOld": -9.9,
+  "balanceNew": 58.1,
+  "sumIn": 968.0,
+  "sumOut": -900.0,
+  "bookings": [
+    {
+      "postDate": "2016-05-27",
+      "valueDate": "2016-05-27",
+      "info": [
+        "Gutschr.SEPA",
+        "GORAN BOLSEC Verwendungszweck INTERNAL",
+        "TRANSFER SALLARY GORAN BOLSEC"
+      ],
+      "amount": 968.0
+    },
+    {
+      "postDate": "2016-05-30",
+      "valueDate": "2016-05-30",
+      "info": [
+        "Auszahlung Geldautomat",
+        "DEUTSCHE BANK Referenz",
+        "03204718088636270516113921 Mandat 969148 Einrei-",
+        "cher-ID DE7600200000132558 HUECKELHOV//Hückel-",
+        "hoven/DE Terminal 03204718 2016-05-27T11:39:21 Fol-",
+        "genr. 000 Verfalld. 2012"
+      ],
+      "amount": -900.0
+    }
+  ]
 }
-]

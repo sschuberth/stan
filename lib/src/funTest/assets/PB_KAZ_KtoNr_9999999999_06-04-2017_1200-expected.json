@@ -1,130 +1,142 @@
-[
 {
-	"postDate": "2020-01-19",
-	"valueDate": "2020-01-19",
-	"amount": "154.0",
-	"info": [
-		"Gutschr. SEPA",
-		"Referenz T1505626335515118F",
-		"KINDERGELD-NR. 1462347",
-		"ARBEITSAMT BONN"
-	]
-},
-{
-	"postDate": "2020-01-19",
-	"valueDate": "2020-01-19",
-	"amount": "-580.06",
-	"info": [
-		"SDD Lastschr",
-		"Referenz C2234288433716048C ",
-		"Mandat F24BUSI-20200305001",
-		"STROMKOSTEN KD.NR.1462347",
-		"JAHRESABRECHNUNG",
-		"STADTWERKE MUSTERSTADT"
-	]
-},
-{
-	"postDate": "2020-01-21",
-	"valueDate": "2020-01-21",
-	"amount": "-125.8",
-	"info": [
-		"SDD Lastschr",
-		"Referenz I3634266643356018L ",
-		"Mandat G55-20204665778",
-		"TELEFON AG KÖLN"
-	]
-},
-{
-	"postDate": "2020-01-23",
-	"valueDate": "2020-01-23",
-	"amount": "-84.75",
-	"info": [
-		"SDD Lastschr",
-		"Referenz D593057869356017Z ",
-		"Mandat UIL2099786858493",
-		"TEILNEHMER 1234567",
-		"RUNDFUNK 0103 - 1203",
-		"GEZ"
-	]
-},
-{
-	"postDate": "2020-01-25",
-	"valueDate": "2020-01-25",
-	"amount": "-75.0",
-	"info": [
-		"Inh. Scheck",
-		"2000123456789"
-	]
-},
-{
-	"postDate": "2020-01-25",
-	"valueDate": "2020-01-25",
-	"amount": "-850.0",
-	"info": [
-		"SDD Lastschr",
-		"Referenz 102030ZZ89446",
-		"Mandat IO949596976",
-		"MIETE 600 + 250 EUR  OBJ22/328",
-		"SCHULSTR. 7, 12345 MEINHEIM",
-		"EIGENHEIM KG",
-		"Muster"
-	]
-},
-{
-	"postDate": "2020-01-25",
-	"valueDate": "2020-01-25",
-	"amount": "1830.0",
-	"info": [
-		"Scheckeinreichung",
-		"EINGANG VORBEHALTEN",
-		"GUTBUCHUNG 12345",
-		"EIN FREMDER"
-	]
-},
-{
-	"postDate": "2020-01-26",
-	"valueDate": "2020-01-26",
-	"amount": "-31.5",
-	"info": [
-		"SEPA Überw. Einzel",
-		"Rechnung Nr. DA1000001",
-		"VERLAGSHAUS SCRIBERE GMBH"
-	]
-},
-{
-	"postDate": "2020-01-28",
-	"valueDate": "2020-01-28",
-	"amount": "2780.7",
-	"info": [
-		"Gutschr. SEPA",
-		"Referenz 007009105597",
-		"BEZÜGE PERS.NR. 70600170/01",
-		"ARBEITGEBER U. CO",
-		"PETRA PFIFFIG"
-	]
-},
-{
-	"postDate": "2020-01-28",
-	"valueDate": "2020-01-28",
-	"amount": "-228.61",
-	"info": [
-		"SEPA Überw. Einzel",
-		"111111/3299999999/20010020",
-		"ÜBERTRAG AUF SPARCARD",
-		"3299999999",
-		"PETRA PFIFFIG"
-	]
-},
-{
-	"postDate": "2020-01-29",
-	"valueDate": "2020-01-29",
-	"amount": "-328.75",
-	"info": [
-		"SEPA Überw. Einzel",
-		"111111/1000000000/37050198",
-		"FINANZKASSE 3991234",
-		"STEUERNUMMER 00703434",
-		"FINANZKASSE KÖLN-SÜD"
-	]
+  "filename": "PB_KAZ_KtoNr_9999999999_06-04-2017_1200.pdf",
+  "locale": "de_DE",
+  "bankId": "PBNKDEFF",
+  "accountId": "DE31200100209999999999",
+  "fromDate": "2020-01-01",
+  "toDate": "2020-02-02",
+  "balanceOld": 2853.82,
+  "balanceNew": 5314.05,
+  "sumIn": 4764.7,
+  "sumOut": -2304.47,
+  "bookings": [
+    {
+      "postDate": "2020-01-19",
+      "valueDate": "2020-01-19",
+      "info": [
+        "Gutschr. SEPA",
+        "Referenz T1505626335515118F",
+        "KINDERGELD-NR. 1462347",
+        "ARBEITSAMT BONN"
+      ],
+      "amount": 154.0
+    },
+    {
+      "postDate": "2020-01-19",
+      "valueDate": "2020-01-19",
+      "info": [
+        "SDD Lastschr",
+        "Referenz C2234288433716048C ",
+        "Mandat F24BUSI-20200305001",
+        "STROMKOSTEN KD.NR.1462347",
+        "JAHRESABRECHNUNG",
+        "STADTWERKE MUSTERSTADT"
+      ],
+      "amount": -580.06
+    },
+    {
+      "postDate": "2020-01-21",
+      "valueDate": "2020-01-21",
+      "info": [
+        "SDD Lastschr",
+        "Referenz I3634266643356018L ",
+        "Mandat G55-20204665778",
+        "TELEFON AG KÖLN"
+      ],
+      "amount": -125.8
+    },
+    {
+      "postDate": "2020-01-23",
+      "valueDate": "2020-01-23",
+      "info": [
+        "SDD Lastschr",
+        "Referenz D593057869356017Z ",
+        "Mandat UIL2099786858493",
+        "TEILNEHMER 1234567",
+        "RUNDFUNK 0103 - 1203",
+        "GEZ"
+      ],
+      "amount": -84.75
+    },
+    {
+      "postDate": "2020-01-25",
+      "valueDate": "2020-01-25",
+      "info": [
+        "Inh. Scheck",
+        "2000123456789"
+      ],
+      "amount": -75.0
+    },
+    {
+      "postDate": "2020-01-25",
+      "valueDate": "2020-01-25",
+      "info": [
+        "SDD Lastschr",
+        "Referenz 102030ZZ89446",
+        "Mandat IO949596976",
+        "MIETE 600 + 250 EUR  OBJ22/328",
+        "SCHULSTR. 7, 12345 MEINHEIM",
+        "EIGENHEIM KG",
+        "Muster"
+      ],
+      "amount": -850.0
+    },
+    {
+      "postDate": "2020-01-25",
+      "valueDate": "2020-01-25",
+      "info": [
+        "Scheckeinreichung",
+        "EINGANG VORBEHALTEN",
+        "GUTBUCHUNG 12345",
+        "EIN FREMDER"
+      ],
+      "amount": 1830.0
+    },
+    {
+      "postDate": "2020-01-26",
+      "valueDate": "2020-01-26",
+      "info": [
+        "SEPA Überw. Einzel",
+        "Rechnung Nr. DA1000001",
+        "VERLAGSHAUS SCRIBERE GMBH"
+      ],
+      "amount": -31.5
+    },
+    {
+      "postDate": "2020-01-28",
+      "valueDate": "2020-01-28",
+      "info": [
+        "Gutschr. SEPA",
+        "Referenz 007009105597",
+        "BEZÜGE PERS.NR. 70600170/01",
+        "ARBEITGEBER U. CO",
+        "PETRA PFIFFIG"
+      ],
+      "amount": 2780.7
+    },
+    {
+      "postDate": "2020-01-28",
+      "valueDate": "2020-01-28",
+      "info": [
+        "SEPA Überw. Einzel",
+        "111111/3299999999/20010020",
+        "ÜBERTRAG AUF SPARCARD",
+        "3299999999",
+        "PETRA PFIFFIG"
+      ],
+      "amount": -228.61
+    },
+    {
+      "postDate": "2020-01-29",
+      "valueDate": "2020-01-29",
+      "info": [
+        "SEPA Überw. Einzel",
+        "111111/1000000000/37050198",
+        "FINANZKASSE 3991234",
+        "STEUERNUMMER 00703434",
+        "FINANZKASSE KÖLN-SÜD"
+      ],
+      "amount": -328.75
+    }
+  ]
 }
-]
