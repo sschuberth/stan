@@ -11,6 +11,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import dev.schuberth.stan.exporters.Exporter
 import dev.schuberth.stan.exporters.JsonExporter
 import dev.schuberth.stan.exporters.OfxV1Exporter
+import dev.schuberth.stan.exporters.QifExporter
 import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.parsers.PostbankPDFParser
 
@@ -32,7 +33,8 @@ fun File.getExisting(): File? {
 class Stan : CliktCommand() {
     enum class ExportFormat(val exporter: Exporter) {
         JSON(JsonExporter()),
-        OFX(OfxV1Exporter());
+        OFX(OfxV1Exporter()),
+        QIF(QifExporter());
 
         override fun toString() = name.toLowerCase()
     }
