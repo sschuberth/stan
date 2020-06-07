@@ -12,5 +12,6 @@ class BookingItem(
     val postDate: LocalDate,
     val valueDate: LocalDate,
     val info: MutableList<String>,
-    val amount: Float
+    val amount: Float,
+    val type: BookingType
 )

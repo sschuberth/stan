@@ -1,8 +1,5 @@
 package dev.schuberth.stan.parsers
 
-import dev.schuberth.stan.model.BookingItem
-import dev.schuberth.stan.model.Statement
-
 import com.itextpdf.text.pdf.PdfName
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.FilteredTextRenderListener
@@ -12,6 +9,10 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor
 import com.itextpdf.text.pdf.parser.RenderFilter
 import com.itextpdf.text.pdf.parser.TextRenderInfo
 import com.itextpdf.text.pdf.parser.Vector
+
+import dev.schuberth.stan.model.BookingItem
+import dev.schuberth.stan.model.BookingType
+import dev.schuberth.stan.model.Statement
 
 import java.io.File
 import java.io.IOException
@@ -132,6 +133,34 @@ object PostbankPDFParser : Parser {
 
         return text to isFormat2014
     }
+
+    private fun mapBookingType(infoLine: String) =
+        when (infoLine) {
+            "Auszahlung Geldautomat", "Bargeldausz. Geldautomat", "Kartenverfüg" -> BookingType.ATM
+
+            "Auszahlung", "Bargeldauszahlung" -> BookingType.CASH
+
+            "Scheckeinreichung", "Scheckeinr", "Inh. Scheck" -> BookingType.CHECK
+
+            "Gutschrift", "Gutschr.SEPA", "Gutschr. SEPA", "Storno: SDD Lastschr", "paydirekt Rückzahlung",
+            "Einzahlung", "Retoure" -> BookingType.CREDIT
+
+            "Kartenlastschrift", "Lastschrift", "SDD Lastschr", "paydirekt Zahlung" -> BookingType.DEBIT
+
+            "Zinsen/Entg." -> BookingType.INT
+
+            "Überweisung giropay", "Kartenzahlung", "Geldkarte", "Gutscheinkauf" -> BookingType.PAYMENT
+
+            "Gehalt/Rente" -> BookingType.SALARY
+
+            "SEPA Überw. Einzel", "SEPA Überw. BZÜ", "Umbuchung" -> BookingType.TRANSFER
+
+            else -> when (infoLine.split(' ').firstOrNull()) {
+                "Gut" -> BookingType.CREDIT
+                "Dauerauftrag" -> BookingType.REPEATPMT
+                else -> BookingType.UNKNOWN
+            }
+        }
 
     private data class ParsingState(
         var foundStart: Boolean = false,
@@ -296,10 +325,11 @@ object PostbankPDFParser : Parser {
                 amountStr = "${amountStr.take(1)} ${amountStr.drop(1)}"
             }
 
-            val info = mutableListOf(m.groupValues[3])
+            val infoLine = m.groupValues[3]
             val amount = BOOKING_FORMAT.parse(amountStr).toFloat()
+            val type = mapBookingType(infoLine)
 
-            BookingItem(postDate, valueDate, info, amount).let { item ->
+            BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type).let { item ->
                 state.currentItem = item
                 state.items.add(item)
             }

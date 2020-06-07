@@ -19,7 +19,8 @@
         "KINDERGELD-NR. 1462347",
         "ARBEITSAMT BONN"
       ],
-      "amount": 154.0
+      "amount": 154.0,
+      "type": "CREDIT"
     },
     {
       "postDate": "2020-01-19",
@@ -32,7 +33,8 @@
         "JAHRESABRECHNUNG",
         "STADTWERKE MUSTERSTADT"
       ],
-      "amount": -580.06
+      "amount": -580.06,
+      "type": "DEBIT"
     },
     {
       "postDate": "2020-01-21",
@@ -43,7 +45,8 @@
         "Mandat G55-20204665778",
         "TELEFON AG KÖLN"
       ],
-      "amount": -125.8
+      "amount": -125.8,
+      "type": "DEBIT"
     },
     {
       "postDate": "2020-01-23",
@@ -56,7 +59,8 @@
         "RUNDFUNK 0103 - 1203",
         "GEZ"
       ],
-      "amount": -84.75
+      "amount": -84.75,
+      "type": "DEBIT"
     },
     {
       "postDate": "2020-01-25",
@@ -65,7 +69,8 @@
         "Inh. Scheck",
         "2000123456789"
       ],
-      "amount": -75.0
+      "amount": -75.0,
+      "type": "CHECK"
     },
     {
       "postDate": "2020-01-25",
@@ -79,7 +84,8 @@
         "EIGENHEIM KG",
         "Muster"
       ],
-      "amount": -850.0
+      "amount": -850.0,
+      "type": "DEBIT"
     },
     {
       "postDate": "2020-01-25",
@@ -90,7 +96,8 @@
         "GUTBUCHUNG 12345",
         "EIN FREMDER"
       ],
-      "amount": 1830.0
+      "amount": 1830.0,
+      "type": "CHECK"
     },
     {
       "postDate": "2020-01-26",
@@ -100,7 +107,8 @@
         "Rechnung Nr. DA1000001",
         "VERLAGSHAUS SCRIBERE GMBH"
       ],
-      "amount": -31.5
+      "amount": -31.5,
+      "type": "TRANSFER"
     },
     {
       "postDate": "2020-01-28",
@@ -112,7 +120,8 @@
         "ARBEITGEBER U. CO",
         "PETRA PFIFFIG"
       ],
-      "amount": 2780.7
+      "amount": 2780.7,
+      "type": "CREDIT"
     },
     {
       "postDate": "2020-01-28",
@@ -124,7 +133,8 @@
         "3299999999",
         "PETRA PFIFFIG"
       ],
-      "amount": -228.61
+      "amount": -228.61,
+      "type": "TRANSFER"
     },
     {
       "postDate": "2020-01-29",
@@ -136,7 +146,8 @@
         "STEUERNUMMER 00703434",
         "FINANZKASSE KÖLN-SÜD"
       ],
-      "amount": -328.75
+      "amount": -328.75,
+      "type": "TRANSFER"
     }
   ]
 }

@@ -2,6 +2,7 @@ package dev.schuberth.stan.functionaltest
 
 import dev.schuberth.stan.exporters.JSON
 import dev.schuberth.stan.exporters.JsonExporter
+import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.parsers.PostbankPDFParser
 
 import io.kotest.core.spec.style.StringSpec
@@ -28,6 +29,7 @@ class JsonExporterTest : StringSpec({
 
         jsonFile.delete() shouldBe true
         actualJson shouldBe expectedJson
+        statement.bookings.none { it.type == BookingType.UNKNOWN } shouldBe true
     }
 
     "Goran Bolsec account statement is exported correctly" {
@@ -43,5 +45,6 @@ class JsonExporterTest : StringSpec({
 
         jsonFile.delete() shouldBe true
         actualJson shouldBe expectedJson
+        statement.bookings.none { it.type == BookingType.UNKNOWN } shouldBe true
     }
 })
