@@ -19,21 +19,20 @@ class Statement(
 ) : Comparable<Statement> {
     override fun compareTo(other: Statement) = fromDate.compareTo(other.fromDate)
 
-    override fun toString(): String {
-        val result = StringBuilder("[\n")
+    override fun toString() =
+        buildString {
+            append("[\n")
 
-        val bookingItemIterator = bookings.iterator()
-        while (bookingItemIterator.hasNext()) {
-            val item = bookingItemIterator.next()
-            result.append(item.toString().prependIndent("  "))
-            if (bookingItemIterator.hasNext()) {
-                result.append(",")
+            val bookingItemIterator = bookings.iterator()
+            while (bookingItemIterator.hasNext()) {
+                val item = bookingItemIterator.next()
+                append(item.toString().prependIndent("  "))
+                if (bookingItemIterator.hasNext()) {
+                    append(",")
+                }
+                append("\n")
             }
-            result.append("\n")
+
+            append("]")
         }
-
-        result.append("]")
-
-        return result.toString()
-    }
 }

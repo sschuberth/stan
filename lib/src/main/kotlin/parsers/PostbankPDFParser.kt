@@ -84,7 +84,7 @@ object PostbankPDFParser : Parser {
     private val BOOKING_SYMBOLS = DecimalFormatSymbols(Locale.GERMAN)
     private val BOOKING_FORMAT = DecimalFormat("+ 0,000.#;- 0,000.#", BOOKING_SYMBOLS)
 
-    private fun extractText(filename: String): Pair<StringBuilder, Boolean> {
+    private fun extractText(filename: String): Pair<String, Boolean> {
         val reader = try {
             PdfReader(filename)
         } catch (e: IOException) {
@@ -101,33 +101,33 @@ object PostbankPDFParser : Parser {
         }
 
         val isFormat2014 = pdfCreationDate?.isBefore(LocalDate.of(2017, 6, 1)) ?: false
-        val text = StringBuilder()
+        val text = buildString {
+            for (i in 1..reader.numberOfPages) {
+                val pageResources = reader.getPageResources(i) ?: continue
+                val pageFonts = pageResources.getAsDict(PdfName.FONT) ?: continue
 
-        for (i in 1..reader.numberOfPages) {
-            val pageResources = reader.getPageResources(i) ?: continue
-            val pageFonts = pageResources.getAsDict(PdfName.FONT) ?: continue
+                if (isFormat2014) {
+                    // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
+                    // http://stackoverflow.com/a/37786643/1127485.
+                    pageFonts.keys
+                        .map { pageFonts.getAsDict(it) }
+                        .forEach { it.put(PdfName.TOUNICODE, null) }
+                }
 
-            if (isFormat2014) {
-                // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
-                // http://stackoverflow.com/a/37786643/1127485.
-                pageFonts.keys
-                    .map { pageFonts.getAsDict(it) }
-                    .forEach { it.put(PdfName.TOUNICODE, null) }
+                // For some reason we must not share the strategy across pages to get correct results.
+                val strategy = MyLocationTextExtractionStrategy(0.3f)
+                val listener = FilteredTextRenderListener(strategy, VerticalTextFilter())
+
+                try {
+                    val pageText = PdfTextExtractor.getTextFromPage(reader, i, listener)
+                    append(pageText)
+                } catch (e: IOException) {
+                    throw ParseException("Error extracting text from page", i)
+                }
+
+                // Ensure text from each page ends with a new-line to separate from the first line on the next page.
+                append("\n")
             }
-
-            // For some reason we must not share the strategy across pages to get correct results.
-            val strategy = MyLocationTextExtractionStrategy(0.3f)
-            val listener = FilteredTextRenderListener(strategy, VerticalTextFilter())
-
-            try {
-                val pageText = PdfTextExtractor.getTextFromPage(reader, i, listener)
-                text.append(pageText)
-            } catch (e: IOException) {
-                throw ParseException("Error extracting text from page", i)
-            }
-
-            // Ensure text from each page ends with a new-line to separate from the first line on the next page.
-            text.append("\n")
         }
 
         return text to isFormat2014
@@ -178,13 +178,10 @@ object PostbankPDFParser : Parser {
         } else if (!isFormat2014 && line.startsWith(STATEMENT_BIC_HEADER_2017)) {
             state.accBic = line.removePrefix(STATEMENT_BIC_HEADER_2017).trim()
         } else if (line.startsWith(bookingPageHeader) && it.hasNext()) {
-            // Read the IBAN and BIC from the page header.
-            val pageIban = StringBuilder(22)
-
             val info = it.next().split(" ").dropLastWhile { it.isBlank() }
 
             if (info.size >= 9) {
-                // Only the 2014 format has the BIC in the page header.
+                // For the 2014 format only, read the BIC from the page header.
                 if (isFormat2014) {
                     if (state.accBic.isNotEmpty() && state.accBic != info[8]) {
                         throw ParseException("Inconsistent BIC", it.nextIndex())
@@ -192,15 +189,19 @@ object PostbankPDFParser : Parser {
                     state.accBic = info[8]
                 }
 
+                // Read the IBAN from the page header.
                 val ibanOffset = if (isFormat2014) 2 else 4
-                for (i in 0..5) {
-                    pageIban.append(info[ibanOffset + i])
+                val pageIban = buildString {
+                    for (i in 0..5) {
+                        append(info[ibanOffset + i])
+                    }
                 }
 
-                if (state.accIban.isNotEmpty() && state.accIban != pageIban.toString()) {
+                if (state.accIban.isNotEmpty() && state.accIban != pageIban) {
                     throw ParseException("Inconsistent IBAN", it.nextIndex())
                 }
-                state.accIban = pageIban.toString()
+
+                state.accIban = pageIban
             }
 
             val oldBalanceOffset = if (isFormat2014) 10 else 11

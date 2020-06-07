@@ -10,37 +10,36 @@ class BookingItem(
 ) {
     val info = mutableListOf(infoLine)
 
-    override fun toString(): String {
-        val s = StringBuilder(
-            """
-            {
-              "postDate": "$postDate",
-              "valueDate": "$valueDate",
-              "amount": "$amount",
-              "info": [
+    override fun toString() =
+        buildString {
+            append(
+                """
+                {
+                  "postDate": "$postDate",
+                  "valueDate": "$valueDate",
+                  "amount": "$amount",
+                  "info": [
+    
+                """.trimIndent()
+            )
 
-            """.trimIndent()
-        )
+            val infoIterator = info.iterator()
+            while (infoIterator.hasNext()) {
+                append("    ")
 
-        val infoIterator = info.iterator()
-        while (infoIterator.hasNext()) {
-            s.append("    ")
+                // Quote the info line.
+                append("\"")
+                append(infoIterator.next())
+                append("\"")
 
-            // Quote the info line.
-            s.append("\"")
-            s.append(infoIterator.next())
-            s.append("\"")
+                if (infoIterator.hasNext()) {
+                    append(",")
+                }
 
-            if (infoIterator.hasNext()) {
-                s.append(",")
+                append("\n")
             }
 
-            s.append("\n")
+            append("  ]\n")
+            append("}")
         }
-
-        s.append("  ]\n")
-        s.append("}")
-
-        return s.toString()
-    }
 }
