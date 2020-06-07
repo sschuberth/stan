@@ -45,7 +45,8 @@ class Stan : CliktCommand() {
 
     private val exportFormat by option(
         "--export-format", "-f",
-        help = "The data format used for dependency information."
+        help = "The data format used for dependency information. If none is specified, only consistency checks on " +
+                "statements will be performed."
     ).enum<ExportFormat>()
 
     override fun run() {
