@@ -418,7 +418,7 @@ object PostbankPDFParser : Parser {
         }
 
         return Statement(
-            filename = filename,
+            filename = statementFile.name,
             locale = Locale.GERMANY,
             bankId = state.accBic,
             accountId = state.accIban,
