@@ -192,8 +192,8 @@ object PostbankPDFParser : Parser {
                 // Read the IBAN from the page header.
                 val ibanOffset = if (isFormat2014) 2 else 4
                 val pageIban = buildString {
-                    for (i in 0..5) {
-                        append(info[ibanOffset + i])
+                    repeat(6) {
+                        append(info[ibanOffset + it])
                     }
                 }
 
