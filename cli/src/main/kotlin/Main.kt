@@ -104,14 +104,14 @@ class Stan : CliktCommand() {
 
         println("Consistency checks passed successfully.")
 
-        exportFormat?.let {
+        exportFormat?.let { format ->
             statementIterator = statements.iterator()
             while (statementIterator.hasNext()) {
                 val statement = statementIterator.next()
-                val exportName = statement.filename.substringBeforeLast(".") + "." + exportFormat.toString()
+                val exportName = statement.filename.substringBeforeLast(".") + ".$format"
 
                 println("Exporting\n    ${statement.filename}\nto\n    $exportName")
-                it.exporter.write(statement, FileOutputStream(exportName))
+                format.exporter.write(statement, FileOutputStream(exportName))
                 println("done.")
             }
         }
