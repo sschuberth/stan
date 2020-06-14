@@ -1,11 +1,10 @@
 package dev.schuberth.stan.exporters
 
 import dev.schuberth.stan.model.Statement
+import dev.schuberth.stan.UnixPrintWriter
 
 import java.io.OutputStream
 import java.io.OutputStreamWriter
-import java.io.PrintWriter
-import java.io.Writer
 import java.nio.charset.StandardCharsets
 import java.time.format.DateTimeFormatter
 
@@ -13,10 +12,6 @@ class QifExporter : Exporter {
     companion object {
         @JvmField
         val DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd''yy")!!
-    }
-
-    private class UnixPrintWriter(writer: Writer) : PrintWriter(writer) {
-        override fun println() = write("\n")
     }
 
     override fun write(statement: Statement, output: OutputStream) {
