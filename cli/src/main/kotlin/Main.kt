@@ -34,9 +34,7 @@ class Stan : CliktCommand() {
     enum class ExportFormat(val exporter: Exporter) {
         JSON(JsonExporter()),
         OFX(OfxV1Exporter()),
-        QIF(QifExporter());
-
-        override fun toString() = name.toLowerCase()
+        QIF(QifExporter())
     }
 
     private val statementFiles by argument()
@@ -108,7 +106,7 @@ class Stan : CliktCommand() {
             statementIterator = statements.iterator()
             while (statementIterator.hasNext()) {
                 val statement = statementIterator.next()
-                val exportName = statement.filename.substringBeforeLast(".") + ".$format"
+                val exportName = "${statement.filename.substringBeforeLast(".")}.${format.exporter.extension}"
 
                 println("Exporting\n    ${statement.filename}\nto\n    $exportName")
                 format.exporter.write(statement, FileOutputStream(exportName))

@@ -12,6 +12,8 @@ import kotlinx.serialization.stringify
 val JSON = Json(JsonConfiguration.Stable.copy(prettyPrint = true, indent = "  "))
 
 class JsonExporter : Exporter {
+    override val extension = "json"
+
     @ImplicitReflectionSerializer
     override fun write(statement: Statement, output: OutputStream) =
         output.use { it.write(JSON.stringify(statement).toByteArray()) }

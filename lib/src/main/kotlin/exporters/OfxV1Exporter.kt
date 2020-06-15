@@ -32,6 +32,8 @@ class OfxV1Exporter : Exporter {
         val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")!!
     }
 
+    override val extension = "ofx"
+
     override fun write(statement: Statement, output: OutputStream) {
         BufferedWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
             writer.write(HEADER.joinToString("\n") + "\n\n")

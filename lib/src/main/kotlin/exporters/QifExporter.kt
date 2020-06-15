@@ -14,6 +14,8 @@ class QifExporter : Exporter {
         val DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd''yy")!!
     }
 
+    override val extension = "qif"
+
     override fun write(statement: Statement, output: OutputStream) {
         UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
             val accountType = "Bank"
