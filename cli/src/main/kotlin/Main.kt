@@ -83,17 +83,12 @@ class Stan : CliktCommand() {
 
         statements.sort()
 
-        var statementIterator = statements.iterator()
-        if (!statementIterator.hasNext()) {
+        if (statements.isEmpty()) {
             System.err.println("No statements found.")
             exitProcess(1)
         }
 
-        var curr = statementIterator.next()
-        var next: Statement
-        while (statementIterator.hasNext()) {
-            next = statementIterator.next()
-
+        statements.zipWithNext().forEach { (curr, next) ->
             if (curr.toDate.plusDays(1) != next.fromDate) {
                 System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
                 exitProcess(1)
@@ -105,16 +100,12 @@ class Stan : CliktCommand() {
                 )
                 exitProcess(1)
             }
-
-            curr = next
         }
 
         println("Consistency checks passed successfully.")
 
         exportFormat?.let { format ->
-            statementIterator = statements.iterator()
-            while (statementIterator.hasNext()) {
-                val statement = statementIterator.next()
+            statements.forEach { statement ->
                 val exportName = "${statement.filename.substringBeforeLast(".")}.${format.exporter.extension}"
                 val exportFile = outputDir.resolve(exportName)
 
