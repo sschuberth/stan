@@ -40,7 +40,7 @@ class Stan : CliktCommand() {
         QIF(QifExporter())
     }
 
-    private val statementFiles by argument()
+    private val statementGlobs by argument()
         .file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
         .multiple()
 
@@ -57,11 +57,11 @@ class Stan : CliktCommand() {
         .default(File("."))
 
     override fun run() {
-        if (statementFiles.isEmpty()) throw UsageError("No statement file(s) specified.", statusCode = 1)
+        if (statementGlobs.isEmpty()) throw UsageError("No statement file(s) specified.", statusCode = 1)
 
         val statements = mutableListOf<Statement>()
 
-        statementFiles.forEach { glob ->
+        statementGlobs.forEach { glob ->
             val globPath = glob.absoluteFile.invariantSeparatorsPath
             val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
 
