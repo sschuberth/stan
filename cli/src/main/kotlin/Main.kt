@@ -59,7 +59,9 @@ class Stan : CliktCommand() {
     override fun run() {
         if (statementGlobs.isEmpty()) throw UsageError("No statement file(s) specified.", statusCode = 1)
 
-        val statements = mutableListOf<Statement>()
+        println("Parsing statements...")
+
+        val statements = sortedMapOf<Statement, File>()
 
         statementGlobs.forEach { glob ->
             val globPath = glob.absoluteFile.invariantSeparatorsPath
@@ -68,27 +70,29 @@ class Stan : CliktCommand() {
             glob.getExisting()?.walkBottomUp()?.filter {
                 matcher.matches(it.toPath())
             }?.forEach {
+                val file = it.normalize()
+
                 try {
-                    val st = PostbankPDFParser.parse(it)
-                    println("Successfully parsed statement '$it' dated from ${st.fromDate} to ${st.toDate}.")
-                    statements.add(st)
+                    val st = PostbankPDFParser.parse(file)
+                    println("Successfully parsed statement\n\t$file\ndated from ${st.fromDate} to ${st.toDate}.")
+                    statements[st] = file
                 } catch (e: ParseException) {
-                    System.err.println("Error parsing '$it'.")
+                    System.err.println("Error parsing '$file'.")
                     e.printStackTrace()
                 }
             }
         }
 
-        println("Parsed ${statements.size} statement(s) in total.")
-
-        statements.sort()
+        println("Parsed ${statements.size} statement(s) in total.\n")
 
         if (statements.isEmpty()) {
             System.err.println("No statements found.")
             exitProcess(1)
         }
 
-        statements.zipWithNext().forEach { (curr, next) ->
+        println("Checking statements for consistency...")
+
+        statements.keys.zipWithNext().forEach { (curr, next) ->
             if (curr.toDate.plusDays(1) != next.fromDate) {
                 System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
                 exitProcess(1)
@@ -102,17 +106,20 @@ class Stan : CliktCommand() {
             }
         }
 
-        println("Consistency checks passed successfully.")
+        println("All statements passed the consistency checks.\n")
 
         exportFormat?.let { format ->
-            statements.forEach { statement ->
-                val exportName = "${statement.filename.substringBeforeLast(".")}.${format.exporter.extension}"
-                val exportFile = outputDir.resolve(exportName)
+            println("Exporting ${format.name} files...")
 
-                println("Exporting\n    ${statement.filename}\nto\n    ${exportFile.absoluteFile.normalize()}")
+            statements.forEach { (statement, file) ->
+                val exportName = "${statement.filename.substringBeforeLast(".")}.${format.exporter.extension}"
+                val exportFile = outputDir.absoluteFile.normalize().resolve(exportName)
+
                 format.exporter.write(statement, FileOutputStream(exportFile))
-                println("done.")
+                println("Successfully exported\n\t$file\nto\n\t$exportFile")
             }
+
+            println("Exported ${statements.size} statement(s) in total.\n")
         }
     }
 }
