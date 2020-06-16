@@ -4,6 +4,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
+import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
@@ -48,6 +49,12 @@ class Stan : CliktCommand() {
         help = "The data format used for dependency information. If none is specified, only consistency checks on " +
                 "statements will be performed."
     ).enum<ExportFormat>()
+
+    private val outputDir by option(
+        "--output-dir", "-o",
+        help = "The directory to which output files will be written to."
+    ).file(mustExist = false, canBeFile = false, canBeDir = true, mustBeReadable = false, mustBeWritable = true)
+        .default(File("."))
 
     override fun run() {
         if (statementFiles.isEmpty()) throw UsageError("No statement file(s) specified.", statusCode = 1)
@@ -109,9 +116,10 @@ class Stan : CliktCommand() {
             while (statementIterator.hasNext()) {
                 val statement = statementIterator.next()
                 val exportName = "${statement.filename.substringBeforeLast(".")}.${format.exporter.extension}"
+                val exportFile = outputDir.resolve(exportName)
 
-                println("Exporting\n    ${statement.filename}\nto\n    $exportName")
-                format.exporter.write(statement, FileOutputStream(exportName))
+                println("Exporting\n    ${statement.filename}\nto\n    ${exportFile.absoluteFile.normalize()}")
+                format.exporter.write(statement, FileOutputStream(exportFile))
                 println("done.")
             }
         }
