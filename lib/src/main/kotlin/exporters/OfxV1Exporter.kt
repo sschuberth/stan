@@ -11,6 +11,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Currency
 
+/**
+ * See https://www.ofx.net/downloads/OFX1.6.zip.
+ */
 class OfxV1Exporter : Exporter {
     companion object {
         @JvmField

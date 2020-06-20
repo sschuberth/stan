@@ -25,6 +25,11 @@ private const val IDENTIFICATION_CODE = "TRF"
 
 private val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd")!!
 
+/**
+ * See e.g. one of these
+ * - https://quickstream.westpac.com.au/bankrec-docs/statements/mt940/
+ * - https://sites.google.com/a/crem-solutions.de/doku/version-2012-neu/buchhaltung/03-zahlungsverkehr/05-e-banking/technische-beschreibung-der-mt940-sta-datei
+ */
 class Mt940Exporter : Exporter {
     override val extension = "txt"
 

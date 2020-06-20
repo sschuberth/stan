@@ -8,6 +8,9 @@ import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 import java.time.format.DateTimeFormatter
 
+/**
+ * See https://en.wikipedia.org/wiki/Quicken_Interchange_Format.
+ */
 class QifExporter : Exporter {
     companion object {
         @JvmField

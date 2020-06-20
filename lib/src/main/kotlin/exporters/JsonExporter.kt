@@ -11,6 +11,9 @@ import kotlinx.serialization.stringify
 
 val JSON = Json(JsonConfiguration.Stable.copy(prettyPrint = true, indent = "  "))
 
+/**
+ * See https://www.json.org/.
+ */
 class JsonExporter : Exporter {
     override val extension = "json"
 
