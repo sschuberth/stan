@@ -21,7 +21,7 @@ import java.text.ParseException
 import kotlin.system.exitProcess
 
 fun File.getExisting(): File? {
-    var current = absoluteFile
+    var current: File? = absoluteFile
     while (current != null && !current.exists()) {
         current = current.parentFile
     }
