@@ -1,6 +1,7 @@
 package dev.schuberth.stan.exporters
 
 import dev.schuberth.stan.UnixPrintWriter
+import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Statement
 
 import java.io.OutputStream
@@ -18,7 +19,25 @@ class CsvExporter : Exporter {
     override fun write(statement: Statement, output: OutputStream) {
         UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
             statement.bookings.forEach { booking ->
+                val moneyControlType = when (booking.type) {
+                    BookingType.ATM, BookingType.CHECK, BookingType.INT ->
+                        if (booking.amount < 0) "Ausgabe" else "Einnahme"
+
+                    BookingType.CASH, BookingType.DEBIT, BookingType.PAYMENT, BookingType.REPEATPMT ->
+                        "Ausgabe"
+
+                    BookingType.CREDIT, BookingType.SALARY ->
+                        "Einnahme"
+
+                    BookingType.TRANSFER ->
+                        "Umbuchung"
+
+                    BookingType.UNKNOWN ->
+                        "Ausgabe"
+                }
+
                 val values = listOf(
+                    statement.accountId,
                     booking.postDate.toString(),
                     booking.valueDate.toString(),
                     booking.info.joinToString(" / "),
