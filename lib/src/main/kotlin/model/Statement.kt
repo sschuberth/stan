@@ -10,7 +10,7 @@ import kotlinx.serialization.UseSerializers
 
 @Serializable
 @Suppress("LongParameterList")
-class Statement(
+data class Statement(
     val filename: String,
     val locale: Locale,
     val bankId: String,

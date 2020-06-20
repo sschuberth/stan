@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
 @Serializable
-class BookingItem(
+data class BookingItem(
     val postDate: LocalDate,
     val valueDate: LocalDate,
     val info: MutableList<String>,
