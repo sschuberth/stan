@@ -21,9 +21,13 @@ Stan is both a library and command line tool to convert and analyze bank account
 
 ## What file formats can be exported to?
 
+- [CSV](https://en.wikipedia.org/wiki/Comma-separated_values)
+
+  CSV files offer a simple generic way to further process the statement data.
+
 - [JSON](https://www.json.org/)
 
-  JSON files offer a generic way to further process the statement data.
+  JSON files offer a powerful generic way to further process the statement data.
 
 - [MT940](https://de.wikipedia.org/wiki/MT940) (support is experimental)
 
