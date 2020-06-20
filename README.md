@@ -21,14 +21,14 @@ Stan is both a library and command line tool to convert and analyze bank account
 
 ## What file formats can be exported to?
 
-- Custom [JSON](https://www.json.org/)
+- [JSON](https://www.json.org/)
 
-  The JSON files offer a generic way to further process the statement data.
+  JSON files offer a generic way to further process the statement data.
 
 - [OFX version 1](http://www.ofx.net/downloads.html)
 
-  The OXF files can then be imported into finance applications like [GnuCash](https://www.gnucash.org/), [HomeBank](http://homebank.free.fr/en/index.php) or [jGnash](https://ccavanaugh.github.io/jgnash/).
+  OXF files can be imported into finance applications like [GnuCash](https://www.gnucash.org/), [HomeBank](http://homebank.free.fr/en/index.php) or [jGnash](https://ccavanaugh.github.io/jgnash/).
 
 - [QIF](https://en.wikipedia.org/wiki/Quicken_Interchange_Format)
 
-  The QIF files can then be imported into finance applications like [GnuCash](https://www.gnucash.org/), [HomeBank](http://homebank.free.fr/en/index.php), [jGnash](https://ccavanaugh.github.io/jgnash/) or [Money Manager Ex](https://www.moneymanagerex.org/).
+  QIF files can be imported into finance applications like [GnuCash](https://www.gnucash.org/), [HomeBank](http://homebank.free.fr/en/index.php), [jGnash](https://ccavanaugh.github.io/jgnash/) or [Money Manager Ex](https://www.moneymanagerex.org/).
