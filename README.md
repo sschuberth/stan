@@ -25,6 +25,10 @@ Stan is both a library and command line tool to convert and analyze bank account
 
   JSON files offer a generic way to further process the statement data.
 
+- [MT940](https://de.wikipedia.org/wiki/MT940) (support is experimental)
+
+  MT940 files can be imported to many professional finance applications.
+
 - [OFX version 1](http://www.ofx.net/downloads.html)
 
   OXF files can be imported into finance applications like [GnuCash](https://www.gnucash.org/), [HomeBank](http://homebank.free.fr/en/index.php) or [jGnash](https://ccavanaugh.github.io/jgnash/).
