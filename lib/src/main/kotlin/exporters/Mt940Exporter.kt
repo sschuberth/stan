@@ -51,22 +51,20 @@ class Mt940Exporter : Exporter {
             val statementSequenceNumber = "1/1"
             writer.println("$STATEMENT_SEQUENCE_NUMBER_MARKER$statementSequenceNumber")
 
-            var creditDebitMarker = if (statement.balanceOld < 0) "D" else "C"
+            val (openingBalanceSign, openingBalance) = creditOrDebit(statement.balanceOld)
             val currency = Currency.getInstance(statement.locale)
-            val openingBalance = String.format(Locale.GERMAN, "%.2f", statement.balanceOld.absoluteValue)
-            writer.println("$OPENING_FINAL_BALANCE_MARKER$creditDebitMarker$statementDate$currency$openingBalance")
+            writer.println("$OPENING_FINAL_BALANCE_MARKER$openingBalanceSign$statementDate$currency$openingBalance")
 
             statement.bookings.forEach { item ->
                 val valueDate = item.valueDate.format(DATE_FORMATTER)
-                creditDebitMarker = if (item.amount < 0) "D" else "C"
-                val amount = String.format(Locale.GERMAN, "%.2f", item.amount.absoluteValue)
+                val (amountSign, amount) = creditOrDebit(statement.balanceOld)
 
                 val transactionNumber = item.hashCode().toUInt().toString().let {
                     it.take(TRANSACTION_NUMBER_LENGTH).padStart(TRANSACTION_NUMBER_LENGTH, '0')
                 }
 
                 writer.println(
-                    "$STATEMENT_LINE_MARKER$valueDate$creditDebitMarker$amount$TRANSACTION_TYPE$IDENTIFICATION_CODE" +
+                    "$STATEMENT_LINE_MARKER$valueDate$amountSign$amount$TRANSACTION_TYPE$IDENTIFICATION_CODE" +
                             transactionNumber
                 )
 
@@ -74,9 +72,11 @@ class Mt940Exporter : Exporter {
                 writer.println("$STATEMENT_LINE_NARRATIVE_MARKER$narrative")
             }
 
-            creditDebitMarker = if (statement.balanceNew < 0) "D" else "C"
-            val closingBalance = String.format(Locale.GERMAN, "%.2f", statement.balanceNew.absoluteValue)
-            writer.println("$CLOSING_BALANCE_MARKER$creditDebitMarker$statementDate$currency$closingBalance")
+            val (closingBalanceSign, closingBalance) = creditOrDebit(statement.balanceOld)
+            writer.println("$CLOSING_BALANCE_MARKER$closingBalanceSign$statementDate$currency$closingBalance")
         }
     }
 }
+
+private fun creditOrDebit(value: Float) =
+    Pair(if (value < 0) "D" else "C", String.format(Locale.GERMAN, "%.2f", value.absoluteValue))
