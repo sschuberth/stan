@@ -16,6 +16,7 @@ private const val STATEMENT_SEQUENCE_NUMBER_MARKER = ":28C:"
 private const val OPENING_FINAL_BALANCE_MARKER = ":60F:"
 private const val STATEMENT_LINE_MARKER = ":61:"
 private const val CLOSING_BALANCE_MARKER = ":62:"
+private const val STATEMENT_LINE_NARRATIVE_MARKER = ":86:"
 
 private const val REFERENCE_NUMBER_LENGTH = 10
 private const val TRANSACTION_NUMBER_LENGTH = 16
@@ -66,6 +67,9 @@ class Mt940Exporter : Exporter {
                     "$STATEMENT_LINE_MARKER$valueDate$creditDebitMarker$amount$TRANSACTION_TYPE$IDENTIFICATION_CODE" +
                             transactionNumber
                 )
+
+                val narrative = item.info.joinToString(" / ")
+                writer.println("$STATEMENT_LINE_NARRATIVE_MARKER$narrative")
             }
 
             creditDebitMarker = if (statement.balanceNew < 0) "D" else "C"
