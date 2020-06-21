@@ -10,6 +10,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Currency
 import java.util.Locale
 
+import kotlin.math.absoluteValue
+
 private const val TRANSACTION_REFERENCE_NUMBER_MARKER = ":20:"
 private const val ACCOUNT_IDENTIFICATION_MARKER = ":25:"
 private const val STATEMENT_SEQUENCE_NUMBER_MARKER = ":28C:"
@@ -51,13 +53,13 @@ class Mt940Exporter : Exporter {
 
             var creditDebitMarker = if (statement.balanceOld < 0) "D" else "C"
             val currency = Currency.getInstance(statement.locale)
-            val openingBalance = String.format(Locale.GERMAN, "%f", statement.balanceOld)
+            val openingBalance = String.format(Locale.GERMAN, "%.2f", statement.balanceOld.absoluteValue)
             writer.println("$OPENING_FINAL_BALANCE_MARKER$creditDebitMarker$statementDate$currency$openingBalance")
 
             statement.bookings.forEach { item ->
                 val valueDate = item.valueDate.format(DATE_FORMATTER)
                 creditDebitMarker = if (item.amount < 0) "D" else "C"
-                val amount = String.format(Locale.GERMAN, "%f", item.amount)
+                val amount = String.format(Locale.GERMAN, "%.2f", item.amount.absoluteValue)
 
                 val transactionNumber = item.hashCode().toUInt().toString().let {
                     it.take(TRANSACTION_NUMBER_LENGTH).padStart(TRANSACTION_NUMBER_LENGTH, '0')
@@ -73,7 +75,7 @@ class Mt940Exporter : Exporter {
             }
 
             creditDebitMarker = if (statement.balanceNew < 0) "D" else "C"
-            val closingBalance = String.format(Locale.GERMAN, "%f", statement.balanceNew)
+            val closingBalance = String.format(Locale.GERMAN, "%.2f", statement.balanceNew.absoluteValue)
             writer.println("$CLOSING_BALANCE_MARKER$creditDebitMarker$statementDate$currency$closingBalance")
         }
     }
