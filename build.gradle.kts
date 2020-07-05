@@ -115,8 +115,9 @@ subprojects {
         // See https://github.com/gradle/gradle/blob/master/subprojects/docs/src/samples/java/withIntegrationTests/build.gradle.
         "funTestImplementation"(sourceSets["main"].output)
 
-        "funTestImplementation"("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
         "funTestImplementation"("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
+        "funTestImplementation"("io.kotest:kotest-runner-console-jvm:$kotestVersion")
+        "funTestImplementation"("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
     }
 
     configurations["funTestImplementation"].extendsFrom(configurations["testImplementation"])
