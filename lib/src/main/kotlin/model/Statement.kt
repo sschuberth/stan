@@ -1,4 +1,7 @@
-@file:UseSerializers(LocaleSerializer::class, LocalDateSerializer::class)
+@file:UseSerializers(
+    dev.schuberth.stan.utils.LocaleSerializer::class,
+    dev.schuberth.stan.utils.LocalDateSerializer::class
+)
 
 package dev.schuberth.stan.model
 

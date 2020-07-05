@@ -1,6 +1,6 @@
-package dev.schuberth.stan.model
+package dev.schuberth.stan.utils
 
-import java.util.Locale
+import java.time.LocalDate
 
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
@@ -10,12 +10,12 @@ import kotlinx.serialization.PrimitiveKind
 import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.Serializer
 
-@Serializer(forClass = Locale::class)
-object LocaleSerializer : KSerializer<Locale> {
+@Serializer(forClass = LocalDate::class)
+object LocalDateSerializer : KSerializer<LocalDate> {
     override val descriptor: SerialDescriptor =
         PrimitiveDescriptor("WithCustomDefault", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: Locale) = encoder.encodeString(value.toString())
+    override fun serialize(encoder: Encoder, value: LocalDate) = encoder.encodeString(value.toString())
 
-    override fun deserialize(decoder: Decoder) = Locale(decoder.decodeString())
+    override fun deserialize(decoder: Decoder) = LocalDate.parse(decoder.decodeString())
 }
