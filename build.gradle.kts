@@ -81,6 +81,10 @@ allprojects {
         input = files("$rootDir/buildSrc", "build.gradle.kts", "src/main/kotlin", "src/test/kotlin",
             "src/funTest/kotlin")
     }
+}
+
+subprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
 
     tasks.withType<KotlinCompile>().configureEach {
         val customCompilerArgs = listOf("-Xopt-in=kotlin.ExperimentalUnsignedTypes")
@@ -92,10 +96,6 @@ allprojects {
             freeCompilerArgs = freeCompilerArgs + customCompilerArgs
         }
     }
-}
-
-subprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
 
     tasks.withType<Test> {
         useJUnitPlatform()
