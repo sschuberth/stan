@@ -1,7 +1,5 @@
-package dev.schuberth.stan.functionaltest
+package dev.schuberth.stan.exporters
 
-import dev.schuberth.stan.exporters.JSON
-import dev.schuberth.stan.exporters.JsonExporter
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.parsers.PostbankPDFParser
 

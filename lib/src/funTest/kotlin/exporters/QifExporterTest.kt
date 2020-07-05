@@ -1,6 +1,5 @@
-package dev.schuberth.stan.functionaltest
+package dev.schuberth.stan.exporters
 
-import dev.schuberth.stan.exporters.QifExporter
 import dev.schuberth.stan.parsers.PostbankPDFParser
 
 import io.kotest.core.spec.style.StringSpec
