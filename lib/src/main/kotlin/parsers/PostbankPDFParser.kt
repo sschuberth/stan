@@ -136,7 +136,7 @@ object PostbankPDFParser : Parser {
         return text to isFormat2014
     }
 
-    private fun mapBookingType(infoLine: String) =
+    private fun mapType(infoLine: String) =
         when (infoLine) {
             "Auszahlung Geldautomat", "Bargeldausz. Geldautomat", "Kartenverfüg" -> BookingType.ATM
 
@@ -259,22 +259,22 @@ object PostbankPDFParser : Parser {
 
             return null
         } else if (BOOKING_SUMMARY_IN.startsWith(line)) {
-            state.sumIn = parseBookingSummary(BOOKING_SUMMARY_IN, line, it)
+            state.sumIn = parseSummary(BOOKING_SUMMARY_IN, line, it)
             return null
         } else if (BOOKING_SUMMARY_OUT.startsWith(line)) {
-            state.sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT, line, it)
+            state.sumOut = parseSummary(BOOKING_SUMMARY_OUT, line, it)
             return null
         } else if (BOOKING_SUMMARY_OUT_ALT.startsWith(line)) {
-            state.sumOut = parseBookingSummary(BOOKING_SUMMARY_OUT_ALT, line, it)
+            state.sumOut = parseSummary(BOOKING_SUMMARY_OUT_ALT, line, it)
             return null
         } else if (BOOKING_SUMMARY_BALANCE_SINGULAR.startsWith(line)) {
-            state.balanceNew = parseBookingSummary(BOOKING_SUMMARY_BALANCE_SINGULAR, line, it)
+            state.balanceNew = parseSummary(BOOKING_SUMMARY_BALANCE_SINGULAR, line, it)
 
             // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
             // to filter out coming unwanted stuff.
             return state
         } else if (BOOKING_SUMMARY_BALANCE_PLURAL.startsWith(line)) {
-            state.balanceNew = parseBookingSummary(BOOKING_SUMMARY_BALANCE_PLURAL, line, it)
+            state.balanceNew = parseSummary(BOOKING_SUMMARY_BALANCE_PLURAL, line, it)
 
             // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
             // to filter out coming unwanted stuff.
@@ -332,7 +332,7 @@ object PostbankPDFParser : Parser {
 
             val infoLine = m.groupValues[3]
             val amount = BOOKING_FORMAT.parse(amountStr).toFloat()
-            val type = mapBookingType(infoLine)
+            val type = mapType(infoLine)
 
             state.items += BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type)
         } else {
@@ -343,7 +343,7 @@ object PostbankPDFParser : Parser {
         return null
     }
 
-    private fun parseBookingSummary(startMarker: String, startLine: String, it: ListIterator<String>): Float {
+    private fun parseSummary(startMarker: String, startLine: String, it: ListIterator<String>): Float {
         var marker = startMarker
         var line = startLine
 
