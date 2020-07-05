@@ -1,0 +1,51 @@
+{
+  "bookingCategories": [
+    "Betriebskosten",
+    "Gehalt",
+    "Kindergeld",
+    "Medien",
+    "Miete",
+    "Sonstige Ausgaben",
+    "Sonstige Einnahmen",
+    "Steuer",
+    "Umbuchung"
+  ],
+  "bookingCategoryMatchers": [
+    {
+      "regex": ".*KINDERGELD.*",
+      "category": "Kindergeld"
+    },
+    {
+      "regex": ".*STROMKOSTEN.*",
+      "category": "Betriebskosten"
+    },
+    {
+      "regex": ".*(GEZ|TELEFON AG).*",
+      "category": "Medien"
+    },
+    {
+      "regex": ".*(Auszahlung Geldautomat|Inh\\. Scheck|Rechnung).*",
+      "category": "Sonstige Ausgaben"
+    },
+    {
+      "regex": ".*MIETE.*",
+      "category": "Miete"
+    },
+    {
+      "regex": ".*GUTBUCHUNG.*",
+      "category": "Sonstige Einnahmen"
+    },
+    {
+      "regex": ".*(BEZÜGE|SALL?ARY).*",
+      "category": "Gehalt"
+    },
+    {
+      "regex": ".*ÜBERTRAG.*",
+      "category": "Umbuchung"
+    },
+    {
+      "regex": ".*STEUERNUMMER.*",
+      "category": "Steuer"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package dev.schuberth.stan.exporters
 
+import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.parsers.PostbankPDFParser
 
 import io.kotest.core.spec.style.StringSpec
@@ -9,6 +10,8 @@ import java.io.File
 import java.io.FileOutputStream
 
 class OfxV1ExporterTest : StringSpec({
+    val parser = PostbankPDFParser(Configuration.EMPTY)
+
     "Demokonto account statement is exported correctly" {
         val baseName = "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
 
@@ -17,7 +20,7 @@ class OfxV1ExporterTest : StringSpec({
             .replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
         val ofx = createTempFile(suffix = ".ofx")
-        val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
+        val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         OfxV1Exporter().write(statement, FileOutputStream(ofx.path))
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
@@ -33,7 +36,7 @@ class OfxV1ExporterTest : StringSpec({
             .replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
         val ofx = createTempFile(suffix = ".ofx")
-        val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
+        val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         OfxV1Exporter().write(statement, FileOutputStream(ofx.path))
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 

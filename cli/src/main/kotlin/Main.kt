@@ -10,6 +10,7 @@ import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 
 import dev.schuberth.stan.exporters.*
+import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.parsers.PostbankPDFParser
 
@@ -37,9 +38,26 @@ class Stan : CliktCommand() {
         QIF(QifExporter())
     }
 
-    private val statementGlobs by argument()
-        .file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
-        .multiple()
+    private val userHome by lazy {
+        val userHome = System.getProperty("user.home")
+
+        val fixedUserHome = if (userHome.isNullOrBlank() || userHome == "?") {
+            listOfNotNull(
+                System.getenv("HOME"),
+                System.getenv("USERPROFILE")
+            ).first { it.isNotBlank() }
+        } else {
+            userHome
+        }
+
+        File(fixedUserHome)
+    }
+
+    private val configFile by option(
+        "--config-file", "-c",
+        help = "The configuration file to use."
+    ).file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
+        .default(userHome.resolve(".config/stan/config.json"))
 
     private val exportFormat by option(
         "--export-format", "-f",
@@ -53,11 +71,22 @@ class Stan : CliktCommand() {
     ).file(mustExist = false, canBeFile = false, canBeDir = true, mustBeReadable = false, mustBeWritable = true)
         .default(File("."))
 
+    private val statementGlobs by argument()
+        .file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
+        .multiple()
+
     override fun run() {
         if (statementGlobs.isEmpty()) throw UsageError("No statement file(s) specified.", statusCode = 1)
 
         println("Parsing statements...")
 
+        val config = if (configFile.isFile) {
+            Configuration.load(configFile)
+        } else {
+            Configuration.loadDefault()
+        }
+
+        val parser = PostbankPDFParser(config)
         val statements = sortedMapOf<Statement, File>()
 
         statementGlobs.forEach { glob ->
@@ -70,7 +99,7 @@ class Stan : CliktCommand() {
                 val file = it.normalize()
 
                 try {
-                    val st = PostbankPDFParser.parse(file)
+                    val st = parser.parse(file)
                     println("Successfully parsed statement\n\t$file\ndated from ${st.fromDate} to ${st.toDate}.")
                     statements[st] = file
                 } catch (e: ParseException) {

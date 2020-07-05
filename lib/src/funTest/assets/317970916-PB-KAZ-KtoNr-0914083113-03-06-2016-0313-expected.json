@@ -19,7 +19,8 @@
         "TRANSFER SALLARY GORAN BOLSEC"
       ],
       "amount": 968.0,
-      "type": "CREDIT"
+      "type": "CREDIT",
+      "category": "Gehalt"
     },
     {
       "postDate": "2016-05-30",
@@ -33,7 +34,8 @@
         "genr. 000 Verfalld. 2012"
       ],
       "amount": -900.0,
-      "type": "ATM"
+      "type": "ATM",
+      "category": "Sonstige Ausgaben"
     }
   ]
 }

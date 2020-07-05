@@ -87,7 +87,10 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
     tasks.withType<KotlinCompile>().configureEach {
-        val customCompilerArgs = listOf("-Xopt-in=kotlin.ExperimentalUnsignedTypes")
+        val customCompilerArgs = listOf(
+            "-Xopt-in=kotlin.ExperimentalStdlibApi",
+            "-Xopt-in=kotlin.ExperimentalUnsignedTypes"
+        )
 
         kotlinOptions {
             allWarningsAsErrors = true

@@ -1,5 +1,6 @@
 package dev.schuberth.stan.exporters
 
+import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.parsers.PostbankPDFParser
 
 import io.kotest.core.spec.style.StringSpec
@@ -9,13 +10,15 @@ import java.io.File
 import java.io.FileOutputStream
 
 class QifExporterTest : StringSpec({
+    val parser = PostbankPDFParser(Configuration.EMPTY)
+
     "Demokonto account statement is exported correctly" {
         val baseName = "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
 
         val expectedQif = File("src/funTest/assets/$baseName-expected.qif").readText()
 
         val qif = createTempFile(suffix = ".qif")
-        val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
+        val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         QifExporter().write(statement, FileOutputStream(qif.path))
         val actualQif = qif.readText()
 
@@ -29,7 +32,7 @@ class QifExporterTest : StringSpec({
         val expectedQif = File("src/funTest/assets/$baseName-expected.qif").readText()
 
         val qif = createTempFile(suffix = ".qif")
-        val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
+        val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         QifExporter().write(statement, FileOutputStream(qif.path))
         val actualQif = qif.readText()
 

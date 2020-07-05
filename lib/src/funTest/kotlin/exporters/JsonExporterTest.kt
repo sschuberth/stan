@@ -1,10 +1,14 @@
 package dev.schuberth.stan.exporters
 
 import dev.schuberth.stan.model.BookingType
+import dev.schuberth.stan.model.Configuration
+import dev.schuberth.stan.parsers.Parser
 import dev.schuberth.stan.parsers.PostbankPDFParser
 
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNot
 
 import java.io.File
 import java.io.FileOutputStream
@@ -12,6 +16,21 @@ import java.io.FileOutputStream
 import kotlinx.serialization.json.JsonElement
 
 class JsonExporterTest : StringSpec({
+    lateinit var config: Configuration
+    lateinit var parser: Parser
+
+    "Loading the default config succeeds" {
+        config = Configuration.loadDefault()
+
+        config.bookingCategories shouldNot beEmpty()
+        config.bookingCategoryMatchers shouldNot beEmpty()
+        config.isValid() shouldBe true
+    }
+
+    "Creating the parser succeeds" {
+        parser = PostbankPDFParser(config)
+    }
+
     "Demokonto account statement is exported correctly" {
         val baseName = "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
 
@@ -19,7 +38,7 @@ class JsonExporterTest : StringSpec({
         val expectedJson = JSON.stringify(JsonElement.serializer(), JSON.parseJson(expectedText))
 
         val jsonFile = createTempFile(suffix = ".json")
-        val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
+        val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         JsonExporter().write(statement, FileOutputStream(jsonFile.path))
         val actualJson = jsonFile.readText()
 
@@ -35,7 +54,7 @@ class JsonExporterTest : StringSpec({
         val expectedJson = JSON.stringify(JsonElement.serializer(), JSON.parseJson(expectedText))
 
         val jsonFile = createTempFile(suffix = ".json")
-        val statement = PostbankPDFParser.parse(File("src/funTest/assets/$baseName.pdf"))
+        val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         JsonExporter().write(statement, FileOutputStream(jsonFile.path))
         val actualJson = jsonFile.readText()
 

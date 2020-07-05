@@ -12,6 +12,7 @@ import com.itextpdf.text.pdf.parser.Vector
 
 import dev.schuberth.stan.model.BookingItem
 import dev.schuberth.stan.model.BookingType
+import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.model.Statement
 
 import java.io.File
@@ -69,7 +70,7 @@ private class VerticalTextFilter : RenderFilter() {
     override fun allowImage(renderInfo: ImageRenderInfo?) = false
 }
 
-object PostbankPDFParser : Parser {
+class PostbankPDFParser(override val config: Configuration) : Parser {
     private val pdfDateFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
 
     private val statementDatePattern = Regex(
@@ -86,6 +87,8 @@ object PostbankPDFParser : Parser {
 
     private val bookingSymbols = DecimalFormatSymbols(Locale.GERMAN)
     private val bookingFormat = DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols)
+
+    private val hyphenationPattern = Regex("([a-z]{2,})-([a-z]{2,})")
 
     private fun extractText(filename: String): Pair<String, Boolean> {
         val reader = try {
@@ -272,12 +275,14 @@ object PostbankPDFParser : Parser {
 
             // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
             // to filter out coming unwanted stuff.
+            finalizeLastItem(state.items)
             return state
         } else if (BOOKING_SUMMARY_BALANCE_PLURAL.startsWith(line)) {
             state.balanceNew = parseSummary(BOOKING_SUMMARY_BALANCE_PLURAL, line, it)
 
             // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
             // to filter out coming unwanted stuff.
+            finalizeLastItem(state.items)
             return state
         }
         if (line == "+" || line == "-") {
@@ -313,6 +318,8 @@ object PostbankPDFParser : Parser {
             var valueDate = LocalDate.parse(m.groupValues[2] + state.valueYear, statementDateFormatter)
 
             state.items.lastOrNull()?.let { item ->
+                finalizeLastItem(state.items)
+
                 // If there is a wrap-around in the month, increase the year.
                 if (postDate.month.value < item.postDate.month.value) {
                     postDate = postDate.withYear(++state.postYear)
@@ -334,13 +341,25 @@ object PostbankPDFParser : Parser {
             val amount = bookingFormat.parse(amountStr).toFloat()
             val type = mapType(infoLine)
 
-            state.items += BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type)
+            // The category is yet known as we do not have all info lines at this point.
+            state.items += BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type, "")
         } else {
             // Add the line as info to the current booking item, if any.
             state.items.lastOrNull()?.info?.add(line)
         }
 
         return null
+    }
+
+    private fun finalizeLastItem(items: MutableList<BookingItem>) {
+        val item = items.removeLast()
+
+        val category = config.bookingCategoryMatchers.find { matcher ->
+            val joinedInfo = item.info.joinToString("").replace(hyphenationPattern, "\\1\\2")
+            matcher.regex.matches(joinedInfo)
+        }?.category.orEmpty()
+
+        items += item.copy(category = category)
     }
 
     private fun parseSummary(startMarker: String, startLine: String, it: ListIterator<String>): Float {
