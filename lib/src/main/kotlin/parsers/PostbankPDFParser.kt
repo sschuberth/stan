@@ -165,7 +165,6 @@ object PostbankPDFParser : Parser {
     private data class ParsingState(
         var foundStart: Boolean = false,
 
-        var currentItem: BookingItem? = null,
         val items: ArrayList<BookingItem> = arrayListOf(),
 
         var stFrom: LocalDate = LocalDate.EPOCH,
@@ -311,7 +310,7 @@ object PostbankPDFParser : Parser {
             var postDate = LocalDate.parse(m.groupValues[1] + state.postYear, STATEMENT_DATE_FORMATTER)
             var valueDate = LocalDate.parse(m.groupValues[2] + state.valueYear, STATEMENT_DATE_FORMATTER)
 
-            state.currentItem?.let { item ->
+            state.items.lastOrNull()?.let { item ->
                 // If there is a wrap-around in the month, increase the year.
                 if (postDate.month.value < item.postDate.month.value) {
                     postDate = postDate.withYear(++state.postYear)
@@ -333,13 +332,10 @@ object PostbankPDFParser : Parser {
             val amount = BOOKING_FORMAT.parse(amountStr).toFloat()
             val type = mapBookingType(infoLine)
 
-            BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type).let { item ->
-                state.currentItem = item
-                state.items.add(item)
-            }
+            state.items += BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type)
         } else {
             // Add the line as info to the current booking item, if any.
-            state.currentItem?.info?.add(line)
+            state.items.lastOrNull()?.info?.add(line)
         }
 
         return null
