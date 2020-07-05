@@ -26,6 +26,19 @@ import java.util.Locale
 
 import kotlin.math.abs
 
+private const val STATEMENT_BIC_HEADER_2017 = "BIC (SWIFT):"
+
+private const val BOOKING_PAGE_HEADER_2014 = "Auszug Seite IBAN BIC (SWIFT)"
+private const val BOOKING_PAGE_HEADER_2017 = "Auszug Jahr Seite von IBAN"
+private const val BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand"
+
+private const val BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge"
+private const val BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge"
+private const val BOOKING_SUMMARY_OUT_ALT =
+    "Eingeräumte Kontoüberziehung Zinssatz für eingeräumte Kontoüberziehung Summe Zahlungsausgänge"
+private const val BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand"
+private const val BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand"
+
 /*
  * Use an extraction strategy that allow to customize the ratio between the regular character width and the space
  * character width to tweak recognition of word boundaries. Inspired by http://stackoverflow.com/a/13645183/1127485.
@@ -63,23 +76,12 @@ object PostbankPDFParser : Parser {
         "Kontoauszug: (.+) vom (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d) bis (\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)"
     )
     private val STATEMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-    private const val STATEMENT_BIC_HEADER_2017 = "BIC (SWIFT):"
-
-    private const val BOOKING_PAGE_HEADER_2014 = "Auszug Seite IBAN BIC (SWIFT)"
-    private const val BOOKING_PAGE_HEADER_2017 = "Auszug Jahr Seite von IBAN"
-    private const val BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand"
 
     private val BOOKING_TABLE_HEADER = Regex("Buchung[ /]Wert Vorgang/Buchungsinformation Soll Haben")
 
     private val BOOKING_ITEM_PATTERN = Regex("(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)")
     private val BOOKING_ITEM_PATTERN_NO_SIGN = Regex("(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)")
 
-    private const val BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge"
-    private const val BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge"
-    private const val BOOKING_SUMMARY_OUT_ALT =
-        "Eingeräumte Kontoüberziehung Zinssatz für eingeräumte Kontoüberziehung Summe Zahlungsausgänge"
-    private const val BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand"
-    private const val BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand"
     private val BOOKING_SUMMARY_PATTERN = Regex("(.*) ?(EUR) ([+-] [\\d.,]+)")
 
     private val BOOKING_SYMBOLS = DecimalFormatSymbols(Locale.GERMAN)
