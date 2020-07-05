@@ -182,6 +182,10 @@ object PostbankPDFParser : Parser {
         var signLine: String? = null
     )
 
+    /**
+     * Parse a single [item][BookingItem]. Returns `null` while parsing has not yet finished and needs to be called
+     * again, or otherwise returns the final [state][ParsingState].
+     */
     private fun parseItem(
         isFormat2014: Boolean,
         bookingPageHeader: String,
