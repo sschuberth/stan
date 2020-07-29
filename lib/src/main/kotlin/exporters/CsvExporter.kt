@@ -7,6 +7,7 @@ import dev.schuberth.stan.model.Statement
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
+import java.util.Locale
 
 const val CVS_DEFAULT_SEPARATOR = ","
 
@@ -17,6 +18,7 @@ class CsvExporter : Exporter {
     override val extension = "csv"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
+        val locale = options["locale"]?.let { Locale(it) } ?: Locale.getDefault()
         val separator = options["separator"] ?: CVS_DEFAULT_SEPARATOR
 
         UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
@@ -43,7 +45,7 @@ class CsvExporter : Exporter {
                     booking.postDate.toString(),
                     booking.valueDate.toString(),
                     booking.info.joinToString(" / "),
-                    booking.amount.toString(),
+                    String.format(locale, "%.02f", booking.amount),
                     moneyControlType
                 ).map {
                     if (separator in it) "\"$it\"" else it
