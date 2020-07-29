@@ -8,7 +8,7 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 
-const val CSV_SEPARATOR = ','
+const val CVS_DEFAULT_SEPARATOR = ","
 
 /**
  * See https://en.wikipedia.org/wiki/Comma-separated_values.
@@ -16,7 +16,9 @@ const val CSV_SEPARATOR = ','
 class CsvExporter : Exporter {
     override val extension = "csv"
 
-    override fun write(statement: Statement, output: OutputStream) {
+    override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
+        val separator = options["separator"] ?: CVS_DEFAULT_SEPARATOR
+
         UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
             statement.bookings.forEach { booking ->
                 val moneyControlType = when (booking.type) {
@@ -44,10 +46,10 @@ class CsvExporter : Exporter {
                     booking.amount.toString(),
                     moneyControlType
                 ).map {
-                    if (CSV_SEPARATOR in it) "\"$it\"" else it
+                    if (separator in it) "\"$it\"" else it
                 }
 
-                writer.println(values.joinToString(CSV_SEPARATOR.toString()))
+                writer.println(values.joinToString(separator))
             }
         }
     }

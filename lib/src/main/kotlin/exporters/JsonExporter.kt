@@ -15,6 +15,6 @@ val JSON = Json(JsonConfiguration.Stable.copy(prettyPrint = true, indent = "  ")
 class JsonExporter : Exporter {
     override val extension = "json"
 
-    override fun write(statement: Statement, output: OutputStream) =
+    override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) =
         output.use { it.write(JSON.stringify(Statement.serializer(), statement).toByteArray()) }
 }

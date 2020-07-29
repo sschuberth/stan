@@ -37,7 +37,7 @@ class OfxV1Exporter : Exporter {
 
     override val extension = "ofx"
 
-    override fun write(statement: Statement, output: OutputStream) {
+    override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
         BufferedWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
             writer.write(HEADER.joinToString("\n") + "\n\n")
 

@@ -7,5 +7,5 @@ import java.io.OutputStream
 interface Exporter {
     val extension: String
 
-    fun write(statement: Statement, output: OutputStream)
+    fun write(statement: Statement, output: OutputStream, options: Map<String, String> = emptyMap())
 }

@@ -19,7 +19,7 @@ class QifExporter : Exporter {
 
     override val extension = "qif"
 
-    override fun write(statement: Statement, output: OutputStream) {
+    override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
         UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
             val accountType = "Bank"
 

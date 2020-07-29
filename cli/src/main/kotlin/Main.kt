@@ -4,8 +4,11 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
+import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.splitPair
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 
@@ -64,6 +67,21 @@ class Stan : CliktCommand() {
         help = "The data format used for dependency information. If none is specified, only consistency checks on " +
                 "statements will be performed."
     ).enum<ExportFormat>()
+
+    private val formatOptions by option(
+        "--format-option", "-O",
+        help = "An export format specific option. The key is the (case-insensitive) name of the export format, and " +
+                "the value is an arbitrary key-value pair. For example: -O CSV=separator=;"
+    ).splitPair().convert { (format, option) ->
+        val upperCaseFormat = format.toUpperCase()
+
+        val allFormats = enumValues<ExportFormat>().map { it.name }
+        require(upperCaseFormat in allFormats) {
+            "Export formats must be one or more of $allFormats."
+        }
+
+        upperCaseFormat to Pair(option.substringBefore("="), option.substringAfter("=", ""))
+    }.multiple()
 
     private val outputDir by option(
         "--output-dir", "-o",
@@ -135,13 +153,22 @@ class Stan : CliktCommand() {
         println("All statements passed the consistency checks.\n")
 
         exportFormat?.let { format ->
+            val formatOptionsMap = mutableMapOf<String, MutableMap<String, String>>()
+
+            formatOptions.forEach { (format, option) ->
+                val reportSpecificOptionsMap = formatOptionsMap.getOrPut(format) { mutableMapOf() }
+                reportSpecificOptionsMap[option.first] = option.second
+            }
+
+            val options = formatOptionsMap[format.name].orEmpty()
+
             println("Exporting ${format.name} files...")
 
             statements.forEach { (statement, file) ->
                 val exportName = "${statement.filename.substringBeforeLast(".")}.${format.exporter.extension}"
                 val exportFile = outputDir.absoluteFile.normalize().resolve(exportName)
 
-                format.exporter.write(statement, FileOutputStream(exportFile))
+                format.exporter.write(statement, FileOutputStream(exportFile), options)
                 println("Successfully exported\n\t$file\nto\n\t$exportFile")
             }
 
