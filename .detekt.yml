@@ -29,5 +29,6 @@ style:
     max: 4
   WildcardImport:
     excludeImports: '
-      dev.schuberth.stan.exporters.*
+      dev.schuberth.stan.exporters.*,
+      tornadofx.*
       '

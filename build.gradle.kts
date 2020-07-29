@@ -94,7 +94,7 @@ subprojects {
 
         kotlinOptions {
             allWarningsAsErrors = true
-            jvmTarget = "1.8"
+            jvmTarget = "11"
             apiVersion = "1.3"
             freeCompilerArgs = freeCompilerArgs + customCompilerArgs
         }

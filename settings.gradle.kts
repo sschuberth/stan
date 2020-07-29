@@ -6,8 +6,14 @@ pluginManagement {
                 val versionPropertyName = if (requested.id.id.startsWith("org.jetbrains.kotlin.")) {
                     "kotlinPluginVersion"
                 } else {
-                    val pluginName = requested.id.name.split('-').joinToString("") { it.capitalize() }.decapitalize()
-                    "${pluginName}PluginVersion"
+                    val pluginNameNoSuffix = requested.id.name.split('-').joinToString("") {
+                        it.capitalize()
+                    }.decapitalize().let { pluginName ->
+                        pluginName.takeUnless { it.toLowerCase().endsWith("plugin") } ?: pluginName.dropLast(6)
+                    }
+
+
+                    "${pluginNameNoSuffix}PluginVersion"
                 }
 
                 logger.info("Checking for plugin version property '$versionPropertyName'.")
@@ -23,4 +29,5 @@ pluginManagement {
 }
 
 include("cli")
+include("gui")
 include("lib")

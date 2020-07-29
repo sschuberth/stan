@@ -1,4 +1,4 @@
-package dev.schuberth.stan
+package dev.schuberth.stan.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.UsageError
