@@ -51,7 +51,7 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
         "alpha", "b", "beta", "cr", "dev", "ea", "eap", "m", "milestone", "pr", "preview", "rc"
     ).joinToString("|", "(", ")")
 
-    val nonFinalQualifiersRegex = Regex(".*[.-]$nonFinalQualifiers[.\\d-+]*", RegexOption.IGNORE_CASE)
+    val nonFinalQualifiersRegex = Regex(".*[.-]$nonFinalQualifiers[.\\w-+]*", RegexOption.IGNORE_CASE)
 
     gradleReleaseChannel = "current"
 
