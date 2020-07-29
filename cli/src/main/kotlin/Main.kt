@@ -90,7 +90,7 @@ class Stan : CliktCommand() {
         .default(File("."))
 
     private val statementGlobs by argument()
-        .file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
+        .file(mustExist = false, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = false)
         .multiple()
 
     override fun run() {
