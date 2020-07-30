@@ -2,41 +2,63 @@
   "bookingCategories": [
     {
       "name": "Betriebskosten",
-      "regex": ".*STROMKOSTEN.*"
+      "regexes": [
+        "STROMKOSTEN"
+      ]
     },
     {
       "name": "Gehalt",
-      "regex": ".*(BEZÜGE|SALL?ARY).*"
+      "regexes": [
+        "BEZÜGE",
+        "SALL?ARY"
+      ]
     },
     {
       "name": "Kindergeld",
-      "regex": ".*KINDERGELD.*"
+      "regexes": [
+        "KINDERGELD"
+      ]
     },
     {
       "name": "Medien",
-      "regex": ".*(GEZ|TELEFON AG).*"
+      "regexes": [
+        "GEZ",
+        "TELEFON AG"
+      ]
     },
     {
       "name": "Miete",
-      "regex": ".*MIETE.*"
+      "regexes": [
+        "MIETE"
+      ]
     },
     {
       "name": "Sonstige Ausgaben",
-      "regex": ".*(Auszahlung Geldautomat|Inh\\. Scheck|Rechnung).*",
+      "regexes": [
+        "Auszahlung Geldautomat",
+        "Inh\\. Scheck",
+        "Rechnung"
+      ],
       "maxAmount": 0
     },
     {
       "name": "Sonstige Einnahmen",
-      "regex": ".*GUTBUCHUNG.*",
+      "regexes": [
+        "GUTBUCHUNG"
+      ],
       "minAmount": 0
     },
     {
       "name": "Steuer",
-      "regex": ".*STEUERNUMMER.*"
+      "regexes": [
+        "STEUERNUMMER"
+      ]
     },
     {
       "name": "Umbuchung",
-      "regex": ".*ÜBERTRAG.*"
+      "regexes": [
+        "ÜBERTRAG"
+      ]
     }
   ]
 }

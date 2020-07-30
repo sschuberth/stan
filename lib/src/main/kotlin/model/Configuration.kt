@@ -27,7 +27,8 @@ data class Configuration(
 
     fun findBookingCategory(item: BookingItem) =
         bookingCategories.find {
-            it.regex.matches(item.joinedInfo) && it.minAmount <= item.amount && item.amount < it.maxAmount
+            val regex = Regex(it.regexes.joinToString("|", ".*(", ").*"), RegexOption.IGNORE_CASE)
+            regex.matches(item.joinedInfo) && it.minAmount <= item.amount && item.amount < it.maxAmount
         }
 
     fun save(configFile: File) = configFile.writeText(JSON.stringify(serializer(), this))
