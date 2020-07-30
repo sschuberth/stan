@@ -25,6 +25,10 @@ Stan is both a library and command line tool to convert and analyze bank account
 
   CSV files offer a simple generic way to further process the statement data.
 
+- [Excel](https://en.wikipedia.org/wiki/Microsoft_Excel)
+
+  Excel 2007 XLSX files are supported.
+
 - [JSON](https://www.json.org/)
 
   JSON files offer a powerful generic way to further process the statement data.

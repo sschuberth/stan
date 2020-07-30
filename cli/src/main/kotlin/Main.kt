@@ -35,6 +35,7 @@ fun File.getExisting(): File? {
 class Stan : CliktCommand() {
     enum class ExportFormat(val exporter: Exporter) {
         CSV(CsvExporter()),
+        EXCEL(ExcelExporter()),
         JSON(JsonExporter()),
         MT940(Mt940Exporter()),
         OFX(OfxV1Exporter()),
