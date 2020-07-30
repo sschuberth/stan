@@ -24,7 +24,7 @@ class ExcelExporter : Exporter {
     override val extension = "xlsx"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
-        val bookingProps = BookingItem::class.memberProperties
+        val bookingProps = BookingItem::class.memberProperties.filterNot { it.name == "info" }
 
         val locale = options["locale"]?.let { Locale(it) } ?: Locale.getDefault()
         val datePattern = DateFormatConverter.convert(locale, "yyyy-mm-dd")
@@ -62,7 +62,7 @@ class ExcelExporter : Exporter {
 
                     when {
                         prop.name == "amount" -> cell.cellStyle = currencyStyle
-                        prop.name == "info" -> noAutoSizeColumns += columnIndex
+                        prop.name == "joinedInfo" -> noAutoSizeColumns += columnIndex
                         value is LocalDate -> cell.cellStyle = dateStyle
                     }
 
@@ -88,6 +88,5 @@ private fun XSSFCell.setAnyCellValue(value: Any?) =
         null -> {}
         is Float -> setCellValue(value.toDouble())
         is LocalDate -> setCellValue(value)
-        is MutableList<*> -> setCellValue(value.joinToString { it.toString().trim() })
         else -> setCellValue(value.toString())
     }
