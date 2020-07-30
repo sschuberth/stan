@@ -85,6 +85,7 @@ class ExcelExporter : Exporter {
 
 private fun XSSFCell.setAnyCellValue(value: Any?) =
     when (value) {
+        null -> {}
         is Float -> setCellValue(value.toDouble())
         is LocalDate -> setCellValue(value)
         is MutableList<*> -> setCellValue(value.joinToString { it.toString().trim() })

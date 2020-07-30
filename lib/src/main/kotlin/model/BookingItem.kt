@@ -14,5 +14,5 @@ data class BookingItem(
     val info: MutableList<String>,
     val amount: Float,
     val type: BookingType,
-    val category: String
+    val category: String? = null
 )

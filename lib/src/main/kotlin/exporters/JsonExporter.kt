@@ -7,7 +7,7 @@ import java.io.OutputStream
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
-val JSON = Json(JsonConfiguration.Stable.copy(prettyPrint = true, indent = "  "))
+val JSON = Json(JsonConfiguration.Stable.copy(encodeDefaults = false, prettyPrint = true, indent = "  "))
 
 /**
  * See https://www.json.org/.

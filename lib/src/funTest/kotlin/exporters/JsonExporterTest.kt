@@ -23,8 +23,6 @@ class JsonExporterTest : StringSpec({
         config = Configuration.loadDefault()
 
         config.bookingCategories shouldNot beEmpty()
-        config.bookingCategoryMatchers shouldNot beEmpty()
-        config.isValid() shouldBe true
     }
 
     "Creating the parser succeeds" {

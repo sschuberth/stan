@@ -88,8 +88,6 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
     private val bookingSymbols = DecimalFormatSymbols(Locale.GERMAN)
     private val bookingFormat = DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols)
 
-    private val hyphenationPattern = Regex("([a-z]{2,})-([a-z]{2,})")
-
     private fun extractText(filename: String): Pair<String, Boolean> {
         val reader = try {
             PdfReader(filename)
@@ -343,7 +341,7 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
             val type = mapType(infoLine)
 
             // The category is yet known as we do not have all info lines at this point.
-            state.items += BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type, "")
+            state.items += BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type)
         } else {
             // Add the line as info to the current booking item, if any.
             state.items.lastOrNull()?.info?.add(line)
@@ -354,13 +352,7 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
 
     private fun finalizeLastItem(items: MutableList<BookingItem>) {
         val item = items.removeLast()
-
-        val category = config.bookingCategoryMatchers.find { matcher ->
-            val joinedInfo = item.info.joinToString("").replace(hyphenationPattern, "\\1\\2")
-            matcher.regex.matches(joinedInfo)
-        }?.category.orEmpty()
-
-        items += item.copy(category = category)
+        items += item.copy(category = config.findBookingCategory(item)?.name)
     }
 
     private fun parseSummary(startMarker: String, startLine: String, it: ListIterator<String>): Float {
