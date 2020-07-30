@@ -15,5 +15,5 @@ object RegexSerializer : KSerializer<Regex> {
 
     override fun serialize(encoder: Encoder, value: Regex) = encoder.encodeString(value.toString())
 
-    override fun deserialize(decoder: Decoder) = Regex(decoder.decodeString())
+    override fun deserialize(decoder: Decoder) = Regex(decoder.decodeString(), RegexOption.IGNORE_CASE)
 }
