@@ -140,6 +140,7 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
     }
 
     private fun mapType(infoLine: String) =
+        // TODO: Make this configurable like categories.
         when (infoLine) {
             "Auszahlung Geldautomat", "Bargeldausz. Geldautomat", "Kartenverfüg" -> BookingType.ATM
 

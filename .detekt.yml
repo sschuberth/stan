@@ -19,6 +19,8 @@ formatting:
     active: false
 
 style:
+  ForbiddenComment:
+    active: false
   LoopWithTooManyJumpStatements:
     maxJumpCount: 2
   MagicNumber:
