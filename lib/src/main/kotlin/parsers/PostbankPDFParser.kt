@@ -173,8 +173,6 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
 
         var stFrom: LocalDate = LocalDate.EPOCH,
         var stTo: LocalDate = LocalDate.EPOCH,
-        var postYear: Int = LocalDate.now().year,
-        var valueYear: Int = LocalDate.now().year,
         var accIban: String = "",
         var accBic: String = "",
         var sumIn: Float = Float.NaN,
@@ -208,9 +206,6 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
                 throw ParseException("Multiple statement end dates found", it.nextIndex())
             }
             state.stTo = LocalDate.parse(m.groupValues[3], statementDateFormatter)
-
-            state.valueYear = state.stFrom.year
-            state.postYear = state.valueYear
         } else if (!isFormat2014 && line.startsWith(STATEMENT_BIC_HEADER_2017)) {
             state.accBic = line.removePrefix(STATEMENT_BIC_HEADER_2017).trim()
         } else if (line.startsWith(bookingPageHeader) && it.hasNext()) {
@@ -313,21 +308,24 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
 
         // Within the booking table, a matching pattern creates a new booking item.
         if (m != null) {
-            var postDate = LocalDate.parse(m.groupValues[1] + state.postYear, statementDateFormatter)
-            var valueDate = LocalDate.parse(m.groupValues[2] + state.valueYear, statementDateFormatter)
+            // Initialize the post / value years with the year the statement starts from.
+            var postDate = LocalDate.parse(m.groupValues[1] + state.stFrom.year, statementDateFormatter)
+            var valueDate = LocalDate.parse(m.groupValues[2] + state.stFrom.year, statementDateFormatter)
 
-            state.items.lastOrNull()?.let { item ->
-                finalizeLastItem(state.items)
-
-                // If there is a wrap-around in the month, increase the year.
-                if (postDate.month.value < item.postDate.month.value) {
-                    postDate = postDate.withYear(++state.postYear)
+            // Find the correct years by checking the statement date range.
+            for (year in state.stFrom.year..state.stTo.year) {
+                val guessedPostDate = LocalDate.parse(m.groupValues[1] + year, statementDateFormatter)
+                if (state.stFrom <= guessedPostDate && guessedPostDate <= state.stTo) {
+                    postDate = guessedPostDate
                 }
 
-                if (valueDate.month.value < item.valueDate.month.value) {
-                    valueDate = valueDate.withYear(++state.valueYear)
+                val guessedValueDate = LocalDate.parse(m.groupValues[2] + year, statementDateFormatter)
+                if (state.stFrom <= guessedValueDate && guessedValueDate <= state.stTo) {
+                    valueDate = guessedValueDate
                 }
             }
+
+            state.items.lastOrNull()?.let { finalizeLastItem(state.items) }
 
             var amountStr = m.groupValues[4]
 
