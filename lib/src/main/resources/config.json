@@ -1,4 +1,7 @@
 {
+  "regexOptions": [
+    "IGNORE_CASE"
+  ],
   "bookingCategories": [
     {
       "name": "Betriebskosten",

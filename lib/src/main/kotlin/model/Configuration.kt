@@ -10,10 +10,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Configuration(
-    val bookingCategories: List<BookingCategory>
+    val regexOptions: Set<RegexOption> = emptySet(),
+    val bookingCategories: List<BookingCategory> = emptyList()
 ) {
     companion object {
-        val EMPTY = Configuration(emptyList())
+        val EMPTY = Configuration()
 
         fun load(configStream: InputStream) =
             JSON.parse(serializer(), configStream.bufferedReader().use(BufferedReader::readText))
@@ -27,7 +28,7 @@ data class Configuration(
 
     fun findBookingCategory(item: BookingItem) =
         bookingCategories.find {
-            val regex = Regex(it.regexes.joinToString("|", ".*(", ").*"), RegexOption.IGNORE_CASE)
+            val regex = Regex(it.regexes.joinToString("|", ".*(", ").*"), regexOptions)
             regex.matches(item.joinedInfo) && it.minAmount <= item.amount && item.amount < it.maxAmount
         }
 
