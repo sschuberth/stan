@@ -23,7 +23,7 @@ Stan is both a library and command line tool to convert and analyze bank account
 
 - [CSV](https://en.wikipedia.org/wiki/Comma-separated_values)
 
-  CSV files offer a simple generic way to further process the statement data.
+  CSV files offer a simple generic way to further process the statement data, e.g. in online tools like [Priotecs MoneyControl](https://primoco.me/).
 
 - [Excel](https://en.wikipedia.org/wiki/Microsoft_Excel)
 
@@ -35,7 +35,7 @@ Stan is both a library and command line tool to convert and analyze bank account
 
 - [MT940](https://de.wikipedia.org/wiki/MT940) (support is experimental)
 
-  MT940 files can be imported to many professional finance applications.
+  MT940 files can be imported to many (professional) finance applications, e.g. [AckiSoft Finanzmanager](https://www.ackisoft.de/).
 
 - [OFX version 1](http://www.ofx.net/downloads.html)
 
