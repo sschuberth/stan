@@ -33,7 +33,7 @@ class JsonExporterTest : StringSpec({
         val baseName = "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
 
         val expectedText = File("src/funTest/assets/$baseName-expected.json").readText()
-        val expectedJson = JSON.stringify(JsonElement.serializer(), JSON.parseJson(expectedText))
+        val expectedJson = JSON.encodeToString(JsonElement.serializer(), JSON.parseToJsonElement(expectedText))
 
         val jsonFile = createTempFile(suffix = ".json")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
@@ -49,7 +49,7 @@ class JsonExporterTest : StringSpec({
         val baseName = "317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313"
 
         val expectedText = File("src/funTest/assets/$baseName-expected.json").readText()
-        val expectedJson = JSON.stringify(JsonElement.serializer(), JSON.parseJson(expectedText))
+        val expectedJson = JSON.encodeToString(JsonElement.serializer(), JSON.parseToJsonElement(expectedText))
 
         val jsonFile = createTempFile(suffix = ".json")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))

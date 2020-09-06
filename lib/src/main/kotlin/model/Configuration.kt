@@ -17,7 +17,7 @@ data class Configuration(
         val EMPTY = Configuration()
 
         fun load(configStream: InputStream) =
-            JSON.parse(serializer(), configStream.bufferedReader().use(BufferedReader::readText))
+            JSON.decodeFromString(serializer(), configStream.bufferedReader().use(BufferedReader::readText))
 
         fun load(configFile: File) = load(configFile.inputStream())
 
@@ -32,5 +32,5 @@ data class Configuration(
             regex.matches(item.joinedInfo) && it.minAmount <= item.amount && item.amount < it.maxAmount
         }
 
-    fun save(configFile: File) = configFile.writeText(JSON.stringify(serializer(), this))
+    fun save(configFile: File) = configFile.writeText(JSON.encodeToString(serializer(), this))
 }

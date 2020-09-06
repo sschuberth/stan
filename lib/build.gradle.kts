@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 val itextpdfVersion: String by project
 val kotlinxSerializationVersion: String by project
 val poiVersion: String by project
@@ -14,5 +16,15 @@ dependencies {
     // By default, the same version as the plugin gets resolved.
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlinxSerializationVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinxSerializationVersion")
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    val customCompilerArgs = listOf(
+        "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi"
+    )
+
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + customCompilerArgs
+    }
 }
