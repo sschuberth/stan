@@ -12,5 +12,5 @@ application {
 dependencies {
     implementation(project(":lib"))
 
-    implementation("com.github.ajalt:clikt:$cliktVersion")
+    implementation("com.github.ajalt.clikt:clikt:$cliktVersion")
 }
