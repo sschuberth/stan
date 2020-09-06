@@ -109,14 +109,13 @@ subprojects {
 
     tasks.withType<KotlinCompile>().configureEach {
         val customCompilerArgs = listOf(
-            "-Xopt-in=kotlin.ExperimentalStdlibApi",
             "-Xopt-in=kotlin.ExperimentalUnsignedTypes"
         )
 
         kotlinOptions {
             allWarningsAsErrors = true
             jvmTarget = "11"
-            apiVersion = "1.3"
+            apiVersion = "1.4"
             freeCompilerArgs = freeCompilerArgs + customCompilerArgs
         }
     }

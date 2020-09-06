@@ -1,3 +1,4 @@
+val kotlinPluginVersion: String by project
 val tornadofxVersion: String by project
 
 plugins {
@@ -15,6 +16,13 @@ application {
 javafx {
     version = JavaVersion.current().majorVersion
     modules("javafx.controls", "javafx.graphics")
+}
+
+configurations.all {
+    resolutionStrategy {
+        // Ensure that tornadofx' version of "kotlin-reflect" matches our version of Kotlin.
+        force("org.jetbrains.kotlin:kotlin-reflect:$kotlinPluginVersion")
+    }
 }
 
 dependencies {
