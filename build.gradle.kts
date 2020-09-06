@@ -101,7 +101,6 @@ subprojects {
         "funTestImplementation"(sourceSets["main"].output)
 
         "funTestImplementation"("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
-        "funTestImplementation"("io.kotest:kotest-runner-console-jvm:$kotestVersion")
         "funTestImplementation"("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
     }
 
