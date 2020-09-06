@@ -86,24 +86,6 @@ allprojects {
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
-    tasks.withType<KotlinCompile>().configureEach {
-        val customCompilerArgs = listOf(
-            "-Xopt-in=kotlin.ExperimentalStdlibApi",
-            "-Xopt-in=kotlin.ExperimentalUnsignedTypes"
-        )
-
-        kotlinOptions {
-            allWarningsAsErrors = true
-            jvmTarget = "11"
-            apiVersion = "1.3"
-            freeCompilerArgs = freeCompilerArgs + customCompilerArgs
-        }
-    }
-
-    tasks.withType<Test> {
-        useJUnitPlatform()
-    }
-
     sourceSets.create("funTest") {
         withConvention(KotlinSourceSet::class) {
             kotlin.srcDirs("src/funTest/kotlin")
@@ -124,6 +106,24 @@ subprojects {
     }
 
     configurations["funTestImplementation"].extendsFrom(configurations["testImplementation"])
+
+    tasks.withType<KotlinCompile>().configureEach {
+        val customCompilerArgs = listOf(
+            "-Xopt-in=kotlin.ExperimentalStdlibApi",
+            "-Xopt-in=kotlin.ExperimentalUnsignedTypes"
+        )
+
+        kotlinOptions {
+            allWarningsAsErrors = true
+            jvmTarget = "11"
+            apiVersion = "1.3"
+            freeCompilerArgs = freeCompilerArgs + customCompilerArgs
+        }
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 
     val funTest by tasks.registering(Test::class) {
         description = "Runs the functional tests."
