@@ -44,3 +44,21 @@ Stan is both a library and command line tool to convert and analyze bank account
 - [QIF](https://en.wikipedia.org/wiki/Quicken_Interchange_Format)
 
   QIF files can be imported into finance applications like [GnuCash](https://www.gnucash.org/), [HomeBank](http://homebank.free.fr/en/index.php), [jGnash](https://ccavanaugh.github.io/jgnash/) or [Money Manager Ex](https://www.moneymanagerex.org/).
+
+## How to run the command line tool?
+
+As there are no binary releases yet, the easiest way to run Stan currently is by cloning the source code repository and
+leveraging Gradle's [run task](https://docs.gradle.org/current/userguide/application_plugin.html#sec:application_tasks):
+
+    $ ./gradlew :cli:run --args="--help"
+
+This will both build (if required) and run Stan. Then follow the usage instructions and replace `--help` in the above
+run with the desired options.
+
+Alternatively, you can first create / install OS-specific run scripts via
+
+    $ ./gradlew installDist
+
+and then run Stan by executing a script like
+
+    $ ./cli/build/install/stan/bin/stan --help
