@@ -4,10 +4,10 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.plugins.ide.idea.model.IdeaProject
 
-import org.jetbrains.gradle.ext.DefaultRunConfigurationContainer
 import org.jetbrains.gradle.ext.JUnit
 import org.jetbrains.gradle.ext.ProjectSettings
 import org.jetbrains.gradle.ext.RunConfiguration
+import org.jetbrains.gradle.ext.RunConfigurationContainer
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -26,10 +26,10 @@ plugins {
 fun IdeaProject.settings(block: ProjectSettings.() -> Unit) =
     (this@settings as ExtensionAware).extensions.configure("settings", block)
 
-fun ProjectSettings.runConfigurations(block: DefaultRunConfigurationContainer.() -> Unit) =
+fun ProjectSettings.runConfigurations(block: RunConfigurationContainer.() -> Unit) =
     (this@runConfigurations as ExtensionAware).extensions.configure("runConfigurations", block)
 
-inline fun <reified T : RunConfiguration> DefaultRunConfigurationContainer.defaults(noinline block: T.() -> Unit) =
+inline fun <reified T : RunConfiguration> RunConfigurationContainer.defaults(noinline block: T.() -> Unit) =
     defaults(T::class.java, block)
 
 idea {
