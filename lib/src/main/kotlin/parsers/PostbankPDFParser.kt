@@ -379,7 +379,7 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
                 var twoLines = line.trim() + " " + it.next().trim()
                 m = bookingSummaryPattern.matchEntire(twoLines)
 
-                // Try prepending the next line before we fail.
+                // Try prepending the previous line before we fail.
                 if (m == null) {
                     twoLines = it.previous().trim() + " " + line.trim()
                     m = bookingSummaryPattern.matchEntire(twoLines)
