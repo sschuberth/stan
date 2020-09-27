@@ -155,6 +155,7 @@ class Stan : CliktCommand() {
         exportFormat?.let { format ->
             val exportOptionsMap = mutableMapOf<String, MutableMap<String, String>>()
 
+            // Merge the list of pairs into a map which contains each format only once associated to all its options.
             exportOptions.forEach { (format, option) ->
                 val reportSpecificOptionsMap = exportOptionsMap.getOrPut(format) { mutableMapOf() }
                 reportSpecificOptionsMap[option.first] = option.second
