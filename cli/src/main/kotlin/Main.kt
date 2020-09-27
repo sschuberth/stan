@@ -42,15 +42,11 @@ class Stan : CliktCommand() {
     }
 
     private val userHome by lazy {
-        val userHome = System.getProperty("user.home")
-
-        val fixedUserHome = if (userHome.isNullOrBlank() || userHome == "?") {
+        val fixedUserHome = System.getProperty("user.home").takeUnless { it.isBlank() || it == "?" } ?: run {
             listOfNotNull(
                 System.getenv("HOME"),
                 System.getenv("USERPROFILE")
             ).first { it.isNotBlank() }
-        } else {
-            userHome
         }
 
         File(fixedUserHome)
