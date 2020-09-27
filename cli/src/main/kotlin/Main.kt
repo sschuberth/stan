@@ -68,16 +68,16 @@ class Stan : CliktCommand() {
                 "statements will be performed."
     ).enum<ExportFormat>()
 
-    private val formatOptions by option(
-        "--format-option", "-O",
+    private val exportOptions by option(
+        "--export-option", "-E",
         help = "An export format specific option. The key is the (case-insensitive) name of the export format, and " +
-                "the value is an arbitrary key-value pair. For example: -O CSV=separator=;"
+                "the value is an arbitrary key-value pair. For example: -E CSV=separator=;"
     ).splitPair().convert { (format, option) ->
         val upperCaseFormat = format.toUpperCase()
 
         val allFormats = enumValues<ExportFormat>().map { it.name }
         require(upperCaseFormat in allFormats) {
-            "Export formats must be one or more of $allFormats."
+            "The export format must be one of $allFormats."
         }
 
         upperCaseFormat to Pair(option.substringBefore("="), option.substringAfter("=", ""))
@@ -153,14 +153,14 @@ class Stan : CliktCommand() {
         println("All statements passed the consistency checks.\n")
 
         exportFormat?.let { format ->
-            val formatOptionsMap = mutableMapOf<String, MutableMap<String, String>>()
+            val exportOptionsMap = mutableMapOf<String, MutableMap<String, String>>()
 
-            formatOptions.forEach { (format, option) ->
-                val reportSpecificOptionsMap = formatOptionsMap.getOrPut(format) { mutableMapOf() }
+            exportOptions.forEach { (format, option) ->
+                val reportSpecificOptionsMap = exportOptionsMap.getOrPut(format) { mutableMapOf() }
                 reportSpecificOptionsMap[option.first] = option.second
             }
 
-            val options = formatOptionsMap[format.name].orEmpty()
+            val options = exportOptionsMap[format.name].orEmpty()
 
             println("Exporting ${format.name} files...")
 
