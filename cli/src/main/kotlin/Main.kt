@@ -1,6 +1,7 @@
 package dev.schuberth.stan.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
@@ -21,8 +22,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.FileSystems
 import java.text.ParseException
-
-import kotlin.system.exitProcess
 
 fun File.getExisting(): File? {
     var current: File? = absoluteFile
@@ -132,7 +131,7 @@ class Stan : CliktCommand() {
 
         if (statements.isEmpty()) {
             System.err.println("No statements found.")
-            exitProcess(1)
+            throw ProgramResult(2)
         }
 
         println("Checking statements for consistency...")
@@ -140,14 +139,14 @@ class Stan : CliktCommand() {
         statements.keys.zipWithNext().forEach { (curr, next) ->
             if (curr.toDate.plusDays(1) != next.fromDate) {
                 System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
-                exitProcess(1)
+                throw ProgramResult(2)
             }
 
             if (curr.balanceNew != next.balanceOld) {
                 System.err.println(
                     "Balances of statements '${curr.filename}' and '${next.filename}' are not consistent."
                 )
-                exitProcess(1)
+                throw ProgramResult(2)
             }
         }
 
