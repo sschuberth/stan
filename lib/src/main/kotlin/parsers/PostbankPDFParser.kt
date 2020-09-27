@@ -374,20 +374,22 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
 
         var m = bookingSummaryPattern.matchEntire(line)
         if (m == null) {
+            var parsedText = line
+
             // Try appending the next line before we fail.
             if (it.hasNext()) {
-                var twoLines = line.trim() + " " + it.next().trim()
-                m = bookingSummaryPattern.matchEntire(twoLines)
+                parsedText = line.trim() + " " + it.next().trim()
+                m = bookingSummaryPattern.matchEntire(parsedText)
 
                 // Try prepending the previous line before we fail.
                 if (m == null) {
-                    twoLines = it.previous().trim() + " " + line.trim()
-                    m = bookingSummaryPattern.matchEntire(twoLines)
+                    parsedText = it.previous().trim() + " " + line.trim()
+                    m = bookingSummaryPattern.matchEntire(parsedText)
                 }
             }
 
             if (m == null) {
-                throw ParseException("Error parsing booking summary", it.nextIndex())
+                throw ParseException("Error parsing booking summary from text '$parsedText'", it.nextIndex())
             }
         }
 
