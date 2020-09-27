@@ -95,7 +95,7 @@ class Stan : CliktCommand() {
         .multiple()
 
     override fun run() {
-        if (statementGlobs.isEmpty()) throw UsageError("No statement file(s) specified.", statusCode = 1)
+        if (statementGlobs.isEmpty()) throw UsageError("No statement file(s) specified.")
 
         println("Parsing statements...")
 
