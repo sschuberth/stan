@@ -10,7 +10,6 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.splitPair
-import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 
 import dev.schuberth.stan.exporters.*
@@ -23,6 +22,9 @@ import java.io.FileOutputStream
 import java.nio.file.FileSystems
 import java.text.ParseException
 
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
+
 fun File.getExisting(): File? {
     var current: File? = absoluteFile
     while (current != null && !current.exists()) {
@@ -32,13 +34,19 @@ fun File.getExisting(): File? {
 }
 
 class Stan : CliktCommand() {
-    enum class ExportFormat(val exporter: Exporter) {
-        CSV(CsvExporter()),
-        EXCEL(ExcelExporter()),
-        JSON(JsonExporter()),
-        MT940(Mt940Exporter()),
-        OFX(OfxV1Exporter()),
-        QIF(QifExporter())
+    sealed class ExporterFactory<T : Exporter>(private val exporter: KClass<T>) {
+        companion object {
+            val ALL = ExporterFactory::class.sealedSubclasses.associateBy { it.simpleName!!.toUpperCase() }
+        }
+
+        object CSV : ExporterFactory<CsvExporter>(CsvExporter::class)
+        object EXCEL : ExporterFactory<ExcelExporter>(ExcelExporter::class)
+        object JSON : ExporterFactory<JsonExporter>(JsonExporter::class)
+        object MT940 : ExporterFactory<Mt940Exporter>(Mt940Exporter::class)
+        object OFX : ExporterFactory<OfxV1Exporter>(OfxV1Exporter::class)
+        object QIF : ExporterFactory<QifExporter>(QifExporter::class)
+
+        fun create() = exporter.createInstance()
     }
 
     private val userHome by lazy {
@@ -58,11 +66,15 @@ class Stan : CliktCommand() {
     ).file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
         .default(userHome.resolve(".config/stan/config.json"))
 
-    private val exportFormat by option(
+    private val exportFormats by option(
         "--export-format", "-f",
-        help = "The data format used for dependency information. If none is specified, only consistency checks on " +
-                "statements will be performed."
-    ).enum<ExportFormat>()
+        help = "The data format to export to. If none is specified only consistency checks on statements are performed."
+    ).convert { format ->
+        val upperCaseFormat = format.toUpperCase()
+        val factory = ExporterFactory.ALL[upperCaseFormat]?.objectInstance
+        factory ?: throw UsageError("Export format '$upperCaseFormat' must be one of ${ExporterFactory.ALL.keys}.")
+        upperCaseFormat to factory.create()
+    }.multiple()
 
     private val exportOptions by option(
         "--export-option", "-E",
@@ -71,9 +83,8 @@ class Stan : CliktCommand() {
     ).splitPair().convert { (format, option) ->
         val upperCaseFormat = format.toUpperCase()
 
-        val allFormats = enumValues<ExportFormat>().map { it.name }
-        require(upperCaseFormat in allFormats) {
-            "The export format must be one of $allFormats."
+        require(upperCaseFormat in ExporterFactory.ALL.keys) {
+            "Export format '$upperCaseFormat' must be one of ${ExporterFactory.ALL.keys}."
         }
 
         upperCaseFormat to Pair(option.substringBefore("="), option.substringAfter("=", ""))
@@ -101,7 +112,7 @@ class Stan : CliktCommand() {
         }
 
         val parser = PostbankPDFParser(config)
-        val statements = sortedMapOf<Statement, File>()
+        val statements = mutableListOf<Statement>()
 
         statementGlobs.forEach { glob ->
             val globPath = glob.absoluteFile.invariantSeparatorsPath
@@ -115,7 +126,7 @@ class Stan : CliktCommand() {
                 try {
                     val st = parser.parse(file)
                     println("Successfully parsed statement\n\t$file\ndated from ${st.fromDate} to ${st.toDate}.")
-                    statements[st] = file
+                    statements += st
                 } catch (e: ParseException) {
                     System.err.println("Error parsing '$file'.")
                     e.printStackTrace()
@@ -132,7 +143,9 @@ class Stan : CliktCommand() {
 
         println("Checking statements for consistency...")
 
-        statements.keys.zipWithNext().forEach { (curr, next) ->
+        statements.sort()
+
+        statements.zipWithNext().forEach { (curr, next) ->
             if (curr.toDate.plusDays(1) != next.fromDate) {
                 System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
                 throw ProgramResult(2)
@@ -148,25 +161,28 @@ class Stan : CliktCommand() {
 
         println("All statements passed the consistency checks.\n")
 
-        exportFormat?.let { format ->
-            val exportOptionsMap = mutableMapOf<String, MutableMap<String, String>>()
+        if (exportFormats.isEmpty()) return
 
-            // Merge the list of pairs into a map which contains each format only once associated to all its options.
-            exportOptions.forEach { (format, option) ->
-                val reportSpecificOptionsMap = exportOptionsMap.getOrPut(format) { mutableMapOf() }
-                reportSpecificOptionsMap[option.first] = option.second
-            }
+        // Merge the list of pairs into a map which contains each format only once associated to all its options.
+        val exportOptionsMap = mutableMapOf<String, MutableMap<String, String>>()
 
-            val options = exportOptionsMap[format.name].orEmpty()
+        exportOptions.forEach { (format, option) ->
+            val reportSpecificOptionsMap = exportOptionsMap.getOrPut(format) { mutableMapOf() }
+            reportSpecificOptionsMap[option.first] = option.second
+        }
 
-            println("Exporting ${format.name} files...")
+        // Export to all specified formats.
+        exportFormats.forEach { (format, exporter) ->
+            val options = exportOptionsMap[format].orEmpty()
 
-            statements.forEach { (statement, file) ->
-                val exportName = "${statement.filename.substringBeforeLast(".")}.${format.exporter.extension}"
+            println("Exporting $format files...")
+
+            statements.forEach { statement ->
+                val exportName = "${statement.filename.substringBeforeLast(".")}.${exporter.extension}"
                 val exportFile = outputDir.absoluteFile.normalize().resolve(exportName)
 
-                format.exporter.write(statement, FileOutputStream(exportFile), options)
-                println("Successfully exported\n\t$file\nto\n\t$exportFile")
+                exporter.write(statement, FileOutputStream(exportFile), options)
+                println("Successfully exported\n\t$exportFile")
             }
 
             println("Exported ${statements.size} statement(s) in total.\n")
