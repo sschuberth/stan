@@ -99,7 +99,7 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
         val pdfCreationDate = pdfInfo["CreationDate"]?.let { creationDate ->
             LocalDate.parse(creationDate.substring(2, 16), pdfDateFormatter).also {
                 if (it.isBefore(LocalDate.of(2014, 7, 1))) {
-                    throw ParseException("Unsupported statement format", 0)
+                    throw ParseException("Unsupported statement format.", 0)
                 }
             }
         }
@@ -126,7 +126,7 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
                     val pageText = PdfTextExtractor.getTextFromPage(reader, i, listener)
                     append(pageText)
                 } catch (e: IOException) {
-                    throw ParseException("Error extracting text from page", i)
+                    throw ParseException("Error extracting text from page.", i)
                 }
 
                 // Ensure text from each page ends with a new-line to separate from the first line on the next page.
@@ -198,12 +198,12 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
         var m = statementDatePattern.matchEntire(line)
         if (m != null) {
             if (state.stFrom != LocalDate.EPOCH) {
-                throw ParseException("Multiple statement start dates found", it.nextIndex())
+                throw ParseException("Multiple statement start dates found.", it.nextIndex())
             }
             state.stFrom = LocalDate.parse(m.groupValues[2], statementDateFormatter)
 
             if (state.stTo != LocalDate.EPOCH) {
-                throw ParseException("Multiple statement end dates found", it.nextIndex())
+                throw ParseException("Multiple statement end dates found.", it.nextIndex())
             }
             state.stTo = LocalDate.parse(m.groupValues[3], statementDateFormatter)
         } else if (!isFormat2014 && line.startsWith(STATEMENT_BIC_HEADER_2017)) {
@@ -215,7 +215,7 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
                 // For the 2014 format only, read the BIC from the page header.
                 if (isFormat2014) {
                     if (state.accBic.isNotEmpty() && state.accBic != info[8]) {
-                        throw ParseException("Inconsistent BIC", it.nextIndex())
+                        throw ParseException("Inconsistent BIC.", it.nextIndex())
                     }
                     state.accBic = info[8]
                 }
@@ -229,7 +229,7 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
                 }
 
                 if (state.accIban.isNotEmpty() && state.accIban != pageIban) {
-                    throw ParseException("Inconsistent IBAN", it.nextIndex())
+                    throw ParseException("Inconsistent IBAN.", it.nextIndex())
                 }
 
                 state.accIban = pageIban
@@ -389,7 +389,7 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
             }
 
             if (m == null) {
-                throw ParseException("Error parsing booking summary from text '$parsedText'", it.nextIndex())
+                throw ParseException("Error parsing booking summary from text '$parsedText'.", it.nextIndex())
             }
         }
 
@@ -412,31 +412,31 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
         }
 
         if (state.stFrom == LocalDate.EPOCH) {
-            throw ParseException("No statement start date found", it.nextIndex())
+            throw ParseException("No statement start date found.", it.nextIndex())
         }
         if (state.stTo == LocalDate.EPOCH) {
-            throw ParseException("No statement end date found", it.nextIndex())
+            throw ParseException("No statement end date found.", it.nextIndex())
         }
 
         if (state.accIban.isEmpty()) {
-            throw ParseException("No IBAN found", it.nextIndex())
+            throw ParseException("No IBAN found.", it.nextIndex())
         }
         if (state.accBic.isEmpty()) {
-            throw ParseException("No BIC found", it.nextIndex())
+            throw ParseException("No BIC found.", it.nextIndex())
         }
 
         if (state.sumIn.isNaN()) {
-            throw ParseException("No incoming booking summary found", it.nextIndex())
+            throw ParseException("No incoming booking summary found.", it.nextIndex())
         }
         if (state.sumOut.isNaN()) {
-            throw ParseException("No outgoing booking summary found", it.nextIndex())
+            throw ParseException("No outgoing booking summary found.", it.nextIndex())
         }
 
         if (state.balanceOld.isNaN()) {
-            throw ParseException("No old balance found", it.nextIndex())
+            throw ParseException("No old balance found.", it.nextIndex())
         }
         if (state.balanceNew.isNaN()) {
-            throw ParseException("No new balance found", it.nextIndex())
+            throw ParseException("No new balance found.", it.nextIndex())
         }
 
         var calcIn = 0.0f
@@ -450,16 +450,16 @@ class PostbankPDFParser(override val config: Configuration) : Parser {
         }
 
         if (abs(calcIn - state.sumIn) >= 0.01) {
-            throw ParseException("Sanity check on incoming booking summary failed", it.nextIndex())
+            throw ParseException("Sanity check on incoming booking summary failed.", it.nextIndex())
         }
 
         if (abs(calcOut - state.sumOut) >= 0.01) {
-            throw ParseException("Sanity check on outgoing booking summary failed", it.nextIndex())
+            throw ParseException("Sanity check on outgoing booking summary failed.", it.nextIndex())
         }
 
         val balanceCalc = state.balanceOld + state.sumIn + state.sumOut
         if (abs(balanceCalc - state.balanceNew) >= 0.01) {
-            throw ParseException("Sanity check on balances failed", it.nextIndex())
+            throw ParseException("Sanity check on balances failed.", it.nextIndex())
         }
 
         return Statement(
