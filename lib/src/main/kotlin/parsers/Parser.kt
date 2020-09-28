@@ -5,8 +5,6 @@ import dev.schuberth.stan.model.Statement
 
 import java.io.File
 
-interface Parser {
-    val config: Configuration
-
-    fun parse(statementFile: File): Statement
+abstract class Parser(protected val config: Configuration) {
+    abstract fun parse(statementFile: File, options: Map<String, String> = emptyMap()): Statement
 }

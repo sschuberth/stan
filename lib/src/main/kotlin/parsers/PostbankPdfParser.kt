@@ -70,7 +70,7 @@ private class VerticalTextFilter : RenderFilter() {
     override fun allowImage(renderInfo: ImageRenderInfo?) = false
 }
 
-class PostbankPdfParser(override val config: Configuration) : Parser {
+class PostbankPdfParser(config: Configuration) : Parser(config) {
     private val pdfDateFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
 
     private val statementDatePattern = Regex(
@@ -396,7 +396,7 @@ class PostbankPdfParser(override val config: Configuration) : Parser {
         return bookingFormat.parse(m.groupValues[3]).toFloat()
     }
 
-    override fun parse(statementFile: File): Statement {
+    override fun parse(statementFile: File, options: Map<String, String>): Statement {
         val filename = statementFile.absolutePath
         val (text, isFormat2014) = extractText(filename)
         val lines = text.lines().dropLastWhile { it.isBlank() }

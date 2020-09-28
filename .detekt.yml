@@ -34,5 +34,6 @@ style:
   WildcardImport:
     excludeImports: '
       dev.schuberth.stan.exporters.*,
+      dev.schuberth.stan.parsers.*,
       tornadofx.*
       '

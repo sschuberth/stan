@@ -15,15 +15,17 @@ import com.github.ajalt.clikt.parameters.types.file
 import dev.schuberth.stan.exporters.*
 import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.model.Statement
-import dev.schuberth.stan.parsers.PostbankPdfParser
+import dev.schuberth.stan.parsers.*
 
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.IllegalArgumentException
 import java.nio.file.FileSystems
 import java.text.ParseException
 
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.primaryConstructor
 
 fun File.getExisting(): File? {
     var current: File? = absoluteFile
@@ -34,6 +36,17 @@ fun File.getExisting(): File? {
 }
 
 class Stan : CliktCommand() {
+    @Suppress("Unused")
+    sealed class ParserFactory<T : Parser>(private val parser: KClass<T>) {
+        companion object {
+            val ALL = ParserFactory::class.sealedSubclasses.associateBy { it.simpleName!!.toUpperCase() }
+        }
+
+        object PostbankPdf : ParserFactory<PostbankPdfParser>(PostbankPdfParser::class)
+
+        fun create(config: Configuration) = parser.primaryConstructor?.call(config)
+    }
+
     @Suppress("Unused")
     sealed class ExporterFactory<T : Exporter>(private val exporter: KClass<T>) {
         companion object {
@@ -66,6 +79,20 @@ class Stan : CliktCommand() {
         help = "The configuration file to use."
     ).file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
         .default(userHome.resolve(".config/stan/config.json"))
+
+    private val parserOptions by option(
+        "--parser-option", "-P",
+        help = "A parser specific option. The key is the (case-insensitive) name of the parser, and the value is an " +
+                "arbitrary key-value pair. For example: -P PostbankPDF=textOutput=true"
+    ).splitPair().convert { (format, option) ->
+        val upperCaseFormat = format.toUpperCase()
+
+        require(upperCaseFormat in ParserFactory.ALL.keys) {
+            "Parser format '$upperCaseFormat' must be one of ${ParserFactory.ALL.keys}."
+        }
+
+        upperCaseFormat to Pair(option.substringBefore("="), option.substringAfter("=", ""))
+    }.multiple()
 
     private val exportFormats by option(
         "--export-format", "-f",
@@ -112,7 +139,18 @@ class Stan : CliktCommand() {
             Configuration.loadDefault()
         }
 
-        val parser = PostbankPdfParser(config)
+        // Merge the list of pairs into a map which contains each format only once associated to all its options.
+        val parserOptionsMap = mutableMapOf<String, MutableMap<String, String>>()
+
+        parserOptions.forEach { (format, option) ->
+            val parserSpecificOptionsMap = parserOptionsMap.getOrPut(format) { mutableMapOf() }
+            parserSpecificOptionsMap[option.first] = option.second
+        }
+
+        // TODO: Do not hard-code this once multiple parsers are supported.
+        val parser = ParserFactory.PostbankPdf.create(config)
+            ?: throw IllegalArgumentException("Cannot instantiate PostbankPdf parser.")
+
         val statements = mutableListOf<Statement>()
 
         statementGlobs.forEach { glob ->
@@ -125,7 +163,8 @@ class Stan : CliktCommand() {
                 val file = it.normalize()
 
                 try {
-                    val st = parser.parse(file)
+                    // TODO: Do not hard-code this once multiple parsers are supported.
+                    val st = parser.parse(file, parserOptionsMap["POSTBANKPDF"].orEmpty())
                     println("Successfully parsed statement\n\t$file\ndated from ${st.fromDate} to ${st.toDate}.")
                     statements += st
                 } catch (e: ParseException) {
