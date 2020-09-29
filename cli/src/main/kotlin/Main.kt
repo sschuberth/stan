@@ -34,6 +34,7 @@ fun File.getExisting(): File? {
 }
 
 class Stan : CliktCommand() {
+    @Suppress("Unused")
     sealed class ExporterFactory<T : Exporter>(private val exporter: KClass<T>) {
         companion object {
             val ALL = ExporterFactory::class.sealedSubclasses.associateBy { it.simpleName!!.toUpperCase() }
