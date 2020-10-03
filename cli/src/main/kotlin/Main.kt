@@ -168,8 +168,8 @@ class Stan : CliktCommand() {
         val exportOptionsMap = mutableMapOf<String, MutableMap<String, String>>()
 
         exportOptions.forEach { (format, option) ->
-            val reportSpecificOptionsMap = exportOptionsMap.getOrPut(format) { mutableMapOf() }
-            reportSpecificOptionsMap[option.first] = option.second
+            val exportSpecificOptionsMap = exportOptionsMap.getOrPut(format) { mutableMapOf() }
+            exportSpecificOptionsMap[option.first] = option.second
         }
 
         // Export to all specified formats.
