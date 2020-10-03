@@ -70,7 +70,7 @@ private class VerticalTextFilter : RenderFilter() {
     override fun allowImage(renderInfo: ImageRenderInfo?) = false
 }
 
-class PostbankPDFParser(override val config: Configuration) : Parser {
+class PostbankPdfParser(override val config: Configuration) : Parser {
     private val pdfDateFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
 
     private val statementDatePattern = Regex(

@@ -3,7 +3,7 @@ package dev.schuberth.stan.exporters
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.parsers.Parser
-import dev.schuberth.stan.parsers.PostbankPDFParser
+import dev.schuberth.stan.parsers.PostbankPdfParser
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.beEmpty
@@ -26,7 +26,7 @@ class JsonExporterTest : StringSpec({
     }
 
     "Creating the parser succeeds" {
-        parser = PostbankPDFParser(config)
+        parser = PostbankPdfParser(config)
     }
 
     "Demokonto account statement is exported correctly" {

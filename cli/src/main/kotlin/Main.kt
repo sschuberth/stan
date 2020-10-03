@@ -15,7 +15,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import dev.schuberth.stan.exporters.*
 import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.model.Statement
-import dev.schuberth.stan.parsers.PostbankPDFParser
+import dev.schuberth.stan.parsers.PostbankPdfParser
 
 import java.io.File
 import java.io.FileOutputStream
@@ -40,12 +40,12 @@ class Stan : CliktCommand() {
             val ALL = ExporterFactory::class.sealedSubclasses.associateBy { it.simpleName!!.toUpperCase() }
         }
 
-        object CSV : ExporterFactory<CsvExporter>(CsvExporter::class)
-        object EXCEL : ExporterFactory<ExcelExporter>(ExcelExporter::class)
-        object JSON : ExporterFactory<JsonExporter>(JsonExporter::class)
-        object MT940 : ExporterFactory<Mt940Exporter>(Mt940Exporter::class)
-        object OFX : ExporterFactory<OfxV1Exporter>(OfxV1Exporter::class)
-        object QIF : ExporterFactory<QifExporter>(QifExporter::class)
+        object Csv : ExporterFactory<CsvExporter>(CsvExporter::class)
+        object Excel : ExporterFactory<ExcelExporter>(ExcelExporter::class)
+        object Json : ExporterFactory<JsonExporter>(JsonExporter::class)
+        object Mt940 : ExporterFactory<Mt940Exporter>(Mt940Exporter::class)
+        object Ofx : ExporterFactory<OfxV1Exporter>(OfxV1Exporter::class)
+        object Qif : ExporterFactory<QifExporter>(QifExporter::class)
 
         fun create() = exporter.createInstance()
     }
@@ -112,7 +112,7 @@ class Stan : CliktCommand() {
             Configuration.loadDefault()
         }
 
-        val parser = PostbankPDFParser(config)
+        val parser = PostbankPdfParser(config)
         val statements = mutableListOf<Statement>()
 
         statementGlobs.forEach { glob ->
