@@ -14,7 +14,7 @@ application {
 }
 
 javafx {
-    version = JavaVersion.current().majorVersion
+    version = 11.coerceAtLeast(JavaVersion.current().majorVersion.toInt()).toString()
     modules("javafx.controls", "javafx.graphics")
 }
 
