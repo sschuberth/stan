@@ -399,6 +399,14 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
     override fun parse(statementFile: File, options: Map<String, String>): Statement {
         val filename = statementFile.absolutePath
         val (text, isFormat2014) = extractText(filename)
+
+        if (options["text.output"]?.toBoolean() == true) {
+            val tempDir = createTempDir()
+            val textFile = tempDir.resolve("${statementFile.nameWithoutExtension}.txt")
+            textFile.writeText(text)
+            println("Wrote text output to '$textFile'.")
+        }
+
         val lines = text.lines().dropLastWhile { it.isBlank() }
 
         val bookingPageHeader = if (isFormat2014) BOOKING_PAGE_HEADER_2014 else BOOKING_PAGE_HEADER_2017
