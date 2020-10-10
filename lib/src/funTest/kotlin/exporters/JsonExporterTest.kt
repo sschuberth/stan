@@ -2,7 +2,6 @@ package dev.schuberth.stan.exporters
 
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Configuration
-import dev.schuberth.stan.parsers.Parser
 import dev.schuberth.stan.parsers.PostbankPdfParser
 
 import io.kotest.core.spec.style.StringSpec
@@ -16,17 +15,11 @@ import java.io.FileOutputStream
 import kotlinx.serialization.json.JsonElement
 
 class JsonExporterTest : StringSpec({
-    lateinit var config: Configuration
-    lateinit var parser: Parser
+    val config = Configuration.loadDefault()
+    val parser = PostbankPdfParser(config)
 
     "Loading the default config succeeds" {
-        config = Configuration.loadDefault()
-
         config.bookingCategories shouldNot beEmpty()
-    }
-
-    "Creating the parser succeeds" {
-        parser = PostbankPdfParser(config)
     }
 
     "Demokonto account statement is exported correctly" {
