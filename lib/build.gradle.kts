@@ -16,7 +16,7 @@ dependencies {
     // By default, the same version as the plugin gets resolved.
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinxSerializationVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
