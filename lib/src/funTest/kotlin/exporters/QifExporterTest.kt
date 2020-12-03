@@ -9,6 +9,8 @@ import io.kotest.matchers.shouldBe
 import java.io.File
 import java.io.FileOutputStream
 
+import kotlin.io.path.createTempFile
+
 class QifExporterTest : StringSpec({
     val parser = PostbankPdfParser(Configuration.EMPTY)
 
@@ -17,7 +19,7 @@ class QifExporterTest : StringSpec({
 
         val expectedQif = File("src/funTest/assets/$baseName-expected.qif").readText()
 
-        val qif = createTempFile(suffix = ".qif")
+        val qif = createTempFile(suffix = ".qif").toFile()
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         QifExporter().write(statement, FileOutputStream(qif.path))
         val actualQif = qif.readText()
@@ -31,7 +33,7 @@ class QifExporterTest : StringSpec({
 
         val expectedQif = File("src/funTest/assets/$baseName-expected.qif").readText()
 
-        val qif = createTempFile(suffix = ".qif")
+        val qif = createTempFile(suffix = ".qif").toFile()
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         QifExporter().write(statement, FileOutputStream(qif.path))
         val actualQif = qif.readText()

@@ -9,6 +9,8 @@ import io.kotest.matchers.shouldBe
 import java.io.File
 import java.io.FileOutputStream
 
+import kotlin.io.path.createTempFile
+
 class OfxV1ExporterTest : StringSpec({
     val parser = PostbankPdfParser(Configuration.EMPTY)
 
@@ -19,7 +21,7 @@ class OfxV1ExporterTest : StringSpec({
             .readText()
             .replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
-        val ofx = createTempFile(suffix = ".ofx")
+        val ofx = createTempFile(suffix = ".ofx").toFile()
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         OfxV1Exporter().write(statement, FileOutputStream(ofx.path))
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
@@ -35,7 +37,7 @@ class OfxV1ExporterTest : StringSpec({
             .readText()
             .replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
-        val ofx = createTempFile(suffix = ".ofx")
+        val ofx = createTempFile(suffix = ".ofx").toFile()
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         OfxV1Exporter().write(statement, FileOutputStream(ofx.path))
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")

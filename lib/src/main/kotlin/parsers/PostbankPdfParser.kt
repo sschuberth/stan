@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter
 import java.util.ArrayList
 import java.util.Locale
 
+import kotlin.io.path.createTempDirectory
 import kotlin.math.abs
 
 private const val STATEMENT_BIC_HEADER_2017 = "BIC (SWIFT):"
@@ -401,7 +402,7 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
         val (text, isFormat2014) = extractText(filename)
 
         if (options["text.output"]?.toBoolean() == true) {
-            val tempDir = createTempDir()
+            val tempDir = createTempDirectory().toFile()
             val textFile = tempDir.resolve("${statementFile.nameWithoutExtension}.txt")
             textFile.writeText(text)
             println("Wrote text output to '$textFile'.")

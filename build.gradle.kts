@@ -108,7 +108,8 @@ subprojects {
 
     tasks.withType<KotlinCompile>().configureEach {
         val customCompilerArgs = listOf(
-            "-Xopt-in=kotlin.ExperimentalUnsignedTypes"
+            "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
+            "-Xopt-in=kotlin.io.path.ExperimentalPathApi"
         )
 
         kotlinOptions {
