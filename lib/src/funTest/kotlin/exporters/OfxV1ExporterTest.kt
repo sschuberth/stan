@@ -4,12 +4,11 @@ import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.parsers.PostbankPdfParser
 
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.engine.spec.tempfile
 import io.kotest.matchers.shouldBe
 
 import java.io.File
 import java.io.FileOutputStream
-
-import kotlin.io.path.createTempFile
 
 class OfxV1ExporterTest : StringSpec({
     val parser = PostbankPdfParser(Configuration.EMPTY)
@@ -21,12 +20,11 @@ class OfxV1ExporterTest : StringSpec({
             .readText()
             .replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
-        val ofx = createTempFile(suffix = ".ofx").toFile()
+        val ofx = tempfile(suffix = ".ofx")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         OfxV1Exporter().write(statement, FileOutputStream(ofx.path))
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
-        ofx.delete() shouldBe true
         actualOfx shouldBe expectedOfx
     }
 
@@ -37,12 +35,11 @@ class OfxV1ExporterTest : StringSpec({
             .readText()
             .replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
-        val ofx = createTempFile(suffix = ".ofx").toFile()
+        val ofx = tempfile(suffix = ".ofx")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         OfxV1Exporter().write(statement, FileOutputStream(ofx.path))
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
-        ofx.delete() shouldBe true
         actualOfx shouldBe expectedOfx
     }
 })

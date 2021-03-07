@@ -5,14 +5,13 @@ import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.parsers.PostbankPdfParser
 
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.engine.spec.tempfile
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
 
 import java.io.File
 import java.io.FileOutputStream
-
-import kotlin.io.path.createTempFile
 
 import kotlinx.serialization.json.JsonElement
 
@@ -30,12 +29,11 @@ class JsonExporterTest : StringSpec({
         val expectedText = File("src/funTest/assets/$baseName-expected.json").readText()
         val expectedJson = JSON.encodeToString(JsonElement.serializer(), JSON.parseToJsonElement(expectedText))
 
-        val jsonFile = createTempFile(suffix = ".json").toFile()
+        val jsonFile = tempfile(suffix = ".json")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         JsonExporter().write(statement, FileOutputStream(jsonFile.path))
         val actualJson = jsonFile.readText()
 
-        jsonFile.delete() shouldBe true
         actualJson shouldBe expectedJson
         statement.bookings.none { it.type == BookingType.UNKNOWN } shouldBe true
     }
@@ -46,12 +44,11 @@ class JsonExporterTest : StringSpec({
         val expectedText = File("src/funTest/assets/$baseName-expected.json").readText()
         val expectedJson = JSON.encodeToString(JsonElement.serializer(), JSON.parseToJsonElement(expectedText))
 
-        val jsonFile = createTempFile(suffix = ".json").toFile()
+        val jsonFile = tempfile(suffix = ".json")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         JsonExporter().write(statement, FileOutputStream(jsonFile.path))
         val actualJson = jsonFile.readText()
 
-        jsonFile.delete() shouldBe true
         actualJson shouldBe expectedJson
         statement.bookings.none { it.type == BookingType.UNKNOWN } shouldBe true
     }

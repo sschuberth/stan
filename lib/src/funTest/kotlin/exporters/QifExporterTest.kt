@@ -4,12 +4,11 @@ import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.parsers.PostbankPdfParser
 
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.engine.spec.tempfile
 import io.kotest.matchers.shouldBe
 
 import java.io.File
 import java.io.FileOutputStream
-
-import kotlin.io.path.createTempFile
 
 class QifExporterTest : StringSpec({
     val parser = PostbankPdfParser(Configuration.EMPTY)
@@ -19,12 +18,11 @@ class QifExporterTest : StringSpec({
 
         val expectedQif = File("src/funTest/assets/$baseName-expected.qif").readText()
 
-        val qif = createTempFile(suffix = ".qif").toFile()
+        val qif = tempfile(suffix = ".qif")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         QifExporter().write(statement, FileOutputStream(qif.path))
         val actualQif = qif.readText()
 
-        qif.delete() shouldBe true
         actualQif shouldBe expectedQif
     }
 
@@ -33,12 +31,11 @@ class QifExporterTest : StringSpec({
 
         val expectedQif = File("src/funTest/assets/$baseName-expected.qif").readText()
 
-        val qif = createTempFile(suffix = ".qif").toFile()
+        val qif = tempfile(suffix = ".qif")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
         QifExporter().write(statement, FileOutputStream(qif.path))
         val actualQif = qif.readText()
 
-        qif.delete() shouldBe true
         actualQif shouldBe expectedQif
     }
 })
