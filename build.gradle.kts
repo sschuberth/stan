@@ -2,13 +2,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.plugins.ide.idea.model.IdeaProject
 
-import org.jetbrains.gradle.ext.Gradle
-import org.jetbrains.gradle.ext.JUnit
-import org.jetbrains.gradle.ext.ProjectSettings
-import org.jetbrains.gradle.ext.RunConfiguration
-import org.jetbrains.gradle.ext.RunConfigurationContainer
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -21,34 +15,6 @@ plugins {
 
     id("com.github.ben-manes.versions")
     id("io.gitlab.arturbosch.detekt")
-    id("org.jetbrains.gradle.plugin.idea-ext")
-}
-
-fun IdeaProject.settings(block: ProjectSettings.() -> Unit) =
-    (this@settings as ExtensionAware).extensions.configure("settings", block)
-
-fun ProjectSettings.runConfigurations(block: RunConfigurationContainer.() -> Unit) =
-    (this@runConfigurations as ExtensionAware).extensions.configure("runConfigurations", block)
-
-inline fun <reified T : RunConfiguration> RunConfigurationContainer.defaults(noinline block: T.() -> Unit) =
-    defaults(T::class.java, block)
-
-idea {
-    project {
-        settings {
-            runConfigurations {
-                // Disable "condensed" multi-line diffs when running tests from the IDE (for both Gradle and JUnit test
-                // runners) to more easily accept actual results as expected results.
-                defaults<Gradle> {
-                    jvmArgs = "-Dkotest.assertions.multi-line-diff=simple"
-                }
-
-                defaults<JUnit> {
-                    vmParameters = "-Dkotest.assertions.multi-line-diff=simple"
-                }
-            }
-        }
-    }
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
