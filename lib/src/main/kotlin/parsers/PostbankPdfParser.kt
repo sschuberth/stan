@@ -16,7 +16,6 @@ import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.model.Statement
 
 import java.io.File
-import java.io.IOException
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.ParseException
@@ -90,9 +89,9 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
     private val bookingFormat = DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols)
 
     private fun extractText(filename: String): Pair<String, Boolean> {
-        val reader = try {
+        val reader = runCatching {
             PdfReader(filename)
-        } catch (e: IOException) {
+        }.getOrElse {
             throw ParseException("Error opening file '$filename'.", 0)
         }
 
@@ -123,10 +122,10 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
                 val strategy = MyLocationTextExtractionStrategy(0.3f)
                 val listener = FilteredTextRenderListener(strategy, VerticalTextFilter())
 
-                try {
+                runCatching {
                     val pageText = PdfTextExtractor.getTextFromPage(reader, i, listener)
                     append(pageText)
-                } catch (e: IOException) {
+                }.onFailure {
                     throw ParseException("Error extracting text from page.", i)
                 }
 
