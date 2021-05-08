@@ -52,7 +52,7 @@ class OfxV1Exporter : Exporter {
                             "SONRS",
                             writeStatusAggregate(0, "INFO"),
                             data("DTSERVER", LocalDateTime.now().format(DATE_FORMATTER)),
-                            data("LANGUAGE", statement.locale.getISO3Language().toUpperCase())
+                            data("LANGUAGE", statement.locale.getISO3Language().uppercase())
                         )
                     ),
                     tag("BANKMSGSRSV1",

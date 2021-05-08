@@ -41,7 +41,7 @@ class Stan : CliktCommand() {
     @Suppress("Unused")
     sealed class ParserFactory<T : Parser>(private val parser: KClass<T>) {
         companion object {
-            val ALL = ParserFactory::class.sealedSubclasses.associateBy { it.simpleName!!.toUpperCase() }
+            val ALL = ParserFactory::class.sealedSubclasses.associateBy { it.simpleName!!.uppercase() }
         }
 
         object PostbankPdf : ParserFactory<PostbankPdfParser>(PostbankPdfParser::class)
@@ -52,7 +52,7 @@ class Stan : CliktCommand() {
     @Suppress("Unused")
     sealed class ExporterFactory<T : Exporter>(private val exporter: KClass<T>) {
         companion object {
-            val ALL = ExporterFactory::class.sealedSubclasses.associateBy { it.simpleName!!.toUpperCase() }
+            val ALL = ExporterFactory::class.sealedSubclasses.associateBy { it.simpleName!!.uppercase() }
         }
 
         object Csv : ExporterFactory<CsvExporter>(CsvExporter::class)
@@ -87,7 +87,7 @@ class Stan : CliktCommand() {
         help = "A parser specific option. The key is the (case-insensitive) name of the parser, and the value is an " +
                 "arbitrary key-value pair. For example: -P PostbankPDF=textOutput=true"
     ).splitPair().convert { (format, option) ->
-        val upperCaseFormat = format.toUpperCase()
+        val upperCaseFormat = format.uppercase()
 
         require(upperCaseFormat in ParserFactory.ALL.keys) {
             "Parser format '$upperCaseFormat' must be one of ${ParserFactory.ALL.keys}."
@@ -100,7 +100,7 @@ class Stan : CliktCommand() {
         "--export-format", "-f",
         help = "The data format to export to. If none is specified only consistency checks on statements are performed."
     ).convert { format ->
-        val upperCaseFormat = format.toUpperCase()
+        val upperCaseFormat = format.uppercase()
         val factory = ExporterFactory.ALL[upperCaseFormat]?.objectInstance
         factory ?: throw UsageError("Export format '$upperCaseFormat' must be one of ${ExporterFactory.ALL.keys}.")
         upperCaseFormat to factory.create()
@@ -111,7 +111,7 @@ class Stan : CliktCommand() {
         help = "An export format specific option. The key is the (case-insensitive) name of the export format, and " +
                 "the value is an arbitrary key-value pair. For example: -E CSV=separator=;"
     ).splitPair().convert { (format, option) ->
-        val upperCaseFormat = format.toUpperCase()
+        val upperCaseFormat = format.uppercase()
 
         require(upperCaseFormat in ExporterFactory.ALL.keys) {
             "Export format '$upperCaseFormat' must be one of ${ExporterFactory.ALL.keys}."

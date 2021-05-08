@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val detektPluginVersion: String by project
+val kotlinPluginVersion: String by project
 val kotestVersion: String by project
 
 plugins {
@@ -77,17 +78,19 @@ subprojects {
 
     configurations["funTestImplementation"].extendsFrom(configurations["testImplementation"])
 
-    tasks.withType<KotlinCompile>().configureEach {
-        val customCompilerArgs = listOf(
-            "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
-            "-Xopt-in=kotlin.io.path.ExperimentalPathApi"
-        )
+    configurations.all {
+        resolutionStrategy {
+            // Ensure that all transitive versions of Kotlin libraries matches our version of Kotlin.
+            force("org.jetbrains.kotlin:kotlin-reflect:$kotlinPluginVersion")
+            force("org.jetbrains.kotlin:kotlin-script-runtime:$kotlinPluginVersion")
+        }
+    }
 
+    tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
             allWarningsAsErrors = true
             jvmTarget = "11"
-            apiVersion = "1.4"
-            freeCompilerArgs = freeCompilerArgs + customCompilerArgs
+            apiVersion = "1.5"
         }
     }
 
