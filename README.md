@@ -11,7 +11,7 @@
 
 ## What's this?
 
-Stan is both a library and command line tool to convert and analyze bank account statements. It works completely offline by parsing the statement files you specify and does not require any online or [HBCI](http://www.hbci-zka.de/spec/spezifikation.htm) connection.
+Stan is both a library and command line tool to convert and analyze bank account statements. It works completely offline by parsing the statement files you specify and does *not* require any online or [HBCI](http://www.hbci-zka.de/spec/spezifikation.htm) connection.
 
 ## What statement files are supported?
 
