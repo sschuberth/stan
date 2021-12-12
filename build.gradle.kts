@@ -33,7 +33,7 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     apply(plugin = "io.gitlab.arturbosch.detekt")
