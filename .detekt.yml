@@ -13,6 +13,10 @@ complexity:
 # Formatting rules are implemented via the ktlint plugin. As ktlint does not allow exceptions, we need to disable
 # respective rules completely.
 formatting:
+  ImportOrdering:
+    active: false
+  Indentation:
+    active: false
   MaximumLineLength:
     active: false
   NoWildcardImports:
