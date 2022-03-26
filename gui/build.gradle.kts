@@ -9,7 +9,7 @@ plugins {
 }
 
 application {
-    mainClassName = "dev.schuberth.stan.gui.MainApp"
+    mainClass.set("dev.schuberth.stan.gui.MainApp")
 }
 
 javafx {
