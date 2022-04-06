@@ -2,11 +2,11 @@ package dev.schuberth.stan.model
 
 import dev.schuberth.stan.exporters.JSON
 
-import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.decodeFromStream
 
 @Serializable
 data class Configuration(
@@ -16,8 +16,7 @@ data class Configuration(
     companion object {
         val EMPTY = Configuration()
 
-        fun load(configStream: InputStream) =
-            JSON.decodeFromString(serializer(), configStream.bufferedReader().use(BufferedReader::readText))
+        fun load(configStream: InputStream) = configStream.use { JSON.decodeFromStream<Configuration>(it) }
 
         fun load(configFile: File) = load(configFile.inputStream())
 
