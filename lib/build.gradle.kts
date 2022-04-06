@@ -21,7 +21,7 @@ dependencies {
 
 tasks.withType<KotlinCompile>().configureEach {
     val customCompilerArgs = listOf(
-        "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi"
+        "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
     )
 
     kotlinOptions {
