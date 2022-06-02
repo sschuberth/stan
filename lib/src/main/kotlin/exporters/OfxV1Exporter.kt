@@ -45,7 +45,8 @@ class OfxV1Exporter : Exporter {
             val toDateStr = statement.toDate.format(DateTimeFormatter.BASIC_ISO_DATE)
 
             writer.write(
-                tag("OFX",
+                tag(
+                    "OFX",
                     tag(
                         "SIGNONMSGSRSV1",
                         tag(
@@ -55,11 +56,14 @@ class OfxV1Exporter : Exporter {
                             data("LANGUAGE", statement.locale.getISO3Language().uppercase())
                         )
                     ),
-                    tag("BANKMSGSRSV1",
-                        tag("STMTTRNRS",
+                    tag(
+                        "BANKMSGSRSV1",
+                        tag(
+                            "STMTTRNRS",
                             data("TRNUID", 0),
                             writeStatusAggregate(0, "INFO"),
-                            tag("STMTRS",
+                            tag(
+                                "STMTRS",
                                 data("CURDEF", Currency.getInstance(statement.locale).toString()),
                                 tag(
                                     "BANKACCTFROM",
@@ -67,7 +71,8 @@ class OfxV1Exporter : Exporter {
                                     data("ACCTID", statement.accountId),
                                     data("ACCTTYPE", "CHECKING")
                                 ),
-                                tag("BANKTRANLIST",
+                                tag(
+                                    "BANKTRANLIST",
                                     data("DTSTART", fromDateStr),
                                     data("DTEND", toDateStr),
                                     statement.bookings.joinToString("\n") { writeStatementTransaction(it) }
