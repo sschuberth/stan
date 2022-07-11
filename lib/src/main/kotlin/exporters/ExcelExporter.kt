@@ -30,7 +30,11 @@ class ExcelExporter : Exporter {
         val datePattern = DateFormatConverter.convert(locale, "yyyy-mm-dd")
 
         XSSFWorkbook().use { workbook ->
-            val currencyStyle = workbook.createCellStyle().apply { setDataFormat(8) }
+            val currencyStyle = workbook.createCellStyle().apply {
+                // See "BuiltinFormats".
+                setDataFormat(8)
+            }
+
             val dateStyle = workbook.createCellStyle().apply {
                 val format = workbook.createDataFormat()
                 dataFormat = format.getFormat(datePattern)
