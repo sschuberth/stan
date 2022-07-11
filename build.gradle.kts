@@ -59,10 +59,15 @@ allprojects {
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
-    sourceSets.create("funTest") {
-        kotlin.sourceSets.getByName(name) {
-            kotlin.srcDirs("src/funTest/kotlin")
-            resources.srcDirs("src/funTest/resources")
+    testing {
+        suites {
+            register<JvmTestSuite>("funTest") {
+                sources {
+                    kotlin {
+                        testType.set(TestSuiteType.FUNCTIONAL_TEST)
+                    }
+                }
+            }
         }
     }
 
@@ -98,24 +103,16 @@ subprojects {
         }
     }
 
-    tasks.withType<Test> {
-        useJUnitPlatform()
-    }
-
-    val funTest by tasks.registering(Test::class) {
-        description = "Runs the functional tests."
-        group = "Verification"
-
-        classpath = sourceSets["funTest"].runtimeClasspath
-        testClassesDirs = sourceSets["funTest"].output.classesDirs
-
+    tasks.withType<Test>().configureEach {
         testLogging {
             events = setOf(TestLogEvent.STARTED, TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
             exceptionFormat = TestExceptionFormat.FULL
         }
+
+        useJUnitPlatform()
     }
 
     tasks.named("check") {
-        dependsOn(funTest)
+        dependsOn(tasks["funTest"])
     }
 }
