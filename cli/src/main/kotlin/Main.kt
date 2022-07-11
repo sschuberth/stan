@@ -98,7 +98,8 @@ class Stan : CliktCommand() {
 
     private val exportFormats by option(
         "--export-format", "-f",
-        help = "The data format to export to. If none is specified only consistency checks on statements are performed."
+        help = "The data format to export to, must be one of ${ExporterFactory.ALL.keys}. If none is specified only " +
+                "consistency checks on statements are performed."
     ).convert { format ->
         val upperCaseFormat = format.uppercase()
         val factory = ExporterFactory.ALL[upperCaseFormat]?.objectInstance
