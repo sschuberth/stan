@@ -9,7 +9,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.versions)
+}
+
+versionCatalogUpdate {
+    // Keep the custom sorting / grouping.
+    sortByKey.set(false)
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates") {

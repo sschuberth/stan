@@ -2,6 +2,7 @@
 detektPlugin = "1.20.0"
 javafxPlugin = "0.0.13"
 kotlinPlugin = "1.6.21"
+versionCatalogUpdatePlugin = "0.5.1"
 versionsPlugin = "0.42.0"
 
 clikt = "3.4.2"
@@ -16,6 +17,7 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektPlugin" }
 javafx = { id = "org.openjfx.javafxplugin", version.ref = "javafxPlugin" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPlugin" }
+versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdatePlugin" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
 
 [libraries]
