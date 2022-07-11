@@ -3,6 +3,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val detektPluginVersion: String by project
@@ -65,12 +66,15 @@ subprojects {
         }
     }
 
+    // Associate the "funTest" compilation with the "main" compilation to be able to access "internal" objects from
+    // functional tests.
+    kotlin.target.compilations.apply {
+        getByName("funTest").associateWith(getByName(KotlinCompilation.MAIN_COMPILATION_NAME))
+    }
+
     dependencies {
         // By default, the same version as the plugin gets resolved.
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-        // See https://github.com/gradle/gradle/blob/master/subprojects/docs/src/samples/java/withIntegrationTests/build.gradle.
-        "funTestImplementation"(sourceSets["main"].output)
 
         "funTestImplementation"("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
         "funTestImplementation"("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
