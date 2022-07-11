@@ -6,16 +6,10 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val detektPluginVersion: String by project
-val kotlinPluginVersion: String by project
-val kotestVersion: String by project
-
 plugins {
-    // Apply third-party plugins.
-    kotlin("jvm")
-
-    id("com.github.ben-manes.versions")
-    id("io.gitlab.arturbosch.detekt")
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.versions)
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
@@ -42,7 +36,7 @@ allprojects {
     // Note: Kotlin DSL cannot directly access configurations that are created by applying a plugin in the very same
     // project, thus put configuration names in quotes to leverage lazy lookup.
     dependencies {
-        "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:$detektPluginVersion")
+        "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:${rootProject.libs.versions.detektPlugin.get()}")
     }
 
     detekt {
@@ -77,21 +71,13 @@ subprojects {
         getByName("funTest").associateWith(getByName(KotlinCompilation.MAIN_COMPILATION_NAME))
     }
 
-    dependencies {
-        // By default, the same version as the plugin gets resolved.
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-        "funTestImplementation"("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
-        "funTestImplementation"("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
-    }
-
     configurations["funTestImplementation"].extendsFrom(configurations["testImplementation"])
 
     configurations.all {
         resolutionStrategy {
             // Ensure that all transitive versions of Kotlin libraries matches our version of Kotlin.
-            force("org.jetbrains.kotlin:kotlin-reflect:$kotlinPluginVersion")
-            force("org.jetbrains.kotlin:kotlin-script-runtime:$kotlinPluginVersion")
+            force("org.jetbrains.kotlin:kotlin-reflect:${rootProject.libs.versions.kotlinPlugin.get()}")
+            force("org.jetbrains.kotlin:kotlin-script-runtime:${rootProject.libs.versions.kotlinPlugin.get()}")
         }
     }
 

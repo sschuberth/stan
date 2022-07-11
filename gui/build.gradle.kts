@@ -1,11 +1,7 @@
-val tornadofxVersion: String by project
-
 plugins {
-    // Apply core plugins.
     application
 
-    // Apply third-party plugins.
-    id("org.openjfx.javafxplugin")
+    alias(libs.plugins.javafx)
 }
 
 application {
@@ -20,5 +16,5 @@ javafx {
 dependencies {
     implementation(project(":lib"))
 
-    implementation("no.tornado:tornadofx:$tornadofxVersion")
+    implementation(libs.tornadofx)
 }

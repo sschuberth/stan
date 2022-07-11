@@ -1,7 +1,4 @@
-val cliktVersion: String by project
-
 plugins {
-    // Apply core plugins.
     application
 }
 
@@ -13,8 +10,6 @@ application {
 dependencies {
     implementation(project(":lib"))
 
-    implementation("com.github.ajalt.clikt:clikt:$cliktVersion")
-
-    // By default, the same version as the plugin gets resolved.
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation(libs.clikt)
+    implementation(libs.kotlinReflect)
 }
