@@ -24,6 +24,10 @@ formatting:
   ParameterListWrapping:
     active: false
 
+naming:
+  InvalidPackageDeclaration:
+    active: false
+
 style:
   ForbiddenComment:
     active: false
@@ -36,8 +40,7 @@ style:
   ThrowsCount:
     max: 4
   WildcardImport:
-    excludeImports: '
-      dev.schuberth.stan.exporters.*,
-      dev.schuberth.stan.parsers.*,
-      tornadofx.*
-      '
+    excludeImports:
+      - dev.schuberth.stan.exporters.*
+      - dev.schuberth.stan.parsers.*
+      - tornadofx.*
