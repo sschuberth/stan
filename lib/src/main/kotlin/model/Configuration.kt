@@ -6,6 +6,7 @@ import java.io.File
 import java.io.InputStream
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.decodeFromStream
 
 @Serializable
@@ -31,5 +32,5 @@ data class Configuration(
             regex.matches(item.joinedInfo) && it.minAmount <= item.amount && item.amount < it.maxAmount
         }
 
-    fun save(configFile: File) = configFile.writeText(JSON.encodeToString(serializer(), this))
+    fun save(configFile: File) = configFile.writeText(JSON.encodeToString(this))
 }

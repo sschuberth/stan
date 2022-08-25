@@ -13,7 +13,7 @@ import io.kotest.matchers.shouldNot
 import java.io.File
 import java.io.FileOutputStream
 
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.encodeToString
 
 class JsonExporterTest : StringSpec({
     val config = Configuration.loadDefault()
@@ -27,7 +27,7 @@ class JsonExporterTest : StringSpec({
         val baseName = "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
 
         val expectedText = File("src/funTest/assets/$baseName-expected.json").readText()
-        val expectedJson = JSON.encodeToString(JsonElement.serializer(), JSON.parseToJsonElement(expectedText))
+        val expectedJson = JSON.encodeToString(JSON.parseToJsonElement(expectedText))
 
         val jsonFile = tempfile(suffix = ".json")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
@@ -42,7 +42,7 @@ class JsonExporterTest : StringSpec({
         val baseName = "317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313"
 
         val expectedText = File("src/funTest/assets/$baseName-expected.json").readText()
-        val expectedJson = JSON.encodeToString(JsonElement.serializer(), JSON.parseToJsonElement(expectedText))
+        val expectedJson = JSON.encodeToString(JSON.parseToJsonElement(expectedText))
 
         val jsonFile = tempfile(suffix = ".json")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))

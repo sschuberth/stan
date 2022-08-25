@@ -5,6 +5,7 @@ import dev.schuberth.stan.model.Statement
 import java.io.OutputStream
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToStream
 
 val JSON = Json {
     encodeDefaults = false
@@ -19,5 +20,5 @@ class JsonExporter : Exporter {
     override val extension = "json"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) =
-        output.use { it.write(JSON.encodeToString(Statement.serializer(), statement).toByteArray()) }
+        output.use { JSON.encodeToStream(statement, it) }
 }
