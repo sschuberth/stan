@@ -34,7 +34,7 @@ class CsvExporter : Exporter {
                         "Einnahme"
 
                     BookingType.TRANSFER ->
-                        "Umbuchung"
+                        "Überweisung"
 
                     BookingType.UNKNOWN ->
                         "Ausgabe"
