@@ -82,7 +82,7 @@ class ExcelExporter : Exporter {
                 }
             }
 
-            workbook.write(output)
+            output.use { workbook.write(it) }
         }
     }
 }
