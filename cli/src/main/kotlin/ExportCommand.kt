@@ -4,7 +4,6 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.options.convert
-import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.splitPair
@@ -19,7 +18,7 @@ import dev.schuberth.stan.exporters.OfxV1Exporter
 import dev.schuberth.stan.exporters.QifExporter
 import dev.schuberth.stan.model.Statement
 
-import java.io.File
+import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
 
 import kotlin.reflect.KClass
@@ -71,7 +70,6 @@ class ExportCommand : CliktCommand(name = "export", help = "Export statements to
         "--output-dir", "-o",
         help = "The directory to which output files will be written to."
     ).file(mustExist = false, canBeFile = false, canBeDir = true, mustBeReadable = false, mustBeWritable = true)
-        .default(File("."))
 
     private val statements by requireObject<List<Statement>>()
 
@@ -92,10 +90,15 @@ class ExportCommand : CliktCommand(name = "export", help = "Export statements to
 
             statements.forEach { statement ->
                 val exportName = "${statement.filename.substringBeforeLast(".")}.${exporter.extension}"
-                val exportFile = outputDir.absoluteFile.normalize().resolve(exportName)
+                val exportFile = outputDir?.absoluteFile?.normalize()?.resolve(exportName)
+                val outputStream = exportFile?.let { FileOutputStream(it) } ?: ByteArrayOutputStream()
 
-                exporter.write(statement, FileOutputStream(exportFile), options)
-                println("Successfully exported\n\t$exportFile")
+                exporter.write(statement, outputStream, options)
+
+                when (outputStream) {
+                    is FileOutputStream -> println("Successfully exported\n\t$exportFile")
+                    is ByteArrayOutputStream -> println(outputStream.toString())
+                }
             }
 
             println("Exported ${statements.size} statement(s) in total.\n")
