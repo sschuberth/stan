@@ -133,7 +133,7 @@ class Stan : CliktCommand() {
 
     init {
         context {
-            helpFormatter = CliktHelpFormatter(showDefaultValues = true)
+            helpFormatter = CliktHelpFormatter(requiredOptionMarker = "*", showDefaultValues = true)
         }
     }
 
