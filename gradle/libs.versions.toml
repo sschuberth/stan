@@ -8,7 +8,7 @@ versionsPlugin = "0.43.0"
 clikt = "3.5.0"
 itextpdf = "5.5.13.3"
 kotest = "5.5.1"
-kotlinxSerialization = "1.4.0"
+kotlinxSerialization = "1.4.1"
 poiOoxml = "5.2.2"
 tornadofx = "1.7.20"
 
