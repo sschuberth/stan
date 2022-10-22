@@ -1,7 +1,7 @@
 [versions]
 detektPlugin = "1.21.0"
 javafxPlugin = "0.0.13"
-kotlinPlugin = "1.7.10"
+kotlinPlugin = "1.7.20"
 versionCatalogUpdatePlugin = "0.6.0"
 versionsPlugin = "0.42.0"
 
