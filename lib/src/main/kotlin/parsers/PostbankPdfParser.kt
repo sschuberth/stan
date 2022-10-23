@@ -308,44 +308,48 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
 
         // Within the booking table, a matching pattern creates a new booking item.
         if (m != null) {
-            // Initialize the post / value years with the year the statement starts from.
-            var postDate = LocalDate.parse(m.groupValues[1] + state.stFrom.year, statementDateFormatter)
-            var valueDate = LocalDate.parse(m.groupValues[2] + state.stFrom.year, statementDateFormatter)
-
-            // Find the correct years by checking the statement date range.
-            for (year in state.stFrom.year..state.stTo.year) {
-                val guessedPostDate = LocalDate.parse(m.groupValues[1] + year, statementDateFormatter)
-                if (state.stFrom <= guessedPostDate && guessedPostDate <= state.stTo) {
-                    postDate = guessedPostDate
-                }
-
-                val guessedValueDate = LocalDate.parse(m.groupValues[2] + year, statementDateFormatter)
-                if (state.stFrom <= guessedValueDate && guessedValueDate <= state.stTo) {
-                    valueDate = guessedValueDate
-                }
-            }
-
-            state.items.lastOrNull()?.let { finalizeLastItem(state.items) }
-
-            var amountStr = m.groupValues[4]
-
-            // Work around a missing space before the amount.
-            if (amountStr[1] != ' ') {
-                amountStr = "${amountStr.take(1)} ${amountStr.drop(1)}"
-            }
-
-            val infoLine = m.groupValues[3]
-            val amount = bookingFormat.parse(amountStr).toFloat()
-            val type = mapType(infoLine)
-
-            // The category is yet known as we do not have all info lines at this point.
-            state.items += BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type)
+            createItem(m, state)
         } else {
             // Add the line as info to the current booking item, if any.
             state.items.lastOrNull()?.info?.add(line)
         }
 
         return null
+    }
+
+    private fun createItem(m: MatchResult, state: ParsingState) {
+        // Initialize the post / value years with the year the statement starts from.
+        var postDate = LocalDate.parse(m.groupValues[1] + state.stFrom.year, statementDateFormatter)
+        var valueDate = LocalDate.parse(m.groupValues[2] + state.stFrom.year, statementDateFormatter)
+
+        // Find the correct years by checking the statement date range.
+        for (year in state.stFrom.year..state.stTo.year) {
+            val guessedPostDate = LocalDate.parse(m.groupValues[1] + year, statementDateFormatter)
+            if (state.stFrom <= guessedPostDate && guessedPostDate <= state.stTo) {
+                postDate = guessedPostDate
+            }
+
+            val guessedValueDate = LocalDate.parse(m.groupValues[2] + year, statementDateFormatter)
+            if (state.stFrom <= guessedValueDate && guessedValueDate <= state.stTo) {
+                valueDate = guessedValueDate
+            }
+        }
+
+        state.items.lastOrNull()?.let { finalizeLastItem(state.items) }
+
+        var amountStr = m.groupValues[4]
+
+        // Work around a missing space before the amount.
+        if (amountStr[1] != ' ') {
+            amountStr = "${amountStr.take(1)} ${amountStr.drop(1)}"
+        }
+
+        val infoLine = m.groupValues[3]
+        val amount = bookingFormat.parse(amountStr).toFloat()
+        val type = mapType(infoLine)
+
+        // The category is yet known as we do not have all info lines at this point.
+        state.items += BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type)
     }
 
     private fun finalizeLastItem(items: MutableList<BookingItem>) {
