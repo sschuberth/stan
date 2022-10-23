@@ -9,11 +9,13 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.decodeFromStream
 
+@Suppress("unused")
 @Serializable
 data class Configuration(
     val regexOptions: Set<RegexOption> = emptySet(),
     val bookingCategories: List<BookingCategory> = emptyList()
 ) {
+    @Suppress("MemberVisibilityCanBePrivate")
     companion object {
         val EMPTY = Configuration()
 
