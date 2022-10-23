@@ -44,6 +44,7 @@ class OfxV1Exporter : Exporter {
             val fromDateStr = statement.fromDate.format(DateTimeFormatter.BASIC_ISO_DATE)
             val toDateStr = statement.toDate.format(DateTimeFormatter.BASIC_ISO_DATE)
 
+            @Suppress("UsePropertyAccessSyntax")
             writer.write(
                 tag(
                     "OFX",
