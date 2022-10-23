@@ -29,6 +29,8 @@ naming:
     active: false
 
 style:
+  DestructuringDeclarationWithTooManyEntries:
+    maxDestructuringEntries: 5
   ForbiddenComment:
     active: false
   LoopWithTooManyJumpStatements:
