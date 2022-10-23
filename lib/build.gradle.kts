@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation(libs.bouncyCastle)
     implementation(libs.itextpdf)
     implementation(libs.koinCore)
     implementation(libs.kotlinReflect)
