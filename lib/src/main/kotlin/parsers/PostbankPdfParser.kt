@@ -37,8 +37,10 @@ private const val BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge"
 private const val BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge"
 private const val BOOKING_SUMMARY_OUT_ALT =
     "Eingeräumte Kontoüberziehung Zinssatz für eingeräumte Kontoüberziehung Summe Zahlungsausgänge"
+private const val BOOKING_SUMMARY_OUT_FYRST = "Kontokorrentkredit Summe Zahlungsausgänge"
 private const val BOOKING_SUMMARY_BALANCE_SINGULAR = "Zinssatz für geduldete Überziehung Anlage Neuer Kontostand"
 private const val BOOKING_SUMMARY_BALANCE_PLURAL = "Zinssatz für geduldete Überziehung Anlagen Neuer Kontostand"
+private const val BOOKING_SUMMARY_BALANCE_FYRST = "Zinssatz für geduldete Überziehung Neuer Kontostand "
 
 /*
  * Use an extraction strategy that allow to customize the ratio between the regular character width and the space
@@ -187,6 +189,7 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
      * Parse a single [item][BookingItem]. Returns `null` while parsing has not yet finished and needs to be called
      * again, or otherwise returns the final [state][ParsingState].
      */
+    @Suppress("ReturnCount")
     private fun parseItem(
         isFormat2014: Boolean,
         bookingPageHeader: String,
@@ -206,8 +209,8 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
                 throw ParseException("Multiple statement end dates found.", it.nextIndex())
             }
             state.stTo = LocalDate.parse(m.groupValues[3], statementDateFormatter)
-        } else if (!isFormat2014 && line.startsWith(STATEMENT_BIC_HEADER_2017)) {
-            state.accBic = line.removePrefix(STATEMENT_BIC_HEADER_2017).trim()
+        } else if (!isFormat2014 && STATEMENT_BIC_HEADER_2017 in line) {
+            state.accBic = line.substringAfter(STATEMENT_BIC_HEADER_2017).trim()
         } else if (line.startsWith(bookingPageHeader) && it.hasNext()) {
             val info = it.next().split(" ").dropLastWhile { it.isBlank() }
 
@@ -264,6 +267,9 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
         } else if (BOOKING_SUMMARY_OUT_ALT.startsWith(line)) {
             state.sumOut = parseSummary(BOOKING_SUMMARY_OUT_ALT, line, it)
             return null
+        } else if (BOOKING_SUMMARY_OUT_FYRST.startsWith(line)) {
+            state.sumOut = parseSummary(BOOKING_SUMMARY_OUT_FYRST, line, it)
+            return null
         } else if (BOOKING_SUMMARY_BALANCE_SINGULAR.startsWith(line)) {
             state.balanceNew = parseSummary(BOOKING_SUMMARY_BALANCE_SINGULAR, line, it)
 
@@ -278,7 +284,15 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
             // to filter out coming unwanted stuff.
             finalizeLastItem(state.items)
             return state
+        } else if (BOOKING_SUMMARY_BALANCE_FYRST.startsWith(line)) {
+            state.balanceNew = parseSummary(BOOKING_SUMMARY_BALANCE_FYRST, line, it)
+
+            // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
+            // to filter out coming unwanted stuff.
+            finalizeLastItem(state.items)
+            return state
         }
+
         if (line == "+" || line == "-") {
             state.signLine = line
             return null

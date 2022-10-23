@@ -19,6 +19,10 @@ Stan is both a library and command line tool to convert and analyze bank account
 
   The Postbank has changed the format for PDF account statements multiple times. The supported formats are the ones introduced in July 2014 and in June 2017, respectively.
 
+- [FYRST PDF](https://www.fyrst.de/faq/#expendable_faq_erste_schritte_1-1)
+
+  This is a variant of the Postbank PDF account statements.
+
 ## What file formats can be exported to?
 
 - [CSV](https://en.wikipedia.org/wiki/Comma-separated_values)
