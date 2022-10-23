@@ -376,6 +376,8 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
             // No match yet, take the next line into consideration.
         } while (marker.startsWith(line))
 
+        if (line.endsWith(" 0,00")) return 0.0f
+
         var m = bookingSummaryPattern.matchEntire(line)
         if (m == null) {
             var parsedText = line
