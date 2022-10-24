@@ -420,7 +420,7 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
         val filename = statementFile.absolutePath
         val (text, isFormat2014) = extractText(filename)
 
-        if (options["text.output"]?.toBoolean() == true) {
+        if (options["textOutput"]?.toBoolean() == true) {
             val tempDir = createTempDirectory().toFile()
             val textFile = tempDir.resolve("${statementFile.nameWithoutExtension}.txt")
             textFile.writeText(text)
