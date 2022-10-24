@@ -362,7 +362,7 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
         val amount = bookingFormat.parse(amountStr).toFloat()
         val type = mapType(infoLine)
 
-        // The category is yet known as we do not have all info lines at this point.
+        // The category is not yet known as not all info lines are available at this point. See finalizeLastItem().
         state.items += BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type)
     }
 
