@@ -3,6 +3,7 @@ package dev.schuberth.stan.exporters
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.parsers.PostbankPdfParser
+import dev.schuberth.stan.utils.JSON
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.engine.spec.tempfile

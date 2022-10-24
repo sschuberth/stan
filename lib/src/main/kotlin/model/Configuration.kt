@@ -1,6 +1,6 @@
 package dev.schuberth.stan.model
 
-import dev.schuberth.stan.exporters.JSON
+import dev.schuberth.stan.utils.JSON
 
 import java.io.File
 import java.io.InputStream

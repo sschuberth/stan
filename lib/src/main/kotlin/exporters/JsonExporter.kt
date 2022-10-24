@@ -1,17 +1,11 @@
 package dev.schuberth.stan.exporters
 
 import dev.schuberth.stan.model.Statement
+import dev.schuberth.stan.utils.JSON
 
 import java.io.OutputStream
 
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToStream
-
-val JSON = Json {
-    encodeDefaults = false
-    prettyPrint = true
-    prettyPrintIndent = "  "
-}
 
 /**
  * See https://www.json.org/.
