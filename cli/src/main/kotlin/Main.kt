@@ -114,7 +114,7 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
         val parser = ParserFactory.PostbankPdf.create(config)
             ?: throw IllegalArgumentException("Cannot instantiate PostbankPdf parser.")
 
-        val statements = mutableListOf<Statement>()
+        val allStatements = mutableListOf<Statement>()
 
         statementGlobs.forEach { glob ->
             val globPath = glob.absoluteFile.invariantSeparatorsPath
@@ -127,9 +127,14 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
 
                 try {
                     // TODO: Do not hard-code this once multiple parsers are supported.
-                    val st = parser.parse(file, parserOptionsMap["POSTBANKPDF"].orEmpty())
-                    println("Successfully parsed statement\n\t$file\ndated from ${st.fromDate} to ${st.toDate}.")
-                    statements += st
+                    val statementsFromFile = parser.parse(file, parserOptionsMap["POSTBANKPDF"].orEmpty())
+
+                    println(
+                        "Successfully parsed statement\n\t$file\ndated from ${statementsFromFile.fromDate} to " +
+                            "${statementsFromFile.toDate}."
+                    )
+
+                    allStatements += statementsFromFile
                 } catch (e: ParseException) {
                     System.err.println("Error parsing '$file'.")
                     e.printStackTrace()
@@ -137,18 +142,18 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
             }
         }
 
-        println("Parsed ${statements.size} statement(s) in total.\n")
+        println("Parsed ${allStatements.size} statement(s) in total.\n")
 
-        if (statements.isEmpty()) {
+        if (allStatements.isEmpty()) {
             System.err.println("No statements found.")
             throw ProgramResult(2)
         }
 
         println("Checking statements for consistency...")
 
-        statements.sort()
+        allStatements.sort()
 
-        statements.zipWithNext().forEach { (curr, next) ->
+        allStatements.zipWithNext().forEach { (curr, next) ->
             if (curr.toDate.plusDays(1) != next.fromDate) {
                 System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
                 throw ProgramResult(2)
@@ -164,7 +169,7 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
 
         println("All statements passed the consistency checks.\n")
 
-        currentContext.findOrSetObject { statements }
+        currentContext.findOrSetObject { allStatements }
     }
 }
 
