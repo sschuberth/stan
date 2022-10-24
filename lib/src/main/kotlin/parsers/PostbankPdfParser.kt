@@ -21,7 +21,6 @@ import java.text.DecimalFormatSymbols
 import java.text.ParseException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.ArrayList
 import java.util.Locale
 
 import kotlin.io.path.createTempDirectory
@@ -171,7 +170,7 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
     private data class ParsingState(
         var foundStart: Boolean = false,
 
-        val items: ArrayList<BookingItem> = arrayListOf(),
+        val items: MutableList<BookingItem> = mutableListOf(),
 
         var stFrom: LocalDate = LocalDate.EPOCH,
         var stTo: LocalDate = LocalDate.EPOCH,
@@ -275,21 +274,18 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
 
             // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
             // to filter out coming unwanted stuff.
-            finalizeLastItem(state.items)
             return state
         } else if (BOOKING_SUMMARY_BALANCE_PLURAL.startsWith(line)) {
             state.balanceNew = parseSummary(BOOKING_SUMMARY_BALANCE_PLURAL, line, it)
 
             // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
             // to filter out coming unwanted stuff.
-            finalizeLastItem(state.items)
             return state
         } else if (BOOKING_SUMMARY_BALANCE_FYRST.startsWith(line)) {
             state.balanceNew = parseSummary(BOOKING_SUMMARY_BALANCE_FYRST, line, it)
 
             // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
             // to filter out coming unwanted stuff.
-            finalizeLastItem(state.items)
             return state
         }
 
@@ -349,8 +345,6 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
             }
         }
 
-        state.items.lastOrNull()?.let { finalizeLastItem(state.items) }
-
         var amountStr = m.groupValues[4]
 
         // Work around a missing space before the amount.
@@ -362,13 +356,8 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
         val amount = bookingFormat.parse(amountStr).toFloat()
         val type = mapType(infoLine)
 
-        // The category is not yet known as not all info lines are available at this point. See finalizeLastItem().
+        // The category is not yet known as not all info lines are available at this point.
         state.items += BookingItem(postDate, valueDate, mutableListOf(infoLine), amount, type)
-    }
-
-    private fun finalizeLastItem(items: MutableList<BookingItem>) {
-        val item = items.removeLast()
-        items += item.copy(category = config.findBookingCategory(item)?.name)
     }
 
     private fun parseSummary(startMarker: String, startLine: String, it: ListIterator<String>): Float {
@@ -501,7 +490,7 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
             balanceNew = state.balanceNew,
             sumIn = state.sumIn,
             sumOut = state.sumOut,
-            bookings = state.items
+            bookings = state.items.map { it.copy(category = config.findBookingCategory(it)?.name) }
         )
     }
 }

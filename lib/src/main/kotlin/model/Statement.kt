@@ -24,7 +24,7 @@ data class Statement(
     val balanceNew: Float,
     val sumIn: Float,
     val sumOut: Float,
-    val bookings: MutableList<BookingItem>
+    val bookings: List<BookingItem>
 ) : Comparable<Statement> {
     override fun compareTo(other: Statement) = fromDate.compareTo(other.fromDate)
 }
