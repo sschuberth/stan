@@ -34,6 +34,7 @@ private val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd")!!
  * - https://sites.google.com/a/crem-solutions.de/doku/version-2012-neu/buchhaltung/03-zahlungsverkehr/05-e-banking/technische-beschreibung-der-mt940-sta-datei
  */
 class Mt940Exporter : Exporter {
+    override val name = "MT940"
     override val extension = "txt"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {

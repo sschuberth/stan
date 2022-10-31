@@ -17,6 +17,7 @@ class QifExporter : Exporter {
         val DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd''yy")!!
     }
 
+    override val name = "QIF"
     override val extension = "qif"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {

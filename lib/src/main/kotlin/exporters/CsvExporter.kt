@@ -15,6 +15,7 @@ const val CVS_DEFAULT_SEPARATOR = ","
  * See https://en.wikipedia.org/wiki/Comma-separated_values.
  */
 class CsvExporter : Exporter {
+    override val name = "CSV"
     override val extension = "csv"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {

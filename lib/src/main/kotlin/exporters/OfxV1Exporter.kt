@@ -35,6 +35,7 @@ class OfxV1Exporter : Exporter {
         val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")!!
     }
 
+    override val name = "OFXv1"
     override val extension = "ofx"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {

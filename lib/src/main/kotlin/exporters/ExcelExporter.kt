@@ -21,6 +21,7 @@ const val EXCEL_DEFAULT_COLUMN_WIDTH = (MAX_VISIBLE_CHARS * MAX_CHAR_WIDTH_SERIF
  * See https://en.wikipedia.org/wiki/Microsoft_Excel.
  */
 class ExcelExporter : Exporter {
+    override val name = "Excel"
     override val extension = "xlsx"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
