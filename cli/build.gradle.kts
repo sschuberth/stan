@@ -11,5 +11,6 @@ dependencies {
     implementation(project(":lib"))
 
     implementation(libs.clikt)
+    implementation(libs.koinCore)
     implementation(libs.kotlinReflect)
 }

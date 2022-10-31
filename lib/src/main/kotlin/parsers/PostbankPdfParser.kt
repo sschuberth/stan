@@ -12,7 +12,6 @@ import com.itextpdf.text.pdf.parser.Vector
 
 import dev.schuberth.stan.model.BookingItem
 import dev.schuberth.stan.model.BookingType
-import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.model.Statement
 
 import java.io.File
@@ -71,7 +70,7 @@ private class VerticalTextFilter : RenderFilter() {
     override fun allowImage(renderInfo: ImageRenderInfo?) = false
 }
 
-class PostbankPdfParser(config: Configuration) : Parser(config) {
+class PostbankPdfParser : Parser() {
     private val pdfDateFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
 
     private val statementDatePattern = Regex(

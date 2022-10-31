@@ -5,7 +5,12 @@ import dev.schuberth.stan.model.Statement
 
 import java.io.File
 
-abstract class Parser(private val config: Configuration) {
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+abstract class Parser : KoinComponent {
+    private val config: Configuration by inject()
+
     fun parse(statementFile: File, options: Map<String, String> = emptyMap()) =
         parseInternal(statementFile, options).applyCategories(config)
 

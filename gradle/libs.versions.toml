@@ -7,6 +7,7 @@ versionsPlugin = "0.43.0"
 
 clikt = "3.5.0"
 itextpdf = "5.5.13.3"
+koinCore = "3.2.2"
 kotest = "5.5.1"
 kotlinxSerialization = "1.4.1"
 poiOoxml = "5.2.3"
@@ -23,6 +24,7 @@ versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin
 [libraries]
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 itextpdf = { module = "com.itextpdf:itextpdf", version.ref = "itextpdf" }
+koinCore = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
 kotestAssertionsCore = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinPlugin" }

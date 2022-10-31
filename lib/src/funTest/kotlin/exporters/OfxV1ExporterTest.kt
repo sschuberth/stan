@@ -1,6 +1,5 @@
 package dev.schuberth.stan.exporters
 
-import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.parsers.PostbankPdfParser
 
 import io.kotest.core.spec.style.StringSpec
@@ -11,7 +10,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 class OfxV1ExporterTest : StringSpec({
-    val parser = PostbankPdfParser(Configuration.EMPTY)
+    val parser = PostbankPdfParser()
 
     "Demokonto account statement is exported correctly" {
         val baseName = "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"

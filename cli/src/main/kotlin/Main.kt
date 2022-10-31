@@ -27,6 +27,9 @@ import java.text.ParseException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
+import org.koin.core.context.GlobalContext.startKoin
+import org.koin.dsl.module
+
 fun File.getExisting(): File? {
     var current: File? = absoluteFile
     while (current != null && !current.exists()) {
@@ -44,7 +47,7 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
 
         object PostbankPdf : ParserFactory<PostbankPdfParser>(PostbankPdfParser::class)
 
-        fun create(config: Configuration) = parser.primaryConstructor?.call(config)
+        fun create() = parser.primaryConstructor?.call()
     }
 
     private val userHome by lazy {
@@ -93,13 +96,21 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
     override fun run() {
         if (statementGlobs.isEmpty()) throw UsageError("No statement file(s) specified.")
 
-        println("Parsing statements...")
-
-        val config = if (configFile.isFile) {
-            Configuration.load(configFile)
-        } else {
-            Configuration.loadDefault()
+        val configModule = module {
+            single {
+                if (configFile.isFile) {
+                    Configuration.load(configFile)
+                } else {
+                    Configuration.loadDefault()
+                }
+            }
         }
+
+        startKoin {
+            modules(configModule)
+        }
+
+        println("Parsing statements...")
 
         // Merge the list of pairs into a map which contains each format only once associated to all its options.
         val parserOptionsMap = mutableMapOf<String, MutableMap<String, String>>()
@@ -110,7 +121,7 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
         }
 
         // TODO: Do not hard-code this once multiple parsers are supported.
-        val parser = ParserFactory.PostbankPdf.create(config)
+        val parser = ParserFactory.PostbankPdf.create()
             ?: throw IllegalArgumentException("Cannot instantiate PostbankPdf parser.")
 
         val allStatements = mutableListOf<Statement>()

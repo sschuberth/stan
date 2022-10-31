@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation(libs.itextpdf)
+    implementation(libs.koinCore)
     implementation(libs.kotlinReflect)
     implementation(libs.kotlinxSerialization)
     implementation(libs.poiOoxml)
