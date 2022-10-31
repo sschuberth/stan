@@ -1,7 +1,7 @@
 package dev.schuberth.stan.cli
 
+import com.github.ajalt.clikt.core.BadParameterValue
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.multiple
@@ -22,7 +22,7 @@ class ExportCommand : CliktCommand(name = "export", help = "Export statements to
                 "consistency checks on statements are performed."
     ).convert { format ->
         Exporter.ALL[format]
-            ?: throw UsageError("Export format '$format' must be one of ${Exporter.ALL.keys}.")
+            ?: throw BadParameterValue("Export format '$format' must be one of ${Exporter.ALL.keys}.")
     }.multiple()
 
     private val exportOptions by option(
