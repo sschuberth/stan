@@ -405,7 +405,7 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
         return bookingFormat.parse(m.groupValues[3]).toFloat()
     }
 
-    override fun parse(statementFile: File, options: Map<String, String>): Statement {
+    override fun parseInternal(statementFile: File, options: Map<String, String>): Statement {
         val filename = statementFile.absolutePath
         val (text, isFormat2014) = extractText(filename)
 
@@ -490,7 +490,7 @@ class PostbankPdfParser(config: Configuration) : Parser(config) {
             balanceNew = state.balanceNew,
             sumIn = state.sumIn,
             sumOut = state.sumOut,
-            bookings = state.items.map { it.copy(category = config.findBookingCategory(it)?.name) }
+            bookings = state.items
         )
     }
 }
