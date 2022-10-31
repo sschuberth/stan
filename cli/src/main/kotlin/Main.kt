@@ -17,15 +17,12 @@ import com.github.ajalt.clikt.parameters.types.file
 
 import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.model.Statement
-import dev.schuberth.stan.parsers.*
+import dev.schuberth.stan.parsers.Parser
 
 import java.io.File
 import java.lang.IllegalArgumentException
 import java.nio.file.FileSystems
 import java.text.ParseException
-
-import kotlin.reflect.KClass
-import kotlin.reflect.full.primaryConstructor
 
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
@@ -39,17 +36,6 @@ fun File.getExisting(): File? {
 }
 
 class Stan : CliktCommand(invokeWithoutSubcommand = true) {
-    @Suppress("Unused")
-    sealed class ParserFactory<T : Parser>(private val parser: KClass<T>) {
-        companion object {
-            val ALL = ParserFactory::class.sealedSubclasses.associateBy { it.simpleName!!.uppercase() }
-        }
-
-        object PostbankPdf : ParserFactory<PostbankPdfParser>(PostbankPdfParser::class)
-
-        fun create() = parser.primaryConstructor?.call()
-    }
-
     private val userHome by lazy {
         val fixedUserHome = System.getProperty("user.home").takeUnless { it.isBlank() || it == "?" } ?: run {
             listOfNotNull(
@@ -72,13 +58,11 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
         help = "A parser specific option. The key is the (case-insensitive) name of the parser, and the value is an " +
                 "arbitrary key-value pair. For example: -P PostbankPDF=textOutput=true"
     ).splitPair().convert { (format, option) ->
-        val upperCaseFormat = format.uppercase()
-
-        require(upperCaseFormat in ParserFactory.ALL.keys) {
-            "Parser format '$upperCaseFormat' must be one of ${ParserFactory.ALL.keys}."
+        require(format in Parser.ALL) {
+            "Parser format '$format' must be one of ${Parser.ALL.keys}."
         }
 
-        upperCaseFormat to Pair(option.substringBefore("="), option.substringAfter("=", ""))
+        format to Pair(option.substringBefore("="), option.substringAfter("=", ""))
     }.multiple()
 
     private val statementGlobs by argument()
@@ -113,7 +97,7 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
         println("Parsing statements...")
 
         // Merge the list of pairs into a map which contains each format only once associated to all its options.
-        val parserOptionsMap = mutableMapOf<String, MutableMap<String, String>>()
+        val parserOptionsMap = sortedMapOf<String, MutableMap<String, String>>(String.CASE_INSENSITIVE_ORDER)
 
         parserOptions.forEach { (format, option) ->
             val parserSpecificOptionsMap = parserOptionsMap.getOrPut(format) { mutableMapOf() }
@@ -121,7 +105,7 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
         }
 
         // TODO: Do not hard-code this once multiple parsers are supported.
-        val parser = ParserFactory.PostbankPdf.create()
+        val parser = Parser.ALL["PostbankPDF"]
             ?: throw IllegalArgumentException("Cannot instantiate PostbankPdf parser.")
 
         val allStatements = mutableListOf<Statement>()
@@ -137,7 +121,7 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
 
                 try {
                     // TODO: Do not hard-code this once multiple parsers are supported.
-                    val statementsFromFile = parser.parse(file, parserOptionsMap["POSTBANKPDF"].orEmpty())
+                    val statementsFromFile = parser.parse(file, parserOptionsMap["PostbankPDF"].orEmpty())
 
                     println(
                         "Successfully parsed statement\n\t$file\ndated from ${statementsFromFile.fromDate} to " +

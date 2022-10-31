@@ -88,6 +88,8 @@ class PostbankPdfParser : Parser() {
     private val bookingSymbols = DecimalFormatSymbols(Locale.GERMAN)
     private val bookingFormat = DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols)
 
+    override val name = "PostbankPDF"
+
     private fun extractText(filename: String): Pair<String, Boolean> {
         val reader = runCatching {
             PdfReader(filename)
