@@ -436,7 +436,7 @@ class PostbankPdfParser : Parser() {
             textOutputFile.writeText(text)
         }
 
-        val lines = text.lines().dropLastWhile { it.isBlank() }
+        val lines = text.trim().lines()
 
         val bookingPageHeader = if (isFormat2014) BOOKING_PAGE_HEADER_2014 else BOOKING_PAGE_HEADER_2017
         val state = ParsingState()
