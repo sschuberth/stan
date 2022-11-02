@@ -70,6 +70,14 @@ private class VerticalTextFilter : RenderFilter() {
 }
 
 class PostbankPdfParser : Parser() {
+    private val applicableProducers = setOf(
+        "StreamServe Communication Server 5.6.2 GA Build 1210 (64 bit)",
+        "StreamServe Communication Server 5.6.2 INTERNAL Build 0 (64 bit)",
+        "XEP 4.19 build 20110414",
+        "iText 1.4 (by lowagie.com)",
+        "iText 2.0.8 (by lowagie.com)"
+    )
+
     private val pdfDateFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
 
     private val statementDatePattern = Regex(
@@ -88,6 +96,19 @@ class PostbankPdfParser : Parser() {
     private val bookingFormat = DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols)
 
     override val name = "PostbankPDF"
+
+    override fun isApplicable(statementFile: File): Boolean {
+        val filename = statementFile.absolutePath
+
+        val reader = runCatching {
+            PdfReader(filename)
+        }.getOrElse {
+            return false
+        }
+
+        val pdfInfo = reader.info
+        return pdfInfo["Producer"] in applicableProducers
+    }
 
     private fun extractText(filename: String): Pair<String, Boolean> {
         val reader = runCatching {

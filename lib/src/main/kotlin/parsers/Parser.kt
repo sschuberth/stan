@@ -23,6 +23,8 @@ abstract class Parser : KoinComponent {
 
     abstract val name: String
 
+    abstract fun isApplicable(statementFile: File): Boolean
+
     fun parse(statementFile: File, options: Map<String, String> = emptyMap()) =
         parseInternal(statementFile, options).applyCategories(config)
 

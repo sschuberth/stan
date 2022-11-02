@@ -20,7 +20,6 @@ import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.parsers.Parser
 
 import java.io.File
-import java.lang.IllegalArgumentException
 import java.nio.file.FileSystems
 import java.text.ParseException
 
@@ -102,10 +101,6 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
             parserSpecificOptionsMap[option.first] = option.second
         }
 
-        // TODO: Do not hard-code this once multiple parsers are supported.
-        val parser = Parser.ALL["PostbankPDF"]
-            ?: throw IllegalArgumentException("Cannot instantiate PostbankPdf parser.")
-
         val allStatements = mutableListOf<Statement>()
 
         statementGlobs.forEach { globPattern ->
@@ -115,15 +110,21 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
 
             glob.getExisting()?.walkBottomUp()?.filter {
                 matcher.matches(it.toPath())
-            }?.forEach {
+            }?.forEach nextFile@{
                 val file = it.normalize()
 
                 try {
-                    // TODO: Do not hard-code this once multiple parsers are supported.
-                    val statementsFromFile = parser.parse(file, parserOptionsMap["PostbankPDF"].orEmpty())
+                    val parserEntry = Parser.ALL.entries.find { (_, parser) -> parser.isApplicable(file) }
+                    if (parserEntry == null) {
+                        println("No applicable parser found for file '$file'.")
+                        return@nextFile
+                    }
+
+                    val (name, parser) = parserEntry
+                    val statementsFromFile = parser.parse(file, parserOptionsMap[name].orEmpty())
 
                     println(
-                        "Successfully parsed statement\n\t$file\ndated from ${statementsFromFile.fromDate} to " +
+                        "Successfully parsed $name statement '$file' dated from ${statementsFromFile.fromDate} to " +
                             "${statementsFromFile.toDate}."
                     )
 
