@@ -65,9 +65,7 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
         format to Pair(option.substringBefore("="), option.substringAfter("=", ""))
     }.multiple()
 
-    private val statementGlobs by argument()
-        .file(mustExist = false, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = false)
-        .multiple()
+    private val statementGlobs by argument().multiple()
 
     init {
         context {
@@ -110,7 +108,8 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
 
         val allStatements = mutableListOf<Statement>()
 
-        statementGlobs.forEach { glob ->
+        statementGlobs.forEach { globPattern ->
+            val glob = File(globPattern)
             val globPath = glob.absoluteFile.invariantSeparatorsPath
             val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
 
