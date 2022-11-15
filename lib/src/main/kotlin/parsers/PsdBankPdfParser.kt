@@ -51,7 +51,7 @@ class PsdBankPdfParser : Logger, Parser() {
 
     private val creditDebitPattern = "\\d+(\\.\\d{3})*)+,\\d{2} [HS]"
 
-    private val ibanAndBicRegex = Regex("IBAN: (?<IBAN>[A-Z]{2}\\d{2}( \\d{4}){4} \\d{2}) BIC: (?<BIC>[A-Z\\d]{11})")
+    private val ibanAndBicRegex = Regex("IBAN: (?<IBAN>[A-Z]{2}\\d{2}( \\d{4}){4} \\d{2})\\s+BIC: (?<BIC>[A-Z\\d]{11})")
     private val fromDateAndOldBalanceRegex = Regex(
         "alter Kontostand vom (?<day>\\d{2})\\.(?<month>\\d{2})\\.(?<year>\\d{4})\\s+" +
                 "(?<balance>($creditDebitPattern)"
