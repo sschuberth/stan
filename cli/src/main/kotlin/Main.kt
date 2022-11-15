@@ -26,14 +26,6 @@ import java.text.ParseException
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
 
-fun File.getExisting(): File? {
-    var current: File? = absoluteFile
-    while (current != null && !current.exists()) {
-        current = current.parentFile
-    }
-    return current
-}
-
 class Stan : CliktCommand(invokeWithoutSubcommand = true) {
     private val userHome by lazy {
         val fixedUserHome = System.getProperty("user.home").takeUnless { it.isBlank() || it == "?" } ?: run {
@@ -104,13 +96,20 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
         val allStatements = mutableListOf<Statement>()
 
         statementGlobs.forEach { globPattern ->
-            val glob = File(globPattern)
-            val globPath = glob.absoluteFile.invariantSeparatorsPath
-            val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
+            val globFile = File(globPattern)
 
-            glob.getExisting()?.walkBottomUp()?.filter {
-                matcher.matches(it.toPath())
-            }?.forEach nextFile@{
+            val statementsFiles = if (globFile.isFile) {
+                sequenceOf(globFile)
+            } else {
+                val globPath = globFile.absoluteFile.invariantSeparatorsPath
+                val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
+
+                globFile.parentFile?.walkBottomUp()?.filter {
+                    matcher.matches(it.toPath())
+                }.orEmpty()
+            }
+
+            statementsFiles.forEach nextFile@{
                 val file = it.normalize()
 
                 try {
