@@ -26,7 +26,7 @@ import java.text.ParseException
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
 
-class Stan : CliktCommand(invokeWithoutSubcommand = true) {
+class Main : CliktCommand(invokeWithoutSubcommand = true) {
     private val userHome by lazy {
         val fixedUserHome = System.getProperty("user.home").takeUnless { it.isBlank() || it == "?" } ?: run {
             listOfNotNull(
@@ -166,4 +166,4 @@ class Stan : CliktCommand(invokeWithoutSubcommand = true) {
     }
 }
 
-fun main(args: Array<String>) = Stan().main(args)
+fun main(args: Array<String>) = Main().main(args)
