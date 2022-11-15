@@ -83,7 +83,7 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
             modules(configModule)
         }
 
-        println("Parsing statements...")
+        println("Parsing statements with ${Parser.ALL.keys}...")
 
         // Merge the list of pairs into a map which contains each format only once associated to all its options.
         val parserOptionsMap = sortedMapOf<String, MutableMap<String, String>>(String.CASE_INSENSITIVE_ORDER)
