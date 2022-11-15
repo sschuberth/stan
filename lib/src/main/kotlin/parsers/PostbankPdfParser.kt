@@ -22,8 +22,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-import kotlin.math.abs
-
 private const val STATEMENT_BIC_HEADER_2017 = "BIC (SWIFT):"
 
 private const val BOOKING_PAGE_HEADER_2014 = "Auszug Seite IBAN BIC (SWIFT)"
@@ -474,29 +472,6 @@ class PostbankPdfParser : Parser() {
         }
         if (state.balanceNew.isNaN()) {
             throw ParseException("No new balance found.", it.nextIndex())
-        }
-
-        var calcIn = 0.0f
-        var calcOut = 0.0f
-        for (item in state.items) {
-            if (item.amount > 0) {
-                calcIn += item.amount
-            } else {
-                calcOut += item.amount
-            }
-        }
-
-        if (abs(calcIn - state.sumIn) >= 0.01) {
-            throw ParseException("Sanity check on incoming booking summary failed.", it.nextIndex())
-        }
-
-        if (abs(calcOut - state.sumOut) >= 0.01) {
-            throw ParseException("Sanity check on outgoing booking summary failed.", it.nextIndex())
-        }
-
-        val balanceCalc = state.balanceOld + state.sumIn + state.sumOut
-        if (abs(balanceCalc - state.balanceNew) >= 0.01) {
-            throw ParseException("Sanity check on balances failed.", it.nextIndex())
         }
 
         return Statement(
