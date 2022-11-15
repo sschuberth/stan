@@ -28,11 +28,11 @@ import org.koin.dsl.module
 
 class Main : CliktCommand(invokeWithoutSubcommand = true) {
     private val userHome by lazy {
-        val fixedUserHome = System.getProperty("user.home").takeUnless { it.isBlank() || it == "?" } ?: run {
-            listOfNotNull(
-                System.getenv("HOME"),
-                System.getenv("USERPROFILE")
-            ).first { it.isNotBlank() }
+        val fixedUserHome = System.getProperty("user.home").takeUnless { it.isBlank() || it == "?" } ?: listOfNotNull(
+            System.getenv("HOME"),
+            System.getenv("USERPROFILE")
+        ).first {
+            it.isNotBlank()
         }
 
         File(fixedUserHome)
