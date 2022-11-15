@@ -23,6 +23,8 @@ Stan is both a library and command line tool to convert and analyze bank account
 
   This is a variant of the Postbank PDF account statements.
 
+- [ING(-DiBa)](https://www.ing.de/girokonto/)
+- 
 - [PSD Bank PDF](https://www.psd-bb.de/privatkunden/girokonto-und-karte/konten-im-ueberblick.html)
 
 ## What file formats can be exported to?
