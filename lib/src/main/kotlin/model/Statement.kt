@@ -26,5 +26,21 @@ data class Statement(
     val sumOut: Float,
     val bookings: List<BookingItem>
 ) : Comparable<Statement> {
+    companion object {
+        val EMPTY = Statement(
+            filename = "",
+            locale = Locale.ROOT,
+            bankId = "",
+            accountId = "",
+            fromDate = LocalDate.EPOCH,
+            toDate = LocalDate.EPOCH,
+            balanceOld = 0f,
+            balanceNew = 0f,
+            sumIn = 0f,
+            sumOut = 0f,
+            bookings = emptyList()
+        )
+    }
+
     override fun compareTo(other: Statement) = fromDate.compareTo(other.fromDate)
 }
