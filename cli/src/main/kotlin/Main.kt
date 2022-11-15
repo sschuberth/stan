@@ -106,7 +106,7 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
 
                 globFile.parentFile?.walkBottomUp()?.filter {
                     matcher.matches(it.toPath())
-                }.orEmpty()
+                }.orEmpty().sorted()
             }
 
             statementsFiles.forEach nextFile@{
