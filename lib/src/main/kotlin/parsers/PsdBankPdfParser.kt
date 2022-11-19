@@ -129,20 +129,20 @@ class PsdBankPdfParser : Logger, Parser() {
             }
 
             whenMatch(line) {
-                pattern(ibanAndBicRegex) {
+                ibanAndBicRegex {
                     state.accountId = groups["IBAN"]?.value
                     state.bankId = groups["BIC"]?.value
                 }
 
-                pattern(fromDateAndOldBalanceRegex) {
+                fromDateAndOldBalanceRegex {
                     state.from = parseDateAndBalance()
                 }
 
-                pattern(toDateAndNewBalanceRegex) {
+                toDateAndNewBalanceRegex {
                     state.to = parseDateAndBalance()
                 }
 
-                pattern(bookingItemStartRegex) {
+                bookingItemStartRegex {
                     logger.debug { "Start of booking item found." }
 
                     state.postDay = groups["postDay"]?.value?.toIntOrNull()
