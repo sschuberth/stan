@@ -49,20 +49,20 @@ class PsdBankPdfParser : Logger, Parser() {
     private val locale = Locale.GERMANY
     private val numberFormat = NumberFormat.getInstance(locale)
 
-    private val creditDebitPattern = "\\d+(\\.\\d{3})*)+,\\d{2} [HS]"
+    private val creditDebitPattern = "(\\d+(\\.\\d{3})*)+,\\d{2} [HS]"
 
     private val ibanAndBicRegex = Regex("IBAN: (?<IBAN>[A-Z]{2}\\d{2}( \\d{4}){4} \\d{2})\\s+BIC: (?<BIC>[A-Z\\d]{11})")
     private val fromDateAndOldBalanceRegex = Regex(
         "alter Kontostand vom (?<day>\\d{2})\\.(?<month>\\d{2})\\.(?<year>\\d{4})\\s+" +
-                "(?<balance>($creditDebitPattern)"
+                "(?<balance>$creditDebitPattern)"
     )
     private val toDateAndNewBalanceRegex = Regex(
         "\\s*neuer Kontostand vom (?<day>\\d{2})\\.(?<month>\\d{2})\\.(?<year>\\d{4})\\s+" +
-                "(?<balance>($creditDebitPattern)"
+                "(?<balance>$creditDebitPattern)"
     )
     private val bookingItemStartRegex = Regex(
         "(?<postDay>\\d{2})\\.(?<postMonth>\\d{2})\\. (?<valueDay>\\d{2})\\.(?<valueMonth>\\d{2})\\. " +
-                "(?<type>.+?)\\s+(?<amount>($creditDebitPattern)"
+                "(?<type>.+?)\\s+(?<amount>$creditDebitPattern)"
     )
     private val bookingItemIndentRegex = Regex("^\\s{14,15}[^\\s].*\$")
 
