@@ -1,9 +1,23 @@
 package dev.schuberth.stan.utils
 
 class PatternMatching(private val value: String) {
-    operator fun Regex.invoke(block: MatchResult.() -> Unit) = matchEntire(value)?.block()
+    private var handled = false
 
-    operator fun String.invoke(block: String.() -> Unit) = value.withoutPrefix(this)?.block()
+    operator fun Regex.invoke(always: Boolean = false, block: MatchResult.() -> Unit) {
+        if (handled && !always) return
+        matchEntire(value)?.block()?.also { handled = true }
+    }
+
+    operator fun String.invoke(always: Boolean = false, block: String.() -> Unit) {
+        if (handled && !always) return
+        value.withoutPrefix(this)?.block()?.also { handled = true }
+    }
+
+    fun otherwise(block: () -> Unit) {
+        if (handled) return
+        block()
+        handled = true
+    }
 }
 
 fun whenMatch(value: String, block: PatternMatching.() -> Unit) = PatternMatching(value).block()
