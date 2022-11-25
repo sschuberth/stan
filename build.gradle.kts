@@ -51,7 +51,11 @@ allprojects {
         config = files("$rootDir/.detekt.yml")
 
         source = files(
-            "$rootDir/buildSrc", "build.gradle.kts", "src/main/kotlin", "src/test/kotlin", "src/funTest/kotlin"
+            "$rootDir/buildSrc",
+            "build.gradle.kts",
+            "src/main/kotlin",
+            "src/test/kotlin",
+            "src/funTest/kotlin"
         )
     }
 }

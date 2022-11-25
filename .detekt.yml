@@ -3,8 +3,8 @@ comments:
     active: false
 
 complexity:
-  ComplexMethod:
-    threshold: 40
+  CyclomaticComplexMethod:
+    threshold: 35
   LongMethod:
     threshold: 120
   NestedBlockDepth:

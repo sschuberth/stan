@@ -1,3 +1,5 @@
+@file:Suppress("ArgumentListWrapping")
+
 package dev.schuberth.stan.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
