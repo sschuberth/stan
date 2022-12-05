@@ -1,19 +1,16 @@
 plugins {
     application
 
-    alias(libs.plugins.javafx)
+    alias(libs.plugins.compose)
 }
 
 application {
-    mainClass.set("dev.schuberth.stan.gui.MainApp")
-}
-
-javafx {
-    modules("javafx.controls", "javafx.graphics")
+    mainClass.set("dev.schuberth.stan.gui.MainKt")
 }
 
 dependencies {
     implementation(project(":lib"))
 
-    implementation(libs.tornadofx)
+    implementation(compose.desktop.currentOs)
+    implementation(libs.bundles.aurora)
 }

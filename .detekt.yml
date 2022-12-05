@@ -45,4 +45,3 @@ style:
     excludeImports:
       - dev.schuberth.stan.exporters.*
       - dev.schuberth.stan.parsers.*
-      - tornadofx.*
