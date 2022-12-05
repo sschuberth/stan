@@ -1,14 +1,5 @@
 # Stan - The *St*atement *An*alyzer
 
-| Linux | Windows |
-| :---- | :------ |
-[ ![Linux build status][1]][2] | [![Windows build status][3]][4] |
-
-[1]: https://travis-ci.org/sschuberth/Stan.svg?branch=master
-[2]: https://travis-ci.org/sschuberth/Stan
-[3]: https://ci.appveyor.com/api/projects/status/xeyju8npt336ley5/branch/master?svg=true
-[4]: https://ci.appveyor.com/project/sschuberth/Stan/branch/master
-
 ## What's this?
 
 Stan is both a library and command line tool to convert and analyze bank account statements. It works completely offline by parsing the statement files you specify and does *not* require any online or [HBCI](http://www.hbci-zka.de/spec/spezifikation.htm) connection.
