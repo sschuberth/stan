@@ -95,7 +95,7 @@ subprojects {
         kotlinOptions {
             allWarningsAsErrors = true
             jvmTarget = "11"
-            apiVersion = "1.7"
+            apiVersion = "1.8"
         }
     }
 
