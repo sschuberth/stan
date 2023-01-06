@@ -6,7 +6,6 @@ import java.io.File
 import java.io.InputStream
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.decodeFromStream
 
 @Suppress("unused")
@@ -31,6 +30,4 @@ data class Configuration(
             val regex = Regex(it.regexes.joinToString("|", ".*(", ").*"), regexOptions)
             regex.matches(item.joinedInfo) && it.minAmount <= item.amount && item.amount < it.maxAmount
         }
-
-    fun save(configFile: File) = configFile.writeText(JSON.encodeToString(this))
 }
