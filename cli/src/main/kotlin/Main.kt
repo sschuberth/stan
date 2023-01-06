@@ -64,7 +64,7 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
             helpFormatter = CliktHelpFormatter(requiredOptionMarker = "*", showDefaultValues = true)
         }
 
-        subcommands(ExportCommand())
+        subcommands(ExportCommand(), FilterCommand())
     }
 
     override fun run() {
