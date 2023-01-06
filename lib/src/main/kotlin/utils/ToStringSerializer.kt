@@ -6,8 +6,14 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+import java.io.File
 import java.time.LocalDate
 import java.util.Locale
+
+/**
+ * A (de-)serializer for Java [File] instances from / to strings.
+ */
+object FileSerializer : KSerializer<File> by toStringSerializer(::File)
 
 /**
  * A (de-)serializer for Java [LocalDate] instances from / to strings.

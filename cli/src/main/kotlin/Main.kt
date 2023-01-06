@@ -22,7 +22,6 @@ import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.parsers.Parser
 
 import java.io.File
-import java.nio.file.FileSystems
 import java.text.ParseException
 
 import org.koin.core.context.GlobalContext.startKoin
@@ -58,7 +57,7 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
         format to Pair(option.substringBefore("="), option.substringAfter("=", ""))
     }.multiple()
 
-    private val statementGlobs by argument().multiple()
+    private val statementGlobs by argument().file().multiple()
 
     init {
         context {
@@ -69,16 +68,17 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
     }
 
     override fun run() {
-        if (statementGlobs.isEmpty()) throw UsageError("No statement file(s) specified.")
+        val config = if (configFile.isFile) {
+            ConfigurationFile.load(configFile)
+        } else {
+            ConfigurationFile.loadDefault()
+        }
+
+        val statementFiles = config.getStatementFiles() + ConfigurationFile.resolveGlobs(statementGlobs.toSet())
+        if (statementFiles.isEmpty()) throw UsageError("No statement file(s) specified.")
 
         val configModule = module {
-            single {
-                if (configFile.isFile) {
-                    ConfigurationFile.load(configFile)
-                } else {
-                    ConfigurationFile.loadDefault()
-                }
-            }
+            single { config }
         }
 
         startKoin {
@@ -97,43 +97,28 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
 
         val allStatements = mutableListOf<Statement>()
 
-        statementGlobs.forEach { globPattern ->
-            val globFile = File(globPattern)
+        statementFiles.forEach nextFile@{
+            val file = it.normalize()
 
-            val statementsFiles = if (globFile.isFile) {
-                sequenceOf(globFile)
-            } else {
-                val globPath = globFile.absoluteFile.invariantSeparatorsPath
-                val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
-
-                globFile.parentFile?.walkBottomUp()?.filter {
-                    matcher.matches(it.toPath())
-                }.orEmpty().sorted()
-            }
-
-            statementsFiles.forEach nextFile@{
-                val file = it.normalize()
-
-                try {
-                    val parserEntry = Parser.ALL.entries.find { (_, parser) -> parser.isApplicable(file) }
-                    if (parserEntry == null) {
-                        println("No applicable parser found for file '$file'.")
-                        return@nextFile
-                    }
-
-                    val (name, parser) = parserEntry
-                    val statementsFromFile = parser.parse(file, parserOptionsMap[name].orEmpty())
-
-                    println(
-                        "Successfully parsed $name statement '$file' dated from ${statementsFromFile.fromDate} to " +
-                            "${statementsFromFile.toDate}."
-                    )
-
-                    allStatements += statementsFromFile
-                } catch (e: ParseException) {
-                    System.err.println("Error parsing '$file'.")
-                    e.printStackTrace()
+            try {
+                val parserEntry = Parser.ALL.entries.find { (_, parser) -> parser.isApplicable(file) }
+                if (parserEntry == null) {
+                    println("No applicable parser found for file '$file'.")
+                    return@nextFile
                 }
+
+                val (name, parser) = parserEntry
+                val statementsFromFile = parser.parse(file, parserOptionsMap[name].orEmpty())
+
+                println(
+                    "Successfully parsed $name statement '$file' dated from ${statementsFromFile.fromDate} to " +
+                        "${statementsFromFile.toDate}."
+                )
+
+                allStatements += statementsFromFile
+            } catch (e: ParseException) {
+                System.err.println("Error parsing '$file'.")
+                e.printStackTrace()
             }
         }
 
