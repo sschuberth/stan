@@ -11,11 +11,12 @@ import kotlinx.serialization.json.decodeFromStream
 
 @Suppress("unused")
 @Serializable
-data class Configuration(val regexOptions: Set<RegexOption>, val bookingCategories: List<BookingCategory>) {
+data class Configuration(
+    val regexOptions: Set<RegexOption> = emptySet(),
+    val bookingCategories: List<BookingCategory> = emptyList()
+) {
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {
-        val EMPTY = Configuration(regexOptions = emptySet(), bookingCategories = emptyList())
-
         fun load(configStream: InputStream) = configStream.use { JSON.decodeFromStream<Configuration>(it) }
 
         fun load(configFile: File) = load(configFile.inputStream())
