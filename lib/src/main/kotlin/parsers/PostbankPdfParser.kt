@@ -88,7 +88,7 @@ class PostbankPdfParser : Parser() {
     private val bookingItemPattern = Regex("(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)")
     private val bookingItemPatternNoSign = Regex("(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)")
 
-    private val bookingSummaryPattern = Regex("(.*) ?(EUR) ([+-] [\\d.,]+)")
+    private val bookingSummaryPattern = Regex("(.*) ?(EUR) ((\\+ |- |)[\\d.,]+)")
 
     private val bookingSymbols = DecimalFormatSymbols(Locale.GERMAN)
     private val bookingFormat = DecimalFormat("+ 0,000.#;- 0,000.#", bookingSymbols)
@@ -230,7 +230,8 @@ class PostbankPdfParser : Parser() {
         } else if (!isFormat2014 && STATEMENT_BIC_HEADER_2017 in line) {
             state.accBic = line.substringAfter(STATEMENT_BIC_HEADER_2017).trim()
         } else if (line.startsWith(bookingPageHeader) && it.hasNext()) {
-            val info = it.next().split(" ").dropLastWhile { it.isBlank() }
+            val nextLine = it.next()
+            val info = nextLine.split(" ").dropLastWhile { it.isBlank() }
 
             if (info.size >= 9) {
                 // For the 2014 format only, read the BIC from the page header.
@@ -256,20 +257,24 @@ class PostbankPdfParser : Parser() {
                 state.accIban = pageIban
             }
 
-            val oldBalanceOffset = if (isFormat2014) 10 else 11
-            if (line.endsWith(BOOKING_PAGE_HEADER_BALANCE_OLD) && info.size == oldBalanceOffset + 2) {
-                val signStr = info[oldBalanceOffset]
-                var amountStr = info[oldBalanceOffset + 1]
+            if (line.endsWith(BOOKING_PAGE_HEADER_BALANCE_OLD)) {
+                bookingSummaryPattern.matchEntire(nextLine)?.also { match ->
+                    var amountStr = match.groupValues[3]
 
-                // Work around a period being used instead of comma.
-                val amountChars = amountStr.toCharArray()
-                val index = amountStr.length - 3
-                if (amountChars[index] == '.') {
-                    amountChars[index] = ','
-                    amountStr = String(amountChars)
+                    // Work around a period being used instead of comma.
+                    val amountChars = amountStr.toCharArray()
+                    val index = amountStr.length - 3
+                    if (amountChars[index] == '.') {
+                        amountChars[index] = ','
+                        amountStr = String(amountChars)
+                    }
+
+                    state.balanceOld = if (amountStr == "0,00") {
+                        0.0f
+                    } else {
+                        bookingFormat.parse(amountStr).toFloat()
+                    }
                 }
-
-                state.balanceOld = bookingFormat.parse("$signStr $amountStr").toFloat()
             }
 
             // Start looking for the table header again.
@@ -372,7 +377,12 @@ class PostbankPdfParser : Parser() {
         }
 
         val infoLine = m.groupValues[3]
-        val amount = bookingFormat.parse(amountStr).toFloat()
+        val amount = if (amountStr == "0,00") {
+            0.0f
+        } else {
+            bookingFormat.parse(amountStr).toFloat()
+        }
+
         val type = mapType(infoLine)
 
         // The category is not yet known as not all info lines are available at this point.
@@ -398,8 +408,6 @@ class PostbankPdfParser : Parser() {
             // No match yet, take the next line into consideration.
         } while (marker.startsWith(line))
 
-        if (line.endsWith(" 0,00")) return 0.0f
-
         var m = bookingSummaryPattern.matchEntire(line)
         if (m == null) {
             var parsedText = line
@@ -421,7 +429,12 @@ class PostbankPdfParser : Parser() {
             }
         }
 
-        return bookingFormat.parse(m.groupValues[3]).toFloat()
+        val amountStr = m.groupValues[3]
+        return if (amountStr == "0,00") {
+            0.0f
+        } else {
+            bookingFormat.parse(amountStr).toFloat()
+        }
     }
 
     override fun parseInternal(statementFile: File, options: Map<String, String>): Statement {
