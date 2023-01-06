@@ -94,7 +94,7 @@ subprojects {
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
             allWarningsAsErrors = true
-            jvmTarget = "11"
+            jvmTarget = "17"
             apiVersion = "1.8"
         }
     }
