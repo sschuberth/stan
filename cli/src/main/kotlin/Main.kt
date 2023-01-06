@@ -17,7 +17,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.splitPair
 import com.github.ajalt.clikt.parameters.types.file
 
-import dev.schuberth.stan.model.Configuration
+import dev.schuberth.stan.model.ConfigurationFile
 import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.parsers.Parser
 
@@ -74,9 +74,9 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
         val configModule = module {
             single {
                 if (configFile.isFile) {
-                    Configuration.load(configFile)
+                    ConfigurationFile.load(configFile)
                 } else {
-                    Configuration.loadDefault()
+                    ConfigurationFile.loadDefault()
                 }
             }
         }

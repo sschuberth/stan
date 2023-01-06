@@ -1,6 +1,6 @@
 package dev.schuberth.stan
 
-import dev.schuberth.stan.model.Configuration
+import dev.schuberth.stan.model.ConfigurationFile
 
 import io.kotest.core.config.AbstractProjectConfig
 
@@ -10,7 +10,7 @@ import org.koin.dsl.module
 class ProjectConfig : AbstractProjectConfig() {
     init {
         val configModule = module {
-            single { Configuration.loadDefault() }
+            single { ConfigurationFile.loadDefault() }
         }
 
         startKoin {
