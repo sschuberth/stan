@@ -95,7 +95,7 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
             parserSpecificOptionsMap[option.first] = option.second
         }
 
-        val allStatements = mutableListOf<Statement>()
+        val parsedStatements = mutableListOf<Statement>()
 
         statementFiles.forEach nextFile@{
             val file = it.normalize()
@@ -115,25 +115,25 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
                         "${statementsFromFile.toDate}."
                 )
 
-                allStatements += statementsFromFile
+                parsedStatements += statementsFromFile
             } catch (e: ParseException) {
                 System.err.println("Error parsing '$file'.")
                 e.printStackTrace()
             }
         }
 
-        println("Parsed ${allStatements.size} statement(s) in total.\n")
+        println("Successfully parsed ${parsedStatements.size} of ${statementFiles.size} statement(s).\n")
 
-        if (allStatements.isEmpty()) {
+        if (parsedStatements.isEmpty()) {
             System.err.println("No statements found.")
             throw ProgramResult(2)
         }
 
-        println("Checking statements for consistency...")
+        println("Checking parsed statements for consistency...")
 
-        allStatements.sort()
+        parsedStatements.sort()
 
-        allStatements.zipWithNext().forEach { (curr, next) ->
+        parsedStatements.zipWithNext().forEach { (curr, next) ->
             if (curr.toDate.plusDays(1) != next.fromDate) {
                 System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
                 throw ProgramResult(2)
@@ -147,9 +147,12 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
             }
         }
 
-        println("All statements passed the consistency checks.\n")
+        println(
+            "All ${parsedStatements.size} parsed statements of originally ${statementFiles.size} statements passed " +
+                    "the consistency checks.\n"
+        )
 
-        currentContext.findOrSetObject { allStatements }
+        currentContext.findOrSetObject { parsedStatements }
     }
 }
 
