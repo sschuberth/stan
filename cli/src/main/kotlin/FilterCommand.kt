@@ -27,17 +27,31 @@ class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items
         help = "Filter for booking items of this type."
     ).enum<BookingType>()
 
+    private val filterPattern by option(
+        "--info-matches",
+        help = "Keep only booking item whose info matches the given regular expression."
+    )
+
+    private val filterNotPattern by option(
+        "--info-matches-not",
+        help = "Remove all booking item whose info matches the given regular expression."
+    )
+
     private val statements by requireObject<List<Statement>>()
 
     override fun run() {
         val fromDate = from?.let { LocalDate.parse(it) }
         val toDate = to?.let { LocalDate.parse(it) }
+        val filterRegex = filterPattern?.let { Regex(it) }
+        val filterNotRegex = filterNotPattern?.let { Regex(it) }
 
         val filteredBookings = statements
             .flatMap { it.bookings }
             .filter { fromDate?.isBefore(it.valueDate) != false || fromDate.isEqual(it.valueDate) }
             .filter { toDate?.isAfter(it.valueDate) != false }
             .filter { type == null || it.type == type }
+            .filter { filterRegex?.containsMatchIn(it.joinedInfo) != false }
+            .filterNot { filterNotRegex?.containsMatchIn(it.joinedInfo) == true }
 
         filteredBookings.forEach {
             println("${it.valueDate} : ${it.type} : ${String.format(Locale.ROOT, "%.2f", it.amount)}")
