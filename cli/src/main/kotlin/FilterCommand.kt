@@ -24,7 +24,12 @@ class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items
 
     private val type by option(
         "--type",
-        help = "Filter for booking items of this type."
+        help = "Keep only booking items of this type."
+    ).enum<BookingType>()
+
+    private val typeNot by option(
+        "--type-not",
+        help = "Remove all booking items of this type."
     ).enum<BookingType>()
 
     private val filterPattern by option(
@@ -50,7 +55,8 @@ class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items
             .asSequence()
             .filter { fromDate?.isBefore(it.valueDate) != false || fromDate.isEqual(it.valueDate) }
             .filter { toDate?.isAfter(it.valueDate) != false }
-            .filter { type == null || it.type == type }
+            .filter { type == null || type == it.type }
+            .filterNot { typeNot == it.type }
             .filter { filterRegex?.containsMatchIn(it.joinedInfo) != false }
             .filterNot { filterNotRegex?.containsMatchIn(it.joinedInfo) == true }
 
