@@ -28,6 +28,9 @@ private const val BOOKING_PAGE_HEADER_2014 = "Auszug Seite IBAN BIC (SWIFT)"
 private const val BOOKING_PAGE_HEADER_2017 = "Auszug Jahr Seite von IBAN"
 private const val BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand"
 
+private const val BOOKING_ITEM_CLOSING_HINT_FYRST = "Rechnungsabschluss - siehe Hinweis"
+private const val BOOKING_ITEM_CLOSING_BALANCE_FYRST = "Abschlusssaldo per "
+
 private const val BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge"
 private const val BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge"
 private const val BOOKING_SUMMARY_OUT_ALT =
@@ -87,6 +90,7 @@ class PostbankPdfParser : Parser() {
 
     private val bookingItemPattern = Regex("(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([+-] ?[\\d.,]+)")
     private val bookingItemPatternNoSign = Regex("(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ([\\d.,]+)")
+    private val bookingItemPatternNoAmount = Regex("(\\d\\d\\.\\d\\d\\.)[ /](\\d\\d\\.\\d\\d\\.) (.+) ")
 
     private val bookingSummaryPattern = Regex("(.*) ?(EUR) ((\\+ |- |)[\\d.,]+)")
 
@@ -332,10 +336,22 @@ class PostbankPdfParser : Parser() {
         if (m == null) {
             // Work around the sign being present on the previous line.
             m = bookingItemPatternNoSign.matchEntire(line)
-            if (m != null && state.signLine != null) {
+
+            if (m == null) {
+                // Handle FYRST bank account closing.
+                m = bookingItemPatternNoAmount.matchEntire(line)
+
+                if (m != null && m.groupValues[3] == BOOKING_ITEM_CLOSING_HINT_FYRST) {
+                    if (it.hasNext()) {
+                        if (!it.next().startsWith(BOOKING_ITEM_CLOSING_BALANCE_FYRST)) it.previous()
+                    }
+                    return null
+                }
+            } else if (state.signLine != null) {
                 line = listOf(m.groupValues[1], m.groupValues[2], m.groupValues[3], state.signLine, m.groupValues[4])
                     .joinToString(" ")
                 state.signLine = null
+
                 m = bookingItemPattern.matchEntire(line)
             }
         }

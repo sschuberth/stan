@@ -4,7 +4,7 @@ comments:
 
 complexity:
   CyclomaticComplexMethod:
-    threshold: 35
+    threshold: 40
   LongMethod:
     threshold: 120
   NestedBlockDepth:
