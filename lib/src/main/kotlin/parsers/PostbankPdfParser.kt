@@ -31,7 +31,7 @@ private const val BOOKING_PAGE_HEADER_BALANCE_OLD = "Alter Kontostand"
 private const val BOOKING_ITEM_CLOSING_HINT_FYRST = "Rechnungsabschluss - siehe Hinweis"
 private const val BOOKING_ITEM_CLOSING_BALANCE_FYRST = "Abschlusssaldo per "
 
-private const val BOOKING_SUMMARY_IN = "Kontonummer BLZ Summe Zahlungseingänge"
+private const val BOOKING_SUMMARY_IN = "Summe Zahlungseingänge"
 private const val BOOKING_SUMMARY_OUT = "Dispositionskredit Zinssatz für Dispositionskredit Summe Zahlungsausgänge"
 private const val BOOKING_SUMMARY_OUT_ALT =
     "Eingeräumte Kontoüberziehung Zinssatz für eingeräumte Kontoüberziehung Summe Zahlungsausgänge"
@@ -190,8 +190,15 @@ class PostbankPdfParser : Parser() {
             }
         }
 
+    private enum class State {
+        INITIAL,
+        BOOKING_HEADER,
+        BOOKING_ITEM,
+        BOOKING_SUMMARY;
+    }
+
     private data class ParsingState(
-        var foundStart: Boolean = false,
+        var current: State = State.INITIAL,
 
         val items: MutableList<BookingItem> = mutableListOf(),
 
@@ -282,35 +289,42 @@ class PostbankPdfParser : Parser() {
             }
 
             // Start looking for the table header again.
-            state.foundStart = false
+            state.current = State.INITIAL
 
             return null
-        } else if (BOOKING_SUMMARY_IN.startsWith(line)) {
+        } else if (line.endsWith(BOOKING_SUMMARY_IN)) {
             state.sumIn = parseSummary(BOOKING_SUMMARY_IN, line, it)
+            state.current = State.BOOKING_SUMMARY
             return null
         } else if (BOOKING_SUMMARY_OUT.startsWith(line)) {
             state.sumOut = parseSummary(BOOKING_SUMMARY_OUT, line, it)
+            state.current = State.BOOKING_SUMMARY
             return null
         } else if (BOOKING_SUMMARY_OUT_ALT.startsWith(line)) {
             state.sumOut = parseSummary(BOOKING_SUMMARY_OUT_ALT, line, it)
+            state.current = State.BOOKING_SUMMARY
             return null
         } else if (BOOKING_SUMMARY_OUT_FYRST.startsWith(line)) {
             state.sumOut = parseSummary(BOOKING_SUMMARY_OUT_FYRST, line, it)
+            state.current = State.BOOKING_SUMMARY
             return null
         } else if (BOOKING_SUMMARY_BALANCE_SINGULAR.startsWith(line)) {
             state.balanceNew = parseSummary(BOOKING_SUMMARY_BALANCE_SINGULAR, line, it)
+            state.current = State.BOOKING_SUMMARY
 
             // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
             // to filter out coming unwanted stuff.
             return state
         } else if (BOOKING_SUMMARY_BALANCE_PLURAL.startsWith(line)) {
             state.balanceNew = parseSummary(BOOKING_SUMMARY_BALANCE_PLURAL, line, it)
+            state.current = State.BOOKING_SUMMARY
 
             // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
             // to filter out coming unwanted stuff.
             return state
         } else if (BOOKING_SUMMARY_BALANCE_FYRST.startsWith(line)) {
             state.balanceNew = parseSummary(BOOKING_SUMMARY_BALANCE_FYRST, line, it)
+            state.current = State.BOOKING_SUMMARY
 
             // This is the last thing we are interested to parse, so break out of the loop early to avoid the need
             // to filter out coming unwanted stuff.
@@ -323,9 +337,9 @@ class PostbankPdfParser : Parser() {
         }
 
         // Loop until the booking table header is found, and then skip it.
-        if (!state.foundStart) {
+        if (state.current == State.INITIAL) {
             if (line.matches(bookingTableHeader)) {
-                state.foundStart = true
+                state.current = State.BOOKING_HEADER
             }
 
             return null
@@ -359,7 +373,8 @@ class PostbankPdfParser : Parser() {
         // Within the booking table, a matching pattern creates a new booking item.
         if (m != null) {
             createItem(m, state)
-        } else {
+            state.current = State.BOOKING_ITEM
+        } else if (state.current == State.BOOKING_ITEM) {
             // Add the line as info to the current booking item, if any.
             state.items.lastOrNull()?.info?.add(line)
         }
