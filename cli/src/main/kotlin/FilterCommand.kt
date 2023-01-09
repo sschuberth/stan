@@ -47,6 +47,7 @@ class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items
 
         val filteredBookings = statements
             .flatMap { it.bookings }
+            .asSequence()
             .filter { fromDate?.isBefore(it.valueDate) != false || fromDate.isEqual(it.valueDate) }
             .filter { toDate?.isAfter(it.valueDate) != false }
             .filter { type == null || it.type == type }
