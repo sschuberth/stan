@@ -57,7 +57,7 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
         format to Pair(option.substringBefore("="), option.substringAfter("=", ""))
     }.multiple()
 
-    private val statementGlobs by argument().file().multiple()
+    private val statementGlobs by argument().multiple()
 
     init {
         context {
@@ -74,7 +74,10 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
             ConfigurationFile.loadDefault()
         }
 
-        val statementFiles = config.getStatementFiles() + ConfigurationFile.resolveGlobs(statementGlobs.toSet())
+        val statementFiles = config.getStatementFiles() + ConfigurationFile.resolveGlobs(
+            statementGlobs.mapTo(mutableSetOf()) { File(it) }
+        )
+
         if (statementFiles.isEmpty()) throw UsageError("No statement file(s) specified.")
 
         val configModule = module {
