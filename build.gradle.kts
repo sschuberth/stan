@@ -19,13 +19,14 @@ versionCatalogUpdate {
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
+    gradleReleaseChannel = "current"
+    outputFormatter = "json"
+
     val nonFinalQualifiers = listOf(
-        "alpha", "b", "beta", "cr", "dev", "ea", "eap", "m", "milestone", "pr", "preview", "rc"
+        "alpha", "b", "beta", "cr", "dev", "ea", "eap", "m", "milestone", "pr", "preview", "rc", "\\d{14}"
     ).joinToString("|", "(", ")")
 
-    val nonFinalQualifiersRegex = Regex(".*[.-]$nonFinalQualifiers[.\\w-+]*", RegexOption.IGNORE_CASE)
-
-    gradleReleaseChannel = "current"
+    val nonFinalQualifiersRegex = Regex(".*[.-]$nonFinalQualifiers[.\\d-+]*", RegexOption.IGNORE_CASE)
 
     rejectVersionIf {
         candidate.version.matches(nonFinalQualifiersRegex)
