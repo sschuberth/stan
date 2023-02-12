@@ -10,7 +10,7 @@ bouncyCastle = "1.72"
 clikt = "3.5.1"
 itextpdf = "5.5.13.3"
 koinCore = "3.3.3"
-kotest = "5.5.4"
+kotest = "5.5.5"
 kotlinxSerialization = "1.4.1"
 poiOoxml = "5.2.3"
 
