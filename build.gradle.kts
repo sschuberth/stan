@@ -105,8 +105,6 @@ subprojects {
             events = setOf(TestLogEvent.STARTED, TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
             exceptionFormat = TestExceptionFormat.FULL
         }
-
-        useJUnitPlatform()
     }
 
     tasks.named("check") {
