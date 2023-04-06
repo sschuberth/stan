@@ -40,7 +40,10 @@ data class ConfigurationFile(
                     val globPath = globFile.absoluteFile.invariantSeparatorsPath
                     val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
 
-                    globFile.parentFile?.walkBottomUp()?.filter {
+                    var walkRoot: File? = globFile
+                    while (walkRoot?.isDirectory == false) walkRoot = walkRoot.parentFile
+
+                    walkRoot?.walkBottomUp()?.filter {
                         matcher.matches(it.toPath())
                     }.orEmpty().sorted()
                 }
