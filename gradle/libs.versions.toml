@@ -11,7 +11,7 @@ clikt = "3.5.2"
 itextpdf = "5.5.13.3"
 koinCore = "3.4.0"
 kotest = "5.5.5"
-kotlinxSerialization = "1.4.1"
+kotlinxSerialization = "1.5.0"
 poiOoxml = "5.2.3"
 
 [plugins]
