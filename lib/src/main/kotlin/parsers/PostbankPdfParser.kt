@@ -108,8 +108,8 @@ class PostbankPdfParser : Parser() {
             return false
         }
 
-        val pdfInfo = reader.info
-        return pdfInfo["Producer"] in applicableProducers
+        val producer = reader.info["Producer"] ?: return false
+        return producer in applicableProducers
     }
 
     private fun extractText(filename: String): Pair<String, Boolean> {
