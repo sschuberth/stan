@@ -194,7 +194,7 @@ class PostbankPdfParser : Parser() {
         INITIAL,
         BOOKING_HEADER,
         BOOKING_ITEM,
-        BOOKING_SUMMARY;
+        BOOKING_SUMMARY
     }
 
     private data class ParsingState(
