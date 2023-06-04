@@ -10,6 +10,8 @@ application {
 }
 
 dependencies {
+    implementation(platform(project(":plugins:exporters")))
+
     implementation(project(":lib"))
 
     implementation(libs.clikt)

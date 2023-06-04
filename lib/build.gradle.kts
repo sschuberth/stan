@@ -4,6 +4,7 @@ plugins {
     id("stan-kotlin-conventions")
 
     `java-library`
+    `java-test-fixtures`
 
     alias(libs.plugins.kotlinSerialization)
 }
@@ -12,17 +13,22 @@ dependencies {
     implementation(libs.bouncyCastle)
     implementation(libs.itextpdf)
     implementation(libs.koinCore)
-    implementation(libs.kotlinReflect)
     implementation(libs.kotlinxSerialization)
-    implementation(libs.poiOoxml)
+
+    testFixturesImplementation(libs.koinCore)
+    testFixturesImplementation(libs.kotestAssertionsCore)
+    testFixturesImplementation(libs.kotestRunnerJunit5)
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    val customCompilerArgs = listOf(
-        "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
-    )
+// Must not opt-in for "compileTestFixturesKotlin" as it does not have kotlinx-serialization in the classpath.
+listOf("compileKotlin", "compileTestKotlin").forEach {
+    tasks.named<KotlinCompile>(it) {
+        val customCompilerArgs = listOf(
+            "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
+        )
 
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + customCompilerArgs
+        kotlinOptions {
+            freeCompilerArgs = freeCompilerArgs + customCompilerArgs
+        }
     }
 }
