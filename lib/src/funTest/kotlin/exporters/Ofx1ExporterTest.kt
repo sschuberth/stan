@@ -9,7 +9,7 @@ import io.kotest.matchers.shouldBe
 import java.io.File
 import java.io.FileOutputStream
 
-class OfxV1ExporterTest : StringSpec({
+class Ofx1ExporterTest : StringSpec({
     val parser = PostbankPdfParser()
 
     "Demokonto account statement is exported correctly" {
@@ -21,7 +21,7 @@ class OfxV1ExporterTest : StringSpec({
 
         val ofx = tempfile(suffix = ".ofx")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
-        OfxV1Exporter().write(statement, FileOutputStream(ofx.path))
+        Ofx1Exporter().write(statement, FileOutputStream(ofx.path))
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
         actualOfx shouldBe expectedOfx
@@ -36,7 +36,7 @@ class OfxV1ExporterTest : StringSpec({
 
         val ofx = tempfile(suffix = ".ofx")
         val statement = parser.parse(File("src/funTest/assets/$baseName.pdf"))
-        OfxV1Exporter().write(statement, FileOutputStream(ofx.path))
+        Ofx1Exporter().write(statement, FileOutputStream(ofx.path))
         val actualOfx = ofx.readText().replace(Regex("(<DTSERVER>)\\d+"), "\\1")
 
         actualOfx shouldBe expectedOfx

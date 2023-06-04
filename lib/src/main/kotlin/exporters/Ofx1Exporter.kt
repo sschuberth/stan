@@ -14,7 +14,7 @@ import java.util.Currency
 /**
  * See https://www.ofx.net/downloads/OFX1.6.zip.
  */
-class OfxV1Exporter : Exporter {
+class Ofx1Exporter : Exporter {
     companion object {
         @JvmField
         val HEADER = arrayOf(
@@ -35,7 +35,7 @@ class OfxV1Exporter : Exporter {
         val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")!!
     }
 
-    override val name = "OFXv1"
+    override val name = "OFX1"
     override val extension = "ofx"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
