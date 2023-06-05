@@ -134,7 +134,7 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
 
         println("Checking parsed statements for consistency...")
 
-        parsedStatements.sort()
+        parsedStatements.sortBy { it.fromDate }
 
         parsedStatements.zipWithNext().forEach { (curr, next) ->
             if (curr.toDate.plusDays(1) != next.fromDate) {

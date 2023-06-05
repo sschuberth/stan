@@ -25,7 +25,7 @@ data class Statement(
     val sumIn: Float,
     val sumOut: Float,
     val bookings: List<BookingItem>
-) : Comparable<Statement> {
+) {
     companion object {
         val EMPTY = Statement(
             filename = "",
@@ -41,6 +41,4 @@ data class Statement(
             bookings = emptyList()
         )
     }
-
-    override fun compareTo(other: Statement) = fromDate.compareTo(other.fromDate)
 }
