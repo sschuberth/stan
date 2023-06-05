@@ -41,7 +41,7 @@ class Mt940Exporter : Exporter {
         UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
             val statementDate = statement.fromDate.format(DATE_FORMATTER)
 
-            val referenceNumber = statement.hashCode().toUInt().toString().take(REFERENCE_NUMBER_LENGTH)
+            val referenceNumber = statement.toString().hashCode().toUInt().toString().take(REFERENCE_NUMBER_LENGTH)
                 .padStart(REFERENCE_NUMBER_LENGTH, '0')
 
             writer.println("$TRANSACTION_REFERENCE_NUMBER_MARKER$statementDate$referenceNumber")
@@ -59,7 +59,7 @@ class Mt940Exporter : Exporter {
                 val valueDate = item.valueDate.format(DATE_FORMATTER)
                 val (amountSign, amount) = creditOrDebit(statement.balanceOld)
 
-                val transactionNumber = item.hashCode().toUInt().toString().take(TRANSACTION_NUMBER_LENGTH)
+                val transactionNumber = item.toString().hashCode().toUInt().toString().take(TRANSACTION_NUMBER_LENGTH)
                     .padStart(TRANSACTION_NUMBER_LENGTH, '0')
 
                 writer.println(
