@@ -35,7 +35,7 @@ private val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd")!!
  */
 class Mt940Exporter : Exporter {
     override val name = "MT940"
-    override val extension = "txt"
+    override val extension = "sta"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
         UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
