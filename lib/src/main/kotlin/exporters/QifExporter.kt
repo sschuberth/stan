@@ -2,7 +2,7 @@ package dev.schuberth.stan.exporters
 
 import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.Statement
-import dev.schuberth.stan.UnixPrintWriter
+import dev.schuberth.stan.utils.UnixPrintWriter
 
 import java.io.OutputStream
 import java.io.OutputStreamWriter

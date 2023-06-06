@@ -1,4 +1,4 @@
-package dev.schuberth.stan
+package dev.schuberth.stan.utils
 
 import java.io.PrintWriter
 import java.io.Writer
