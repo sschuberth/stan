@@ -9,7 +9,6 @@ import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Statement
 
 import java.time.LocalDate
-import java.util.Locale
 
 class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items.") {
     private val from by option(
@@ -61,7 +60,7 @@ class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items
             .filterNot { filterNotRegex?.containsMatchIn(it.joinedInfo) == true }
 
         filteredBookings.forEach {
-            println("${it.valueDate} : ${it.type} : ${String.format(Locale.ROOT, "%.2f", it.amount)}")
+            println("${it.valueDate} : ${it.type} : ${"%.2f".format(it.amount)}")
             it.info.forEach { line ->
                 println("    $line")
             }
@@ -69,6 +68,6 @@ class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items
         }
 
         val sum = filteredBookings.sumOf { it.amount.toDouble() }
-        println("Sum: ${String.format(Locale.ROOT, "%.2f", sum)}")
+        println("Sum: ${"%.2f".format(sum)}")
     }
 }

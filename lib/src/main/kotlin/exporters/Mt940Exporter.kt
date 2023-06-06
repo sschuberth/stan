@@ -78,4 +78,4 @@ class Mt940Exporter : Exporter {
 }
 
 private fun creditOrDebit(value: Float) =
-    Pair(if (value < 0) "D" else "C", String.format(Locale.GERMAN, "%.2f", value.absoluteValue))
+    Pair(if (value < 0) "D" else "C", "%.2f".format(Locale.GERMAN, value.absoluteValue))

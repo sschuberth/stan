@@ -46,7 +46,7 @@ class CsvExporter : Exporter {
                     postDate.toString(),
                     valueDate.toString(),
                     info.joinToString(" / "),
-                    String.format(locale, "%.02f", amount),
+                    "%.2f".format(locale, amount),
                     moneyControlType
                 ).map {
                     if (separator in it) "\"$it\"" else it
