@@ -1,4 +1,4 @@
-package dev.schuberth.stan.exporters
+package dev.schuberth.stan
 
 import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.utils.NamedPlugin

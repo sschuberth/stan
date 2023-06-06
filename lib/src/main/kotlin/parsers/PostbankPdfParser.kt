@@ -10,6 +10,7 @@ import com.itextpdf.text.pdf.parser.RenderFilter
 import com.itextpdf.text.pdf.parser.TextRenderInfo
 import com.itextpdf.text.pdf.parser.Vector
 
+import dev.schuberth.stan.Parser
 import dev.schuberth.stan.model.BookingItem
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Statement

@@ -3,6 +3,7 @@ package dev.schuberth.stan.parsers
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
 
+import dev.schuberth.stan.Parser
 import dev.schuberth.stan.model.BookingItem
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Statement

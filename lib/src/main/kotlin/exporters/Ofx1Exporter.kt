@@ -1,5 +1,6 @@
 package dev.schuberth.stan.exporters
 
+import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.BookingItem
 import dev.schuberth.stan.model.Statement
 

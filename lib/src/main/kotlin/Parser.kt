@@ -1,4 +1,4 @@
-package dev.schuberth.stan.parsers
+package dev.schuberth.stan
 
 import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.model.Statement

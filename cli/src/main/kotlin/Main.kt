@@ -19,7 +19,7 @@ import com.github.ajalt.clikt.parameters.types.file
 
 import dev.schuberth.stan.model.ConfigurationFile
 import dev.schuberth.stan.model.Statement
-import dev.schuberth.stan.parsers.Parser
+import dev.schuberth.stan.Parser
 
 import java.io.File
 import java.text.ParseException

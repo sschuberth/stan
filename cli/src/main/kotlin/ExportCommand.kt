@@ -11,7 +11,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.splitPair
 import com.github.ajalt.clikt.parameters.types.file
 
-import dev.schuberth.stan.exporters.Exporter
+import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.Statement
 
 import java.io.ByteArrayOutputStream
