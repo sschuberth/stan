@@ -37,7 +37,7 @@ class QifExporter : Exporter {
 
                 writer.println("D$date")
                 writer.println("T$amount")
-                writer.println("P$memo")
+                writer.println("M$memo")
 
                 writer.println("^")
             }
