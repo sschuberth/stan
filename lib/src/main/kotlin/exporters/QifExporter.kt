@@ -32,7 +32,7 @@ class QifExporter : Exporter {
 
             statement.bookings.forEach {
                 val date = it.valueDate.format(DATE_FORMATTER)
-                val amount = it.amount
+                val amount = "%.2f".format(it.amount)
                 val memo = it.joinedInfo
 
                 writer.println("D$date")
