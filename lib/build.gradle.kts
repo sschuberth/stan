@@ -10,9 +10,8 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.bouncyCastle)
-    implementation(libs.itextpdf)
-    implementation(libs.koinCore)
+    api(libs.koinCore)
+
     implementation(libs.kotlinxSerialization)
 
     testFixturesImplementation(libs.koinCore)

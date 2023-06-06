@@ -1,4 +1,4 @@
-package dev.schuberth.stan.parsers
+package dev.schuberth.stan.plugins.parsers.postbank
 
 import com.itextpdf.text.pdf.PdfName
 import com.itextpdf.text.pdf.PdfReader

@@ -11,6 +11,7 @@ application {
 
 dependencies {
     implementation(platform(project(":plugins:exporters")))
+    implementation(platform(project(":plugins:parsers")))
 
     implementation(project(":lib"))
 

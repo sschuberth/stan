@@ -1,4 +1,4 @@
-package dev.schuberth.stan.parsers
+package dev.schuberth.stan.plugins.parsers.ing
 
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
