@@ -31,6 +31,3 @@ kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = 
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinPlugin" }
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 poiOoxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poiOoxml" }
-
-[bundles]
-kotest = ["kotestAssertionsCore", "kotestRunnerJunit5"]

@@ -68,6 +68,15 @@ subprojects {
 
     testing {
         suites {
+            withType<JvmTestSuite>().configureEach {
+                useJUnitJupiter()
+
+                dependencies {
+                    implementation(rootProject.libs.kotestAssertionsCore)
+                    implementation(rootProject.libs.kotestRunnerJunit5)
+                }
+            }
+
             register<JvmTestSuite>("funTest") {
                 sources {
                     kotlin {

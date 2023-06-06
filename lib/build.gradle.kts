@@ -11,8 +11,6 @@ dependencies {
     implementation(libs.kotlinReflect)
     implementation(libs.kotlinxSerialization)
     implementation(libs.poiOoxml)
-
-    funTestImplementation(libs.bundles.kotest)
 }
 
 tasks.withType<KotlinCompile>().configureEach {
