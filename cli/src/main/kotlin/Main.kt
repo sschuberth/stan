@@ -17,6 +17,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.splitPair
 import com.github.ajalt.clikt.parameters.types.file
 
+import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.ConfigurationFile
 import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.Parser
@@ -68,6 +69,10 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
     }
 
     override fun run() {
+        println("Available parsers: ${Parser.ALL.keys.joinToString()}")
+        println("Available exporters: ${Exporter.ALL.keys.joinToString()}")
+        println()
+
         val config = if (configFile.isFile) {
             ConfigurationFile.load(configFile)
         } else {
@@ -88,7 +93,7 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
             modules(configModule)
         }
 
-        println("Parsing statements with ${Parser.ALL.keys}...")
+        println("Parsing statements...")
 
         // Merge the list of pairs into a map which contains each format only once associated to all its options.
         val parserOptionsMap = sortedMapOf<String, MutableMap<String, String>>(String.CASE_INSENSITIVE_ORDER)
