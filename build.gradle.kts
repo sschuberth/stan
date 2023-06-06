@@ -84,8 +84,6 @@ subprojects {
         getByName("funTest").associateWith(getByName(KotlinCompilation.MAIN_COMPILATION_NAME))
     }
 
-    configurations["funTestImplementation"].extendsFrom(configurations["testImplementation"])
-
     configurations.all {
         resolutionStrategy {
             // Ensure that all transitive versions of Kotlin libraries matches our version of Kotlin.
