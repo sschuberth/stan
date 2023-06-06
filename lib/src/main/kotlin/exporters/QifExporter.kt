@@ -39,6 +39,10 @@ class QifExporter : Exporter {
                 writer.println("T$amount")
                 writer.println("M$memo")
 
+                it.category?.also { category ->
+                    writer.println("L$category")
+                }
+
                 writer.println("^")
             }
         }
