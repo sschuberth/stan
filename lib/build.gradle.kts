@@ -1,6 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    id("stan-kotlin-conventions")
+
+    `java-library`
+
     alias(libs.plugins.kotlinSerialization)
 }
 

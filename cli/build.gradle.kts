@@ -1,4 +1,6 @@
 plugins {
+    id("stan-kotlin-conventions")
+
     application
 }
 

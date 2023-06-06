@@ -15,8 +15,6 @@ poiOoxml = "5.2.3"
 
 [plugins]
 compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektPlugin" }
-kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPlugin" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdatePlugin" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
@@ -24,10 +22,12 @@ versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin
 [libraries]
 bouncyCastle = { module = "org.bouncycastle:bcprov-jdk15to18", version.ref = "bouncyCastle" }
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
+detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektPlugin" }
 itextpdf = { module = "com.itextpdf:itextpdf", version.ref = "itextpdf" }
 koinCore = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
 kotestAssertionsCore = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinPlugin" }
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinPlugin" }
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 poiOoxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poiOoxml" }
