@@ -68,7 +68,7 @@ class Mt940Exporter : Exporter {
                             transactionNumber
                 )
 
-                val narrative = item.info.joinToString(" / ")
+                val narrative = item.joinInfo(" / ")
                 writer.println("$STATEMENT_LINE_NARRATIVE_MARKER$narrative")
             }
 
