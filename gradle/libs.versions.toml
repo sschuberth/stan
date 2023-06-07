@@ -11,6 +11,7 @@ itextpdf = "5.5.13.3"
 koinCore = "3.4.0"
 kotest = "5.6.2"
 kotlinxSerialization = "1.5.1"
+pdfbox = "2.0.28"
 poiOoxml = "5.2.3"
 
 [plugins]
@@ -30,4 +31,5 @@ kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = 
 kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinPlugin" }
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinPlugin" }
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
 poiOoxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poiOoxml" }

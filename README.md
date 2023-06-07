@@ -14,6 +14,10 @@ Stan is both a library and command line tool to convert and analyze bank account
 
   This is a variant of the Postbank PDF account statements.
 
+- [Postbank DB PDF](https://www.postbank.de/privatkunden/services/kundenservice/gut-zu-wissen.html)
+
+  The new (monochrome) PDF format after the Postbank's IT migration to the Deutsche Bank infrastructure in 2023.
+
 - [ING(-DiBa)](https://www.ing.de/girokonto/)
 
 - [PSD Bank PDF](https://www.psd-bb.de/privatkunden/girokonto-und-karte/konten-im-ueberblick.html)
