@@ -8,4 +8,6 @@ dependencies {
     api(project(":lib"))
 
     implementation(libs.itextpdf)
+
+    funTestImplementation(testFixtures(project(":lib")))
 }
