@@ -24,10 +24,10 @@ class CsvExporter : Exporter {
         val separator = options["separator"] ?: CVS_DEFAULT_SEPARATOR
 
         UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
-            statement.bookings.forEach { (postDate, valueDate, info, amount, type) ->
-                val moneyControlType = when (type) {
+            statement.bookings.forEach { booking ->
+                val moneyControlType = when (booking.type) {
                     BookingType.ATM, BookingType.CHECK, BookingType.INT ->
-                        if (amount < 0) "Ausgabe" else "Einnahme"
+                        if (booking.amount < 0) "Ausgabe" else "Einnahme"
 
                     BookingType.CASH, BookingType.DEBIT, BookingType.PAYMENT, BookingType.REPEATPMT ->
                         "Ausgabe"
@@ -44,10 +44,10 @@ class CsvExporter : Exporter {
 
                 val values = listOf(
                     statement.accountId,
-                    postDate.toString(),
-                    valueDate.toString(),
-                    info.joinToString(" / "),
-                    "%.2f".format(locale, amount),
+                    booking.postDate.toString(),
+                    booking.valueDate.toString(),
+                    booking.joinInfo(" / "),
+                    "%.2f".format(locale, booking.amount),
                     moneyControlType
                 ).map {
                     if (separator in it) "\"$it\"" else it
