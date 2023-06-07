@@ -56,6 +56,6 @@ data class ConfigurationFile(
     override fun findBookingCategory(item: BookingItem): BookingCategory? =
         bookingCategories.find {
             val regex = Regex(it.regexes.joinToString("|", ".*(", ").*"), regexOptions)
-            regex.matches(item.joinedInfo) && it.minAmount <= item.amount && item.amount < it.maxAmount
+            regex.matches(item.joinInfo()) && it.minAmount <= item.amount && item.amount < it.maxAmount
         }
 }

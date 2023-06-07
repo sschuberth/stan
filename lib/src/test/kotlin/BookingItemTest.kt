@@ -25,6 +25,7 @@ class BookingItemTest : StringSpec({
             type = BookingType.UNKNOWN
         )
 
-        item.joinedInfo shouldBe "PRIVATHAFTPFLICHT-VERS., Einreicher-ID, Teltower Damm"
+        item.joinInfo() shouldBe "PRIVATHAFTPFLICHT-VERS., Einreicher-ID, Teltower Damm"
+        item.joinInfo(" / ") shouldBe "PRIVATHAFTPFLICHT-VERS. / Einreicher-ID / Teltower Damm"
     }
 })

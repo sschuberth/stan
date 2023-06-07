@@ -56,8 +56,8 @@ class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items
             .filter { toDate?.isAfter(it.valueDate) != false }
             .filter { type == null || type == it.type }
             .filterNot { typeNot == it.type }
-            .filter { filterRegex?.containsMatchIn(it.joinedInfo) != false }
-            .filterNot { filterNotRegex?.containsMatchIn(it.joinedInfo) == true }
+            .filter { filterRegex?.containsMatchIn(it.joinInfo()) != false }
+            .filterNot { filterNotRegex?.containsMatchIn(it.joinInfo()) == true }
 
         filteredBookings.forEach {
             println("${it.valueDate} : ${it.type} : ${"%.2f".format(it.amount)}")

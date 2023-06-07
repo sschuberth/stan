@@ -7,10 +7,6 @@ import java.time.LocalDate
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
-private const val JOIN_SEPARATOR = ", "
-private val INFO_DASH_PATTERN = Regex("([A-Z-a-z]{2,})-$JOIN_SEPARATOR([A-Z][A-Za-z])")
-private val INFO_HYPHENATION_PATTERN = Regex("([a-z]{2,})-$JOIN_SEPARATOR([a-z]{2,})")
-
 @Serializable
 data class BookingItem(
     val postDate: LocalDate,
@@ -20,9 +16,12 @@ data class BookingItem(
     val type: BookingType,
     val category: String? = null
 ) {
-    val joinedInfo by lazy {
-        info.joinToString(JOIN_SEPARATOR) { it.trim() }
-            .replace(INFO_DASH_PATTERN, "$1-$2")
-            .replace(INFO_HYPHENATION_PATTERN, "$1$2")
+    fun joinInfo(separator: String = ", "): String {
+        val dashRegex = Regex("([A-Z-a-z]{2,})-$separator([A-Z][A-Za-z])")
+        val hyphenationRegex = Regex("([a-z]{2,})-$separator([a-z]{2,})")
+
+        return info.joinToString(separator) { it.trim() }
+            .replace(dashRegex, "$1-$2")
+            .replace(hyphenationRegex, "$1$2")
     }
 }
