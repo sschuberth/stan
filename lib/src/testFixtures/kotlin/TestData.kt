@@ -8,7 +8,7 @@ import java.time.LocalDate
 import java.util.Locale
 
 val statementGoranBolsec = "Goran Bolsec" to Statement(
-    filename = "317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313.pdf",
+    filename = "PB_KAZ_KtoNr_0914083113_03-06-2016_0313.pdf",
     locale = Locale.Builder().setLanguage("de").setRegion("DE").build(),
     bankId = "PBNKDEFF",
     accountId = "DE94100100100914083113",

@@ -18,7 +18,7 @@ class PostbankPdfParserFunTest : StringSpec({
     }
 
     "Goran Bolsec account statement is parsed correctly" {
-        val statement = parser.parse(File("src/funTest/assets/317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313.pdf"))
+        val statement = parser.parse(File("src/funTest/assets/PB_KAZ_KtoNr_0914083113_03-06-2016_0313.pdf"))
 
         statement shouldBe statementGoranBolsec.second
     }

@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets
 
 abstract class AbstractTextExporterFunTest(exporter: Exporter, transform: String.() -> String = { this }) : StringSpec({
     listOf(
-        statementGoranBolsec to "317970916-PB-KAZ-KtoNr-0914083113-03-06-2016-0313",
+        statementGoranBolsec to "PB_KAZ_KtoNr_0914083113_03-06-2016_0313",
         statementPetraPfiffig to "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
     ).forEach { (holderToStatement, filename) ->
         "${holderToStatement.first} statement is exported correctly" {
