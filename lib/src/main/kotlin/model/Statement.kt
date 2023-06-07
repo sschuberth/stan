@@ -41,4 +41,14 @@ data class Statement(
             bookings = emptyList()
         )
     }
+
+    init {
+        require(bankId.none { it.isWhitespace() }) {
+            "The bank ID must not contain any whitespace characters."
+        }
+
+        require(accountId.none { it.isWhitespace() }) {
+            "The account ID must not contain any whitespace characters."
+        }
+    }
 }

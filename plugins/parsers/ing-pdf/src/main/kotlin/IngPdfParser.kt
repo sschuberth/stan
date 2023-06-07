@@ -100,7 +100,7 @@ class IngPdfParser : Logger, Parser() {
                 }
 
                 "IBAN " {
-                    state.accountId = this
+                    state.accountId = replace(" ", "")
                 }
 
                 "BIC " {
