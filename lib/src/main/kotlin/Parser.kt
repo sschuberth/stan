@@ -43,15 +43,15 @@ private fun Statement.performSanityChecks() =
         }
 
         if (abs(calcIn - sumIn) >= 0.01) {
-            throw ParseException("Sanity check on incoming booking summary failed.", 0)
+            throw ParseException("Sanity check on incoming booking summary failed: $calcIn != $sumIn", 0)
         }
 
         if (abs(calcOut - sumOut) >= 0.01) {
-            throw ParseException("Sanity check on outgoing booking summary failed.", 0)
+            throw ParseException("Sanity check on outgoing booking summary failed: $calcOut != $sumOut", 0)
         }
 
         val balanceCalc = balanceOld + sumIn + sumOut
         if (abs(balanceCalc - balanceNew) >= 0.01) {
-            throw ParseException("Sanity check on balances failed.", 0)
+            throw ParseException("Sanity check on balances failed: $balanceCalc != $balanceNew", 0)
         }
     }
