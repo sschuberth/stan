@@ -16,6 +16,17 @@ data class BookingItem(
     val type: BookingType,
     val category: String? = null
 ) {
+    companion object {
+        val EMPTY = BookingItem(
+            postDate = LocalDate.EPOCH,
+            valueDate = LocalDate.EPOCH,
+            info = mutableListOf(),
+            amount = Float.NaN,
+            type = BookingType.UNKNOWN,
+            category = null
+        )
+    }
+
     fun joinInfo(separator: String = ", "): String {
         val dashRegex = Regex("([A-Z-a-z]{2,})-$separator([A-Z][A-Za-z])")
         val hyphenationRegex = Regex("([a-z]{2,})-$separator([a-z]{2,})")
