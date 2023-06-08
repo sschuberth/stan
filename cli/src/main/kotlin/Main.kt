@@ -93,8 +93,6 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
             modules(configModule)
         }
 
-        println("Parsing statements...")
-
         // Merge the list of pairs into a map which contains each format only once associated to all its options.
         val parserOptionsMap = sortedMapOf<String, MutableMap<String, String>>(String.CASE_INSENSITIVE_ORDER)
 
@@ -115,11 +113,13 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
                     return@nextFile
                 }
 
+                print("Parsing statement '$file'... ")
+
                 val (name, parser) = parserEntry
                 val statementsFromFile = parser.parse(file, parserOptionsMap[name].orEmpty())
 
                 println(
-                    "Successfully parsed $name statement '$file' dated from ${statementsFromFile.fromDate} to " +
+                    "recognized $name statement dated from ${statementsFromFile.fromDate} to " +
                         "${statementsFromFile.toDate}."
                 )
 
