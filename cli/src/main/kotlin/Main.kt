@@ -142,6 +142,20 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
         val sortedStatements = parsedStatements.toSortedSet(compareBy { it.fromDate })
 
         sortedStatements.zipWithNext().forEach { (curr, next) ->
+            if (curr.bankId != next.bankId) {
+                System.err.println(
+                    "Statements '${curr.filename}' and '${next.filename}' do not belong to the same bank."
+                )
+                throw ProgramResult(2)
+            }
+
+            if (curr.accountId != next.accountId) {
+                System.err.println(
+                    "Statements '${curr.filename}' and '${next.filename}' do not belong to the same account."
+                )
+                throw ProgramResult(2)
+            }
+
             if (curr.toDate.plusDays(1) != next.fromDate) {
                 System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
                 throw ProgramResult(2)
