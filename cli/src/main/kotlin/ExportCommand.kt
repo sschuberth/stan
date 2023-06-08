@@ -44,7 +44,7 @@ class ExportCommand : CliktCommand(name = "export", help = "Export statements to
         help = "The directory to which output files will be written to."
     ).file(mustExist = false, canBeFile = false, canBeDir = true, mustBeReadable = false, mustBeWritable = true)
 
-    private val statements by requireObject<List<Statement>>()
+    private val statements by requireObject<Set<Statement>>()
 
     override fun run() {
         // Merge the list of pairs into a map which contains each format only once associated to all its options.

@@ -41,7 +41,7 @@ class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items
         help = "Remove all booking item whose info matches the given regular expression."
     )
 
-    private val statements by requireObject<List<Statement>>()
+    private val statements by requireObject<Set<Statement>>()
 
     override fun run() {
         val fromDate = from?.let { LocalDate.parse(it) }

@@ -139,9 +139,9 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
 
         println("Checking parsed statements for consistency...")
 
-        parsedStatements.sortBy { it.fromDate }
+        val sortedStatements = parsedStatements.toSortedSet(compareBy { it.fromDate })
 
-        parsedStatements.zipWithNext().forEach { (curr, next) ->
+        sortedStatements.zipWithNext().forEach { (curr, next) ->
             if (curr.toDate.plusDays(1) != next.fromDate) {
                 System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
                 throw ProgramResult(2)
@@ -156,11 +156,11 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
         }
 
         println(
-            "All ${parsedStatements.size} parsed statements of originally ${statementFiles.size} statements passed " +
+            "All ${sortedStatements.size} parsed statements of originally ${statementFiles.size} statements passed " +
                     "the consistency checks.\n"
         )
 
-        currentContext.findOrSetObject { parsedStatements }
+        currentContext.findOrSetObject { sortedStatements }
     }
 }
 
