@@ -1,4 +1,4 @@
-package dev.schuberth.stan.plugins.exporters.ofx1
+package dev.schuberth.stan.plugins.exporters.ofx
 
 import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.BookingItem
@@ -15,7 +15,7 @@ import java.util.Currency
 /**
  * See https://www.ofx.net/downloads/OFX1.6.zip.
  */
-class Ofx1Exporter : Exporter {
+class OfxExporter : Exporter {
     companion object {
         @JvmField
         val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")!!
@@ -36,7 +36,7 @@ class Ofx1Exporter : Exporter {
         const val INDENTATION_STRING = "    "
     }
 
-    override val name = "OFX1"
+    override val name = "OFX"
     override val extension = "ofx"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
