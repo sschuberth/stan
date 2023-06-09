@@ -94,21 +94,21 @@ class OfxExporter : Exporter {
             writer.write("\n")
         }
     }
-
-    private fun tag(name: String, vararg contents: String) =
-        "<$name>\n${contents.joinToString("\n").prependIndent(INDENTATION_STRING)}\n</$name>"
-
-    private fun data(name: String, value: Any) =
-        "<$name>$value"
-
-    private fun writeStatusAggregate(code: Int, severity: String) =
-        tag("STATUS", "<CODE>$code", "<SEVERITY>$severity")
-
-    private fun writeStatementTransaction(item: BookingItem) =
-        tag(
-            "STMTTRN",
-            data("TRNTYPE", if (item.amount > 0) "CREDIT" else "DEBIT"),
-            data("DTPOSTED", item.postDate.format(DateTimeFormatter.BASIC_ISO_DATE)),
-            data("TRNAMT", item.amount)
-        )
 }
+
+private fun tag(name: String, vararg contents: String) =
+    "<$name>\n${contents.joinToString("\n").prependIndent(OfxExporter.INDENTATION_STRING)}\n</$name>"
+
+private fun data(name: String, value: Any) =
+    "<$name>$value"
+
+private fun writeStatusAggregate(code: Int, severity: String) =
+    tag("STATUS", "<CODE>$code", "<SEVERITY>$severity")
+
+private fun writeStatementTransaction(item: BookingItem) =
+    tag(
+        "STMTTRN",
+        data("TRNTYPE", if (item.amount > 0) "CREDIT" else "DEBIT"),
+        data("DTPOSTED", item.postDate.format(DateTimeFormatter.BASIC_ISO_DATE)),
+        data("TRNAMT", item.amount)
+    )
