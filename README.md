@@ -40,7 +40,7 @@ Stan is both a library and command line tool to convert and analyze bank account
 
   MT940 files can be imported to many (professional) finance applications, e.g. [AckiSoft Finanzmanager](https://www.ackisoft.de/).
 
-- [OFX version 1](http://www.ofx.net/downloads.html)
+- [OFX](https://financialdataexchange.org/FDX/About/OFX-Work-Group.aspx?a315d1c24e44=2#a315d1c24e44) (version 1)
 
   OXF files can be imported into finance applications like [GnuCash](https://www.gnucash.org/), [HomeBank](http://homebank.free.fr/en/index.php) or [jGnash](https://ccavanaugh.github.io/jgnash/).
 

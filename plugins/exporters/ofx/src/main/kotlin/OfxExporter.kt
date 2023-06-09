@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Currency
 
 /**
- * See https://www.ofx.net/downloads/OFX1.6.zip.
+ * See https://financialdataexchange.org/FDX/About/OFX-Work-Group.aspx?a315d1c24e44=2#a315d1c24e44.
  */
 class OfxExporter : Exporter {
     companion object {

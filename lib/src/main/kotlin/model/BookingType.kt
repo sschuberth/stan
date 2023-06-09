@@ -1,8 +1,7 @@
 package dev.schuberth.stan.model
 
 /**
- * The type of booking, loosely based on OFX transaction types, see
- * https://www.ofx.net/downloads/OFX%202.2.pdf
+ * The type of booking, loosely based on OFX transaction types.
  */
 enum class BookingType {
     /**
