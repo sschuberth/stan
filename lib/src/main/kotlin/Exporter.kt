@@ -7,6 +7,7 @@ import java.io.OutputStream
 
 interface Exporter : NamedPlugin {
     companion object {
+        @JvmField
         val ALL = NamedPlugin.getAll<Exporter>()
     }
 

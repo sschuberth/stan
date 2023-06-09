@@ -18,6 +18,9 @@ import java.util.Currency
 class Ofx1Exporter : Exporter {
     companion object {
         @JvmField
+        val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")!!
+
+        @JvmField
         val HEADER = arrayOf(
             "OFXHEADER:100",
             "DATA:OFXSGML",
@@ -31,9 +34,6 @@ class Ofx1Exporter : Exporter {
         )
 
         const val INDENTATION_STRING = "    "
-
-        @JvmField
-        val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")!!
     }
 
     override val name = "OFX1"

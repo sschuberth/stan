@@ -27,6 +27,7 @@ data class Statement(
     val bookings: List<BookingItem>
 ) {
     companion object {
+        @JvmField
         val EMPTY = Statement(
             filename = "",
             locale = Locale.ROOT,

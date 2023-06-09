@@ -14,6 +14,7 @@ import org.koin.core.component.inject
 
 abstract class Parser : KoinComponent, NamedPlugin {
     companion object {
+        @JvmField
         val ALL = NamedPlugin.getAll<Parser>()
     }
 

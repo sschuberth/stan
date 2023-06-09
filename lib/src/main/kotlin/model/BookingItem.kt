@@ -17,6 +17,7 @@ data class BookingItem(
     val category: String? = null
 ) {
     companion object {
+        @JvmField
         val EMPTY = BookingItem(
             postDate = LocalDate.EPOCH,
             valueDate = LocalDate.EPOCH,
