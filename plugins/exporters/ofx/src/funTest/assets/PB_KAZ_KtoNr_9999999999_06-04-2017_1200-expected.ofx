@@ -37,59 +37,70 @@ NEWFILEUID:NONE
                     <DTSTART>20200101
                     <DTEND>20200202
                     <STMTTRN>
-                        <TRNTYPE>CREDIT
                         <DTPOSTED>20200119
+                        <MEMO>Gutschr. SEPA, Referenz T1505626335515118F, KINDERGELD-NR. 1462347, ARBEITSAMT BONN
                         <TRNAMT>154.0
+                        <TRNTYPE>CREDIT
                     </STMTTRN>
                     <STMTTRN>
-                        <TRNTYPE>DEBIT
                         <DTPOSTED>20200119
+                        <MEMO>SDD Lastschr, Referenz C2234288433716048C, Mandat F24BUSI-20200305001, STROMKOSTEN KD.NR.1462347, JAHRESABRECHNUNG, STADTWERKE MUSTERSTADT
                         <TRNAMT>-580.06
+                        <TRNTYPE>DEBIT
                     </STMTTRN>
                     <STMTTRN>
-                        <TRNTYPE>DEBIT
                         <DTPOSTED>20200121
+                        <MEMO>SDD Lastschr, Referenz I3634266643356018L, Mandat G55-20204665778, TELEFON AG KÖLN
                         <TRNAMT>-125.8
+                        <TRNTYPE>DEBIT
                     </STMTTRN>
                     <STMTTRN>
-                        <TRNTYPE>DEBIT
                         <DTPOSTED>20200123
+                        <MEMO>SDD Lastschr, Referenz D593057869356017Z, Mandat UIL2099786858493, TEILNEHMER 1234567, RUNDFUNK 0103 - 1203, GEZ
                         <TRNAMT>-84.75
+                        <TRNTYPE>DEBIT
                     </STMTTRN>
                     <STMTTRN>
-                        <TRNTYPE>DEBIT
                         <DTPOSTED>20200125
+                        <MEMO>Inh. Scheck, 2000123456789
                         <TRNAMT>-75.0
+                        <TRNTYPE>CHECK
                     </STMTTRN>
                     <STMTTRN>
-                        <TRNTYPE>DEBIT
                         <DTPOSTED>20200125
+                        <MEMO>SDD Lastschr, Referenz 102030ZZ89446, Mandat IO949596976, MIETE 600 + 250 EUR  OBJ22/328, SCHULSTR. 7, 12345 MEINHEIM, EIGENHEIM KG, Muster
                         <TRNAMT>-850.0
+                        <TRNTYPE>DEBIT
                     </STMTTRN>
                     <STMTTRN>
-                        <TRNTYPE>CREDIT
                         <DTPOSTED>20200125
+                        <MEMO>Scheckeinreichung, EINGANG VORBEHALTEN, GUTBUCHUNG 12345, EIN FREMDER
                         <TRNAMT>1830.0
+                        <TRNTYPE>CHECK
                     </STMTTRN>
                     <STMTTRN>
-                        <TRNTYPE>DEBIT
                         <DTPOSTED>20200126
+                        <MEMO>SEPA Überw. Einzel, Rechnung Nr. DA1000001, VERLAGSHAUS SCRIBERE GMBH
                         <TRNAMT>-31.5
+                        <TRNTYPE>XFER
                     </STMTTRN>
                     <STMTTRN>
-                        <TRNTYPE>CREDIT
                         <DTPOSTED>20200128
+                        <MEMO>Gutschr. SEPA, Referenz 007009105597, BEZÜGE PERS.NR. 70600170/01, ARBEITGEBER U. CO, PETRA PFIFFIG
                         <TRNAMT>2780.7
+                        <TRNTYPE>CREDIT
                     </STMTTRN>
                     <STMTTRN>
-                        <TRNTYPE>DEBIT
                         <DTPOSTED>20200128
+                        <MEMO>SEPA Überw. Einzel, 111111/3299999999/20010020, ÜBERTRAG AUF SPARCARD, 3299999999, PETRA PFIFFIG
                         <TRNAMT>-228.61
+                        <TRNTYPE>XFER
                     </STMTTRN>
                     <STMTTRN>
-                        <TRNTYPE>DEBIT
                         <DTPOSTED>20200129
+                        <MEMO>SEPA Überw. Einzel, 111111/1000000000/37050198, FINANZKASSE 3991234, STEUERNUMMER 00703434, FINANZKASSE KÖLN-SÜD
                         <TRNAMT>-328.75
+                        <TRNTYPE>XFER
                     </STMTTRN>
                 </BANKTRANLIST>
                 <LEDGERBAL>

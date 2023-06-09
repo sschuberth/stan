@@ -108,7 +108,8 @@ private fun writeStatusAggregate(code: Int, severity: String) =
 private fun writeStatementTransaction(item: BookingItem) =
     tag(
         "STMTTRN",
-        data("TRNTYPE", if (item.amount > 0) "CREDIT" else "DEBIT"),
         data("DTPOSTED", item.postDate.format(DateTimeFormatter.BASIC_ISO_DATE)),
-        data("TRNAMT", item.amount)
+        data("MEMO", item.joinInfo()),
+        data("TRNAMT", item.amount),
+        data("TRNTYPE", item.type.name)
     )
