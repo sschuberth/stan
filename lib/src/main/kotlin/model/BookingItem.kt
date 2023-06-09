@@ -23,7 +23,7 @@ data class BookingItem(
             valueDate = LocalDate.EPOCH,
             info = mutableListOf(),
             amount = Float.NaN,
-            type = BookingType.UNKNOWN,
+            type = BookingType.OTHER,
             category = null
         )
     }

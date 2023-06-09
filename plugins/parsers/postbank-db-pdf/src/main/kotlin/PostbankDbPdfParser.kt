@@ -130,7 +130,7 @@ class PostbankDbPdfParser : Parser(), Logger {
                             info = info.toMutableList(),
                             amount = bookingFormat.parse(amount).toFloat(),
                             // TODO: Implement type mapping by looking at "infoStart".
-                            type = BookingType.UNKNOWN
+                            type = BookingType.OTHER
                         )
 
                         logger.debug { "Created booking item dated ${item.postDate} for ${item.amount}." }

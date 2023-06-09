@@ -22,7 +22,7 @@ class BookingItemTest : StringSpec({
                 "wer Damm"
             ),
             amount = Float.NaN,
-            type = BookingType.UNKNOWN
+            type = BookingType.OTHER
         )
 
         item.joinInfo() shouldBe "PRIVATHAFTPFLICHT-VERS., Einreicher-ID, Teltower Damm"

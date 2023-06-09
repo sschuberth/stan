@@ -180,14 +180,14 @@ class PostbankPdfParser : Parser() {
 
             "Überweisung giropay", "Kartenzahlung", "Geldkarte", "Gutscheinkauf" -> BookingType.PAYMENT
 
-            "Gehalt/Rente" -> BookingType.SALARY
+            "Gehalt/Rente" -> BookingType.CREDIT
 
-            "SEPA Überw. Einzel", "SEPA Überw. BZÜ", "Umbuchung" -> BookingType.TRANSFER
+            "SEPA Überw. Einzel", "SEPA Überw. BZÜ", "Umbuchung" -> BookingType.XFER
 
             else -> when (infoLine.split(' ').firstOrNull()) {
                 "Gut" -> BookingType.CREDIT
                 "Dauerauftrag" -> BookingType.REPEATPMT
-                else -> BookingType.UNKNOWN
+                else -> BookingType.OTHER
             }
         }
 

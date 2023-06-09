@@ -207,12 +207,12 @@ class IngPdfParser : Logger, Parser() {
         // TODO: Make this configurable like categories.
         when (this) {
             "Abbuchung" -> BookingType.DEBIT
-            "Abschluss" -> BookingType.UNKNOWN
-            "Entgelt" -> BookingType.UNKNOWN
+            "Abschluss" -> BookingType.OTHER
+            "Entgelt" -> BookingType.FEE
             "Gutschrift" -> BookingType.CREDIT
             "Gutschrift/Dauerauftrag" -> BookingType.REPEATPMT
             "Lastschrift" -> BookingType.PAYMENT
-            "Ueberweisung" -> BookingType.TRANSFER
-            else -> BookingType.UNKNOWN
+            "Ueberweisung" -> BookingType.XFER
+            else -> BookingType.OTHER
         }
 }

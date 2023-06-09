@@ -115,7 +115,7 @@
         "VERLAGSHAUS SCRIBERE GMBH"
       ],
       "amount": -31.5,
-      "type": "TRANSFER",
+      "type": "XFER",
       "category": "Sonstige Ausgaben"
     },
     {
@@ -143,7 +143,7 @@
         "PETRA PFIFFIG"
       ],
       "amount": -228.61,
-      "type": "TRANSFER",
+      "type": "XFER",
       "category": "Umbuchung"
     },
     {
@@ -157,7 +157,7 @@
         "FINANZKASSE KÖLN-SÜD"
       ],
       "amount": -328.75,
-      "type": "TRANSFER",
+      "type": "XFER",
       "category": "Steuer"
     }
   ]

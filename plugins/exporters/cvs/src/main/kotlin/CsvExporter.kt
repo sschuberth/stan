@@ -26,20 +26,19 @@ class CsvExporter : Exporter {
         UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->
             statement.bookings.forEach { booking ->
                 val moneyControlType = when (booking.type) {
-                    BookingType.ATM, BookingType.CHECK, BookingType.INT ->
-                        if (booking.amount < 0) "Ausgabe" else "Einnahme"
+                    BookingType.ATM, BookingType.CHECK, BookingType.INT, BookingType.HOLD, BookingType.OTHER,
+                        BookingType.POS ->
+                            if (booking.amount < 0) "Ausgabe" else "Einnahme"
 
-                    BookingType.CASH, BookingType.DEBIT, BookingType.PAYMENT, BookingType.REPEATPMT ->
-                        "Ausgabe"
+                    BookingType.CASH, BookingType.DEBIT, BookingType.DIRECTDEBIT, BookingType.FEE, BookingType.PAYMENT,
+                        BookingType.REPEATPMT, BookingType.SRVCHG ->
+                            "Ausgabe"
 
-                    BookingType.CREDIT, BookingType.SALARY ->
+                    BookingType.CREDIT, BookingType.DEP, BookingType.DIRECTDEP, BookingType.DIV ->
                         "Einnahme"
 
-                    BookingType.TRANSFER ->
+                    BookingType.XFER ->
                         "Überweisung"
-
-                    BookingType.UNKNOWN ->
-                        "Ausgabe"
                 }
 
                 val values = listOf(

@@ -166,7 +166,7 @@ val statementPetraPfiffig = "Petra Pfiffig" to Statement(
                 "VERLAGSHAUS SCRIBERE GMBH"
             ),
             amount = -31.5f,
-            type = BookingType.TRANSFER,
+            type = BookingType.XFER,
             category = "Sonstige Ausgaben"
         ),
         BookingItem(
@@ -194,7 +194,7 @@ val statementPetraPfiffig = "Petra Pfiffig" to Statement(
                 "PETRA PFIFFIG"
             ),
             amount = -228.61f,
-            type = BookingType.TRANSFER,
+            type = BookingType.XFER,
             category = "Umbuchung"
         ),
         BookingItem(
@@ -208,7 +208,7 @@ val statementPetraPfiffig = "Petra Pfiffig" to Statement(
                 "FINANZKASSE KÖLN-SÜD"
             ),
             amount = -328.75f,
-            type = BookingType.TRANSFER,
+            type = BookingType.XFER,
             category = "Steuer"
         )
     )

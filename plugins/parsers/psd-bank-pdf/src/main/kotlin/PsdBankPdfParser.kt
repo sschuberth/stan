@@ -240,11 +240,11 @@ class PsdBankPdfParser : Logger, Parser() {
         // TODO: Make this configurable like categories.
         when (this) {
             "Auszahlung girocard" -> BookingType.ATM
-            "Abschluss lt. Anlage 1" -> BookingType.UNKNOWN
+            "Abschluss lt. Anlage 1" -> BookingType.OTHER
             "EURO-Überweisung" -> BookingType.PAYMENT
             "Kartenzahlung girocard", "Kartenzahlung V PAY" -> BookingType.PAYMENT
             "Lastschrift" -> BookingType.DEBIT
             "Überweisungsgutschr." -> BookingType.CREDIT
-            else -> BookingType.UNKNOWN
+            else -> BookingType.OTHER
         }
 }

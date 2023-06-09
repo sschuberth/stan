@@ -65,7 +65,7 @@ class IngPdfParserFunTest : StringSpec({
                         "Abschluss"
                     )
                     amount shouldBe -11.46f
-                    type shouldBe BookingType.UNKNOWN
+                    type shouldBe BookingType.OTHER
                     category should beNull()
                 }
             }

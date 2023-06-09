@@ -1,61 +1,26 @@
 package dev.schuberth.stan.model
 
 /**
- * The type of booking, loosely based on OFX transaction types.
+ * The type of booking, based on OFX transaction types.
  */
-enum class BookingType {
-    /**
-     * An unknown type of booking. If this occurs the mapping might need an update or a new type be added.
-     */
-    UNKNOWN,
+enum class BookingType(val description: String) {
+    ATM("ATM debit or credit"),
+    CASH("Cash withdrawal"),
+    CHECK("Check"),
+    CREDIT("Generic credit"),
+    DEBIT("Generic debit"),
+    DEP("Deposit"),
+    DIRECTDEBIT("Merchant initiated debit"),
+    DIRECTDEP("Direct deposit"),
+    DIV("Dividend"),
+    FEE("FI fee"),
+    HOLD("Amount is under a hold"),
+    INT("Interest earned or paid"),
+    PAYMENT("Electronic payment"),
+    POS("Point of sale debit or credit"),
+    REPEATPMT("Repeating payment/standing order"),
+    SRVCHG("Service charge"),
+    XFER("Transfer"),
 
-    /**
-     * ATM debit or credit.
-     */
-    ATM,
-
-    /**
-     * Cash withdrawal.
-     */
-    CASH,
-
-    /**
-     * Check debit or credit.
-     */
-    CHECK,
-
-    /**
-     * Genric credit.
-     */
-    CREDIT,
-
-    /**
-     * Generic debit.
-     */
-    DEBIT,
-
-    /**
-     * Interest earned or paid.
-     */
-    INT,
-
-    /**
-     * Electronic payment.
-     */
-    PAYMENT,
-
-    /**
-     * Repeating payment/standing order.
-     */
-    REPEATPMT,
-
-    /**
-     * Salary debit.
-     */
-    SALARY,
-
-    /**
-     * Money transfer.
-     */
-    TRANSFER
+    OTHER("Other")
 }
