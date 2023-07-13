@@ -11,7 +11,7 @@ itextpdf = "5.5.13.3"
 koinCore = "3.4.2"
 kotest = "5.6.2"
 kotlinxSerialization = "1.5.1"
-pdfbox = "2.0.28"
+pdfbox = "2.0.29"
 poiOoxml = "5.2.3"
 
 [plugins]
