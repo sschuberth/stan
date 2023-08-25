@@ -14,10 +14,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+import org.apache.pdfbox.Loader
 import org.apache.pdfbox.cos.COSDictionary
 import org.apache.pdfbox.cos.COSName
 import org.apache.pdfbox.cos.COSObject
-import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDResources
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject
 import org.apache.pdfbox.text.PDFTextStripper
@@ -31,7 +31,7 @@ class PostbankDbPdfParser : Parser(), Logger {
 
     override fun isApplicable(statementFile: File): Boolean {
         val document = runCatching {
-            PDDocument.load(statementFile)
+            Loader.loadPDF(statementFile)
         }.getOrElse {
             return false
         }
@@ -40,7 +40,7 @@ class PostbankDbPdfParser : Parser(), Logger {
     }
 
     override fun parseInternal(statementFile: File, options: Map<String, String>): Statement {
-        val text = PDDocument.load(statementFile).use { document ->
+        val text = Loader.loadPDF(statementFile).use { document ->
             // Ignore the ToUnicode tables of non-embedded fonts to fix garbled text being extracted, see
             // https://stackoverflow.com/a/45922162/1127485.
             for (i in 0 until document.numberOfPages) {
