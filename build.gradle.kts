@@ -1,6 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
+    alias(libs.plugins.gver)
     alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.versions)
 }
