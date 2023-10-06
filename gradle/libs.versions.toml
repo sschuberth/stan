@@ -6,7 +6,7 @@ versionCatalogUpdatePlugin = "0.8.1"
 versionsPlugin = "0.48.0"
 
 bouncyCastle = "1.76"
-clikt = "4.2.0"
+clikt = "4.2.1"
 itextpdf = "5.5.13.3"
 koinCore = "3.5.0"
 kotest = "5.7.2"
