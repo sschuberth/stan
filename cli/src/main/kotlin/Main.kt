@@ -15,6 +15,7 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.splitPair
+import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 
 import dev.schuberth.stan.Exporter
@@ -22,8 +23,10 @@ import dev.schuberth.stan.model.ConfigurationFile
 import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.Parser
 import dev.schuberth.stan.utils.Logger
+import dev.schuberth.stan.utils.setRootLogLevel
 
 import java.io.File
+import java.lang.System.Logger.Level
 import java.text.ParseException
 
 import org.koin.core.context.GlobalContext.startKoin
@@ -40,6 +43,11 @@ class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
 
         File(fixedUserHome)
     }
+
+    private val logLevel by option(
+        "--log-level", "-l",
+        help = "The log level to use."
+    ).enum<Level>().default(Level.INFO)
 
     private val configFile by option(
         "--config-file", "-c",
@@ -70,6 +78,8 @@ class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
     }
 
     override fun run() {
+        setRootLogLevel(logLevel)
+
         logger.info { "Available parsers: ${Parser.ALL.keys.joinToString()}" }
         logger.info { "Available exporters: ${Exporter.ALL.keys.joinToString()}" }
 
