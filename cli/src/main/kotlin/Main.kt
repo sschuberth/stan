@@ -21,6 +21,7 @@ import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.ConfigurationFile
 import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.Parser
+import dev.schuberth.stan.utils.Logger
 
 import java.io.File
 import java.text.ParseException
@@ -28,7 +29,7 @@ import java.text.ParseException
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
 
-class Main : CliktCommand(invokeWithoutSubcommand = true) {
+class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
     private val userHome by lazy {
         val fixedUserHome = System.getProperty("user.home").takeUnless { it.isBlank() || it == "?" } ?: listOfNotNull(
             System.getenv("HOME"),
@@ -69,9 +70,8 @@ class Main : CliktCommand(invokeWithoutSubcommand = true) {
     }
 
     override fun run() {
-        println("Available parsers: ${Parser.ALL.keys.joinToString()}")
-        println("Available exporters: ${Exporter.ALL.keys.joinToString()}")
-        println()
+        logger.info { "Available parsers: ${Parser.ALL.keys.joinToString()}" }
+        logger.info { "Available exporters: ${Exporter.ALL.keys.joinToString()}" }
 
         val config = if (configFile.isFile) {
             ConfigurationFile.load(configFile)
