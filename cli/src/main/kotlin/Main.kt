@@ -48,9 +48,9 @@ class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
         .default(userHome.resolve(".config/stan/config.json"))
 
     private val parserOptions by option(
-        "--parser-option", "-P",
+        "--parser-option", "-p",
         help = "A parser specific option. The key is the (case-insensitive) name of the parser, and the value is an " +
-                "arbitrary key-value pair. For example: -P PostbankPDF=textOutputDir=text/output/dir"
+                "arbitrary key-value pair. For example: -p PostbankPDF=textOutputDir=text/output/dir"
     ).splitPair().convert { (format, option) ->
         require(format in Parser.ALL) {
             "Parser format '$format' must be one of ${Parser.ALL.keys}."
