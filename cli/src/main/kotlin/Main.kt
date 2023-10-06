@@ -23,7 +23,6 @@ import dev.schuberth.stan.model.ConfigurationFile
 import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.Parser
 import dev.schuberth.stan.utils.Logger
-import dev.schuberth.stan.utils.setRootLogLevel
 
 import java.io.File
 import java.lang.System.Logger.Level
