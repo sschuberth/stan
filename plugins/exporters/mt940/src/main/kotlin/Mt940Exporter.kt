@@ -2,6 +2,7 @@ package dev.schuberth.stan.plugins.exporters.mt940
 
 import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.Statement
+import dev.schuberth.stan.model.joinInfo
 import dev.schuberth.stan.utils.UnixPrintWriter
 
 import java.io.OutputStream
@@ -68,7 +69,7 @@ class Mt940Exporter : Exporter {
                             transactionNumber
                 )
 
-                val narrative = item.joinInfo(" / ")
+                val narrative = item.info.joinInfo(" / ")
                 writer.println("$STATEMENT_LINE_NARRATIVE_MARKER$narrative")
             }
 

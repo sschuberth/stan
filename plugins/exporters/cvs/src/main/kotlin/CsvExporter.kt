@@ -3,6 +3,7 @@ package dev.schuberth.stan.plugins.exporters.csv
 import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Statement
+import dev.schuberth.stan.model.joinInfo
 import dev.schuberth.stan.utils.UnixPrintWriter
 
 import java.io.OutputStream
@@ -45,7 +46,7 @@ class CsvExporter : Exporter {
                     statement.accountId,
                     booking.postDate.toString(),
                     booking.valueDate.toString(),
-                    booking.joinInfo(" / "),
+                    booking.info.joinInfo(" / "),
                     "%.2f".format(locale, booking.amount),
                     moneyControlType
                 ).map {

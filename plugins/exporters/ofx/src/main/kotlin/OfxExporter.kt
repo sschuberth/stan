@@ -3,6 +3,7 @@ package dev.schuberth.stan.plugins.exporters.ofx
 import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.BookingItem
 import dev.schuberth.stan.model.Statement
+import dev.schuberth.stan.model.joinInfo
 
 import java.io.BufferedWriter
 import java.io.OutputStream
@@ -109,7 +110,7 @@ private fun writeStatementTransaction(item: BookingItem) =
     tag(
         "STMTTRN",
         data("DTPOSTED", item.postDate.format(DateTimeFormatter.BASIC_ISO_DATE)),
-        data("MEMO", item.joinInfo()),
+        data("MEMO", item.info.joinInfo()),
         data("TRNAMT", item.amount),
         data("TRNTYPE", item.type.name)
     )

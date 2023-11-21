@@ -4,6 +4,7 @@ import dev.schuberth.stan.Parser
 import dev.schuberth.stan.model.BookingItem
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Statement
+import dev.schuberth.stan.model.joinInfo
 import dev.schuberth.stan.utils.Logger
 import dev.schuberth.stan.utils.whenMatch
 
@@ -159,7 +160,7 @@ class PostbankDbPdfParser : Parser(), Logger {
 
         // Accoount for a special booking due to the Postbank to DB IT migration.
         if (data.balanceOld == 0.0f) {
-            val info = bookings.first().joinInfo(" ")
+            val info = bookings.first().info.joinInfo(" ")
             if (BOOKING_FOR_IT_MIGRATION_NOTICE in info) {
                 val migrationBooking = bookings.removeFirst()
                 data.fromDate = migrationBooking.postDate.plusDays(1)

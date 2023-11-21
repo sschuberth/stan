@@ -2,6 +2,7 @@ package dev.schuberth.stan.plugins.exporters.qif
 
 import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.Statement
+import dev.schuberth.stan.model.joinInfo
 import dev.schuberth.stan.utils.UnixPrintWriter
 
 import java.io.OutputStream
@@ -34,7 +35,7 @@ class QifExporter : Exporter {
             statement.bookings.forEach {
                 val date = it.valueDate.format(DATE_FORMATTER)
                 val amount = "%.2f".format(it.amount)
-                val memo = it.joinInfo()
+                val memo = it.info.joinInfo()
 
                 writer.println("D$date")
                 writer.println("T$amount")

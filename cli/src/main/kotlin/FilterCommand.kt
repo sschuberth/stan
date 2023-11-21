@@ -7,6 +7,7 @@ import com.github.ajalt.clikt.parameters.types.enum
 
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Statement
+import dev.schuberth.stan.model.joinInfo
 
 import java.time.LocalDate
 
@@ -56,8 +57,8 @@ class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items
             .filter { toDate?.isAfter(it.valueDate) != false }
             .filter { type == null || type == it.type }
             .filterNot { typeNot == it.type }
-            .filter { filterRegex?.containsMatchIn(it.joinInfo()) != false }
-            .filterNot { filterNotRegex?.containsMatchIn(it.joinInfo()) == true }
+            .filter { filterRegex?.containsMatchIn(it.info.joinInfo()) != false }
+            .filterNot { filterNotRegex?.containsMatchIn(it.info.joinInfo()) == true }
 
         filteredBookings.forEach {
             println("${it.valueDate} : ${it.type} : ${"%.2f".format(it.amount)}")
