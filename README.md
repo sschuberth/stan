@@ -48,6 +48,10 @@ Stan is both a library and command line tool to convert and analyze bank account
 
   QIF files can be imported into finance applications like [GnuCash](https://www.gnucash.org/), [HomeBank](http://homebank.free.fr/en/index.php), [jGnash](https://ccavanaugh.github.io/jgnash/) or [Money Manager Ex](https://www.moneymanagerex.org/).
 
+- [SUPA](https://www.subsembly.com/download/SUPA.pdf)
+
+  Subsembly's SUPA format is used by the [Banking4](https://www.subsembly.com/banking4.html) application.
+
 ## How to run the command line tool?
 
 As there are no binary releases yet, the easiest way to run Stan currently is by cloning the source code repository and
