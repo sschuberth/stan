@@ -36,7 +36,8 @@ class SupaExporter : Exporter {
                 BookgTxt = it.info.first(),
                 RmtdAcctCtry = statement.locale.country,
                 RmtdAcctIBAN = statement.accountId,
-                RmtdAcctBIC = statement.bankId
+                RmtdAcctBIC = statement.bankId,
+                Category = it.category
             )
         }
 

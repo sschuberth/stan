@@ -43,7 +43,10 @@ data class Booking(
     val RmtdAcctIBAN: String,
 
     /** Remitted account BIC. */
-    val RmtdAcctBIC: String
+    val RmtdAcctBIC: String,
+
+    /** Application-specific booking category. A colon is used to separate sub-categories. */
+    val Category: String? = null
 )
 
 enum class CreditDebitIndicator {
