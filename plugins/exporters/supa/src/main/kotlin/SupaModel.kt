@@ -39,11 +39,11 @@ data class Booking(
     /** Remitted account currency. */
     val RmtdAcctCtry: String,
 
-    /** Remitted account number / IBAN. */
-    val RmtdAcctNo: String,
+    /** Remitted account IBAN. */
+    val RmtdAcctIBAN: String,
 
-    /** Remitted bank code / BIC. */
-    val RmtdAcctBankCode: String
+    /** Remitted account BIC. */
+    val RmtdAcctBIC: String
 )
 
 enum class CreditDebitIndicator {
