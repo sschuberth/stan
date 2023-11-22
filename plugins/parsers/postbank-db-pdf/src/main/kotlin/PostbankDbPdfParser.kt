@@ -120,6 +120,11 @@ class PostbankDbPdfParser : Parser(), Logger {
                                     break
                                 }
 
+                                if (nextLine == "Auszug Seite von IBAN") {
+                                    i.next()
+                                    break
+                                }
+
                                 add(nextLine)
                             }
                         }
