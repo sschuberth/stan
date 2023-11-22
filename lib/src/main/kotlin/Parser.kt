@@ -29,7 +29,12 @@ abstract class Parser : KoinComponent, NamedPlugin {
 }
 
 private fun Statement.applyCategories(config: Configuration) =
-    copy(bookings = bookings.map { it.copy(category = config.findBookingCategory(it)?.name) })
+    copy(
+        bookings = bookings.map { item ->
+            val configuredCategory = config.findBookingCategory(item)?.name
+            item.takeUnless { configuredCategory != null } ?: item.copy(category = configuredCategory)
+        }
+    )
 
 private fun Statement.performSanityChecks() =
     apply {
