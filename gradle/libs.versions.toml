@@ -9,7 +9,7 @@ clikt = "4.2.1"
 itextpdf = "5.5.13.3"
 koinCore = "3.5.3"
 kotest = "5.8.0"
-kotlinxSerialization = "1.6.1"
+kotlinxSerialization = "1.6.2"
 pdfbox = "3.0.1"
 poiOoxml = "5.2.5"
 
