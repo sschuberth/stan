@@ -11,7 +11,7 @@ koinCore = "3.5.3"
 kotest = "5.8.0"
 kotlinxSerialization = "1.6.1"
 pdfbox = "3.0.1"
-poiOoxml = "5.2.4"
+poiOoxml = "5.2.5"
 
 [plugins]
 compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }
