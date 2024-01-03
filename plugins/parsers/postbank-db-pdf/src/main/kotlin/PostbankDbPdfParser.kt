@@ -62,15 +62,15 @@ class PostbankDbPdfParser : Parser(), Logger {
 
         val i = text.lines().listIterator()
         while (i.hasNext()) {
-            val line = i.next()
+            val line = i.next().trim()
 
             whenMatch(line) {
-                "BIC (SWIFT) " {
+                "BIC (SWIFT)" {
                     val bicLine = i.hasNext().takeIf { it }?.let { i.next() }
                     data.bankId = bicLine?.substringBefore(' ')?.removeSuffix("XXX")
                 }
 
-                "Auszug Seite von IBAN Alter Saldo per " {
+                "Auszug Seite von IBAN Alter Saldo per" {
                     val ibanAndBalanceLine = i.hasNext().takeIf { it }?.let { i.next() }
 
                     if (ibanAndBalanceLine != null) {
