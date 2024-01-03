@@ -16,6 +16,8 @@ abstract class Parser : KoinComponent, NamedPlugin {
     companion object {
         @JvmField
         val ALL = NamedPlugin.getAll<Parser>()
+
+        const val IBAN_LENGTH = 22
     }
 
     private val config: Configuration by inject()

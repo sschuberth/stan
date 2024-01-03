@@ -76,7 +76,7 @@ class PostbankDbPdfParser : Parser(), Logger {
                     if (ibanAndBalanceLine != null) {
                         var iban = ""
                         ibanAndBalanceLine.split(' ').drop(3).takeWhile { part ->
-                            (iban.length < 22).also { if (it) iban += part }
+                            (iban.length < IBAN_LENGTH).also { if (it) iban += part }
                         }
                         data.accountId = iban
 
