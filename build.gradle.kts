@@ -1,13 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.versions)
-}
-
-versionCatalogUpdate {
-    // Keep the custom sorting / grouping.
-    sortByKey.set(false)
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
