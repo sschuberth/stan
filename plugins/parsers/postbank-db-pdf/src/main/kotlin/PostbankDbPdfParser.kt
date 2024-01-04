@@ -25,6 +25,7 @@ import org.apache.pdfbox.text.PDFTextStripper
 
 class PostbankDbPdfParser : Parser(), Logger {
     private val applicableProducers = setOf(
+        "CrawfordTech PDF Driver Version 4.9",
         "XEP 4.28.759"
     )
 
@@ -37,7 +38,8 @@ class PostbankDbPdfParser : Parser(), Logger {
             return false
         }
 
-        return document.use { it.documentInformation.producer } in applicableProducers
+        val producer = document.use { it.documentInformation.producer }
+        return applicableProducers.any { producer.startsWith(it) }
     }
 
     override fun parseInternal(statementFile: File, options: Map<String, String>): Statement {
@@ -80,7 +82,7 @@ class PostbankDbPdfParser : Parser(), Logger {
                         }
                         data.accountId = iban
 
-                        val balance = ibanAndBalanceLine.substringAfterLast(" EUR ")
+                        val balance = ibanAndBalanceLine.substringAfterLast(BALANCING_CURRENCY_MARKER)
                         data.balanceOld = bookingFormat.parse(balance).toFloat()
                     }
                 }
@@ -149,10 +151,14 @@ class PostbankDbPdfParser : Parser(), Logger {
                     if (data.state == ParsingState.BOOKINGS) {
                         data.state = ParsingState.BALANCING
 
-                        val balanceLine = i.hasNext().takeIf { it }?.let { i.next() }
+                        var balanceLine: String? = null
+                        while (i.hasNext()) {
+                            balanceLine = i.next()
+                            if (BALANCING_CURRENCY_MARKER in balanceLine) break
+                        }
 
                         if (balanceLine != null) {
-                            val balance = balanceLine.substringAfterLast(" EUR ")
+                            val balance = balanceLine.substringAfterLast(BALANCING_CURRENCY_MARKER)
                             data.balanceNew = bookingFormat.parse(balance).toFloat()
                         }
                     }
@@ -212,6 +218,7 @@ private const val BOOKING_FOR_IT_MIGRATION_NOTICE = "Die Buchung hat technische 
         "fuer alle Konten um. Ihr Kontostand vor und nach den Buchungen bleibt gleich."
 
 private const val BALANCING_START = "Filialnummer Kontonummer Neuer Saldo"
+private const val BALANCING_CURRENCY_MARKER = "EUR "
 
 private enum class ParsingState {
     INITIAL,
