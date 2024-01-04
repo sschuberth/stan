@@ -153,26 +153,32 @@ class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
         sortedStatements.zipWithNext().forEach { (curr, next) ->
             if (curr.bankId != next.bankId) {
                 System.err.println(
-                    "Statements '${curr.filename}' and '${next.filename}' do not belong to the same bank."
+                    "Statements '${curr.filename}' (${curr.bankId}) and '${next.filename}' (${next.bankId}) do not " +
+                            "belong to the same bank."
                 )
                 throw ProgramResult(2)
             }
 
             if (curr.accountId != next.accountId) {
                 System.err.println(
-                    "Statements '${curr.filename}' and '${next.filename}' do not belong to the same account."
+                    "Statements '${curr.filename}' (${curr.accountId}) and '${next.filename}' (${next.accountId}) do " +
+                            "not belong to the same account."
                 )
                 throw ProgramResult(2)
             }
 
             if (curr.toDate.plusDays(1) != next.fromDate) {
-                System.err.println("Statements '${curr.filename}' and '${next.filename}' are not consecutive.")
+                System.err.println(
+                    "Statements '${curr.filename}' (${curr.toDate}) and '${next.filename}' (${next.fromDate}) are " +
+                            "not consecutive."
+                )
                 throw ProgramResult(2)
             }
 
             if (curr.balanceNew != next.balanceOld) {
                 System.err.println(
-                    "Balances of statements '${curr.filename}' and '${next.filename}' are not consistent."
+                    "Balances of statements '${curr.filename}' (${curr.balanceNew}) and '${next.filename}' " +
+                            "(${next.balanceOld}) are not successive."
                 )
                 throw ProgramResult(2)
             }
