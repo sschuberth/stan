@@ -163,7 +163,7 @@ class PostbankDbPdfParser : Parser(), Logger {
         // Flush the last booking item.
         data.bookingItem?.also { bookings += it }
 
-        // Accoount for a special booking due to the Postbank to DB IT migration.
+        // Account for a special booking due to the Postbank to DB IT migration.
         if (data.balanceOld == 0.0f) {
             val info = bookings.first().info.joinInfo(" ")
             if (BOOKING_FOR_IT_MIGRATION_NOTICE in info) {
