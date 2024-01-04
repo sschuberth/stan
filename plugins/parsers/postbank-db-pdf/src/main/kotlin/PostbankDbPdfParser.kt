@@ -170,14 +170,7 @@ class PostbankDbPdfParser : Parser(), Logger {
         data.bookingItem?.also { bookings += it }
 
         // Account for a special booking due to the Postbank to DB IT migration.
-        if (data.balanceOld == 0.0f) {
-            val info = bookings.first().info.joinInfo(" ")
-            if (BOOKING_FOR_IT_MIGRATION_NOTICE in info) {
-                val migrationBooking = bookings.removeFirst()
-                data.fromDate = migrationBooking.postDate.plusDays(1)
-                data.balanceOld = migrationBooking.amount
-            }
-        }
+        fixupItMigrationBooking(data, bookings)
 
         val amounts = bookings.map { it.amount.toDouble() }
         val (sumIn, sumOut) = amounts.partition { it >= 0 }.toList().map { it.sum().toFloat() }
@@ -214,8 +207,10 @@ private val bookingStartRegex = Regex(
         "(?<amount>$BOOKING_AMOUNT_PATTERN)$"
 )
 
-private const val BOOKING_FOR_IT_MIGRATION_NOTICE = "Die Buchung hat technische Gruende: Wir stellen das IT-System " +
-        "fuer alle Konten um. Ihr Kontostand vor und nach den Buchungen bleibt gleich."
+private const val BOOKING_FOR_IT_MIGRATION_NOTICE_PB = "Die Buchung hat technische Gruende: Wir stellen das " +
+        "IT-System fuer alle Konten um. Ihr Kontostand vor und nach den Buchungen bleibt gleich."
+private const val BOOKING_FOR_IT_MIGRATION_NOTICE_FYRST = "Die Buchung hat technische Gruende aufgrund der " +
+        "Umstellung unseres Bank-IT-Systems. Ihr Kontostand vor und nach der Buchung bleibt gleich."
 
 private const val BALANCING_START = "Filialnummer Kontonummer Neuer Saldo"
 private const val BALANCING_CURRENCY_MARKER = "EUR "
@@ -257,6 +252,26 @@ private fun removeToUnicodeMaps(pdResources: PDResources) {
         if (obj is PDFormXObject) {
             val xobjectPdResources = obj.resources
             removeToUnicodeMaps(xobjectPdResources)
+        }
+    }
+}
+
+private fun fixupItMigrationBooking(data: ParsingData, bookings: MutableList<BookingItem>) {
+    if (data.balanceOld != 0.0f) return
+
+    val info = bookings.first().info.joinInfo(" ")
+
+    when {
+        BOOKING_FOR_IT_MIGRATION_NOTICE_PB in info -> {
+            val migrationBooking = bookings.removeFirst()
+            data.fromDate = migrationBooking.postDate.plusDays(1)
+            data.balanceOld = migrationBooking.amount
+        }
+
+        BOOKING_FOR_IT_MIGRATION_NOTICE_FYRST in info -> {
+            val migrationBooking = bookings.removeFirst()
+            data.fromDate = migrationBooking.valueDate.plusDays(1)
+            data.balanceOld = migrationBooking.amount
         }
     }
 }
