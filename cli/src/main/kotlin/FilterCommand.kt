@@ -47,8 +47,8 @@ class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items
     override fun run() {
         val fromDate = from?.let { LocalDate.parse(it) }
         val toDate = to?.let { LocalDate.parse(it) }
-        val filterRegex = filterPattern?.let { Regex(it) }
-        val filterNotRegex = filterNotPattern?.let { Regex(it) }
+        val filterRegex = filterPattern?.let { Regex(it, RegexOption.IGNORE_CASE) }
+        val filterNotRegex = filterNotPattern?.let { Regex(it, RegexOption.IGNORE_CASE) }
 
         val filteredBookings = statements
             .flatMap { it.bookings }
