@@ -6,7 +6,7 @@ plugins {
 
 application {
     applicationName = "stan"
-    mainClass.set("dev.schuberth.stan.cli.MainKt")
+    mainClass = "dev.schuberth.stan.cli.MainKt"
 }
 
 dependencies {

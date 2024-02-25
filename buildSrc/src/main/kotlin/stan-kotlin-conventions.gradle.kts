@@ -53,7 +53,7 @@ testing {
         register<JvmTestSuite>("funTest") {
             sources {
                 kotlin {
-                    testType.set(TestSuiteType.FUNCTIONAL_TEST)
+                    testType = TestSuiteType.FUNCTIONAL_TEST
                 }
             }
         }
