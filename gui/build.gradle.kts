@@ -12,6 +12,10 @@ compose {
     }
 }
 
+repositories {
+    google()
+}
+
 dependencies {
     implementation(project(":lib"))
 
