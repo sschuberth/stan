@@ -20,13 +20,11 @@ import com.github.ajalt.clikt.parameters.types.file
 
 import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.ConfigurationFile
-import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.Parser
 import dev.schuberth.stan.utils.Logger
 
 import java.io.File
 import java.lang.System.Logger.Level
-import java.text.ParseException
 
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
@@ -110,16 +108,14 @@ class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
             parserSpecificOptionsMap[option.first] = option.second
         }
 
-        val parsedStatements = mutableListOf<Statement>()
-
-        statementFiles.forEach nextFile@{
+        val parsedStatements = statementFiles.mapNotNull nextFile@{
             val file = it.normalize()
 
-            try {
+            runCatching {
                 val parserEntry = Parser.ALL.entries.find { (_, parser) -> parser.isApplicable(file) }
                 if (parserEntry == null) {
                     println("No applicable parser found for file '$file'.")
-                    return@nextFile
+                    return@nextFile null
                 }
 
                 print("Parsing statement '$file'... ")
@@ -132,11 +128,11 @@ class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
                         "${statementsFromFile.toDate}."
                 )
 
-                parsedStatements += statementsFromFile
-            } catch (e: ParseException) {
+                statementsFromFile
+            }.onFailure { e ->
                 System.err.println("Error parsing '$file'.")
                 e.printStackTrace()
-            }
+            }.getOrNull()
         }
 
         println("Successfully parsed ${parsedStatements.size} of ${statementFiles.size} statement(s).\n")
