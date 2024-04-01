@@ -12,6 +12,7 @@ plugins {
 dependencies {
     api(libs.koinCore)
 
+    implementation(libs.bundles.ks3)
     implementation(libs.kotlinxSerialization)
 
     testFixturesImplementation(libs.koinCore)

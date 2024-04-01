@@ -1,9 +1,8 @@
-@file:UseSerializers(
-    dev.schuberth.stan.utils.LocaleSerializer::class,
-    dev.schuberth.stan.utils.LocalDateSerializer::class
-)
+@file:UseSerializers(dev.schuberth.stan.utils.LocaleSerializer::class)
 
 package dev.schuberth.stan.model
+
+import io.ks3.java.typealiases.LocalDateAsString
 
 import java.time.LocalDate
 import java.util.Locale
@@ -18,8 +17,8 @@ data class Statement(
     val locale: Locale,
     val bankId: String,
     val accountId: String,
-    val fromDate: LocalDate,
-    val toDate: LocalDate,
+    val fromDate: LocalDateAsString,
+    val toDate: LocalDateAsString,
     val balanceOld: Float,
     val balanceNew: Float,
     val sumIn: Float,

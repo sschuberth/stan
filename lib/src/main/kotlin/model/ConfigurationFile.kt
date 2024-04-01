@@ -1,20 +1,19 @@
-@file:UseSerializers(dev.schuberth.stan.utils.FileSerializer::class)
-
 package dev.schuberth.stan.model
 
 import dev.schuberth.stan.utils.JSON
+
+import io.ks3.java.typealiases.FileAsString
 
 import java.io.File
 import java.io.InputStream
 import java.nio.file.FileSystems
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.decodeFromStream
 
 @Serializable
 data class ConfigurationFile(
-    val statementGlobs: Set<File> = emptySet(),
+    val statementGlobs: Set<FileAsString> = emptySet(),
     val regexOptions: Set<RegexOption> = emptySet(),
     val bookingCategories: List<BookingCategory> = emptyList()
 ) : Configuration {

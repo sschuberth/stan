@@ -1,16 +1,15 @@
-@file:UseSerializers(dev.schuberth.stan.utils.LocalDateSerializer::class)
-
 package dev.schuberth.stan.model
 
 import java.time.LocalDate
 
+import io.ks3.java.typealiases.LocalDateAsString
+
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UseSerializers
 
 @Serializable
 data class BookingItem(
-    val postDate: LocalDate,
-    val valueDate: LocalDate,
+    val postDate: LocalDateAsString,
+    val valueDate: LocalDateAsString,
     val info: MutableList<String>,
     val amount: Float,
     val type: BookingType,
