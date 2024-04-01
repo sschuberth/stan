@@ -30,6 +30,8 @@ import java.lang.System.Logger.Level
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
 
+fun main(args: Array<String>) = Main().main(args)
+
 class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
     private val userHome by lazy {
         val fixedUserHome = System.getProperty("user.home").takeUnless { it.isBlank() || it == "?" } ?: listOfNotNull(
@@ -185,5 +187,3 @@ class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
         currentContext.findOrSetObject { sortedStatements }
     }
 }
-
-fun main(args: Array<String>) = Main().main(args)
