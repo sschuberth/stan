@@ -27,6 +27,8 @@ import dev.schuberth.stan.utils.alsoIfNull
 import java.io.File
 import java.lang.System.Logger.Level
 
+import kotlin.time.measureTimedValue
+
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.dsl.module
 
@@ -111,30 +113,32 @@ class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
             parserSpecificOptionsMap[option.first] = option.second
         }
 
-        val parsedStatements = statementFiles.mapNotNull {
-            val file = it.normalize()
+        val (parsedStatements, duration) = measureTimedValue {
+            statementFiles.mapNotNull {
+                val file = it.normalize()
 
-            runCatching {
-                val parserEntry = Parser.ALL.entries.find { (_, parser) -> parser.isApplicable(file) }
-                parserEntry?.let { (name, parser) ->
-                    print("Parsing statement '$file'... ")
+                runCatching {
+                    val parserEntry = Parser.ALL.entries.find { (_, parser) -> parser.isApplicable(file) }
+                    parserEntry?.let { (name, parser) ->
+                        print("Parsing statement '$file'... ")
 
-                    parser.parse(file, parserOptionsMap[name].orEmpty()).also { statementsFromFile ->
-                        println(
-                            "recognized $name statement dated from ${statementsFromFile.fromDate} to " +
-                                    "${statementsFromFile.toDate}."
-                        )
+                        parser.parse(file, parserOptionsMap[name].orEmpty()).also { statementsFromFile ->
+                            println(
+                                "recognized $name statement dated from ${statementsFromFile.fromDate} to " +
+                                        "${statementsFromFile.toDate}."
+                            )
+                        }
+                    }.alsoIfNull {
+                        println("No applicable parser found for file '$file'.")
                     }
-                }.alsoIfNull {
-                    println("No applicable parser found for file '$file'.")
-                }
-            }.onFailure { e ->
-                System.err.println("Error parsing '$file'.")
-                e.printStackTrace()
-            }.getOrNull()
+                }.onFailure { e ->
+                    System.err.println("Error parsing '$file'.")
+                    e.printStackTrace()
+                }.getOrNull()
+            }
         }
 
-        println("Successfully parsed ${parsedStatements.size} of ${statementFiles.size} statement(s).\n")
+        println("Successfully parsed ${parsedStatements.size} of ${statementFiles.size} statement(s) in $duration.\n")
 
         if (parsedStatements.isEmpty()) {
             System.err.println("No statements found.")

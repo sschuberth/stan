@@ -78,7 +78,6 @@ tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
         allWarningsAsErrors = true
         jvmTarget = JavaVersion.current().majorVersion.toInt().coerceAtMost(19).toString()
-        apiVersion = "1.8"
     }
 }
 
