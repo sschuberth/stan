@@ -2,11 +2,14 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 private val Project.libs: LibrariesForLibs
     get() = extensions.getByType()
+
+val javaLanguageVersion: String by project
 
 plugins {
     id("org.jetbrains.kotlin.jvm")
@@ -74,17 +77,21 @@ configurations.all {
     }
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(javaLanguageVersion)
+    }
+}
+
 tasks.withType<KotlinCompile>().configureEach {
     val hasSerialization = plugins.hasPlugin(libs.plugins.kotlinSerialization.get().pluginId)
+    val maxKotlinJvmTarget = runCatching { JvmTarget.fromTarget(javaLanguageVersion) }
+        .getOrDefault(enumValues<JvmTarget>().max())
 
-    kotlinOptions {
+    compilerOptions {
         allWarningsAsErrors = true
-
-        if (hasSerialization) {
-            freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
-        }
-
-        jvmTarget = JavaVersion.current().majorVersion.toInt().coerceAtMost(19).toString()
+        if (hasSerialization) freeCompilerArgs.add("-opt-in=kotlinx.serialization.ExperimentalSerializationApi")
+        jvmTarget = maxKotlinJvmTarget
     }
 }
 
