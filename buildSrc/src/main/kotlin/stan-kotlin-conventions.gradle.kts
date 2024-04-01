@@ -75,8 +75,15 @@ configurations.all {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
+    val hasSerialization = plugins.hasPlugin(libs.plugins.kotlinSerialization.get().pluginId)
+
     kotlinOptions {
         allWarningsAsErrors = true
+
+        if (hasSerialization) {
+            freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
+        }
+
         jvmTarget = JavaVersion.current().majorVersion.toInt().coerceAtMost(19).toString()
     }
 }
