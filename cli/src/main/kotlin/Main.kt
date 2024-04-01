@@ -22,6 +22,7 @@ import dev.schuberth.stan.Exporter
 import dev.schuberth.stan.model.ConfigurationFile
 import dev.schuberth.stan.Parser
 import dev.schuberth.stan.utils.Logger
+import dev.schuberth.stan.utils.alsoIfNull
 
 import java.io.File
 import java.lang.System.Logger.Level
@@ -108,27 +109,23 @@ class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
             parserSpecificOptionsMap[option.first] = option.second
         }
 
-        val parsedStatements = statementFiles.mapNotNull nextFile@{
+        val parsedStatements = statementFiles.mapNotNull {
             val file = it.normalize()
 
             runCatching {
                 val parserEntry = Parser.ALL.entries.find { (_, parser) -> parser.isApplicable(file) }
-                if (parserEntry == null) {
+                parserEntry?.let { (name, parser) ->
+                    print("Parsing statement '$file'... ")
+
+                    parser.parse(file, parserOptionsMap[name].orEmpty()).also { statementsFromFile ->
+                        println(
+                            "recognized $name statement dated from ${statementsFromFile.fromDate} to " +
+                                    "${statementsFromFile.toDate}."
+                        )
+                    }
+                }.alsoIfNull {
                     println("No applicable parser found for file '$file'.")
-                    return@nextFile null
                 }
-
-                print("Parsing statement '$file'... ")
-
-                val (name, parser) = parserEntry
-                val statementsFromFile = parser.parse(file, parserOptionsMap[name].orEmpty())
-
-                println(
-                    "recognized $name statement dated from ${statementsFromFile.fromDate} to " +
-                        "${statementsFromFile.toDate}."
-                )
-
-                statementsFromFile
             }.onFailure { e ->
                 System.err.println("Error parsing '$file'.")
                 e.printStackTrace()
