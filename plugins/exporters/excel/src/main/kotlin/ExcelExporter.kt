@@ -28,7 +28,7 @@ class ExcelExporter : Exporter {
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
         val bookingProps = BookingItem::class.memberProperties.filterNot { it.name == "info" }
 
-        val locale = options["locale"]?.let { Locale(it) } ?: Locale.getDefault()
+        val locale = options["locale"]?.let { Locale.Builder().setLanguage(it).build() } ?: Locale.getDefault()
         val datePattern = DateFormatConverter.convert(locale, "yyyy-mm-dd")
 
         XSSFWorkbook().use { workbook ->

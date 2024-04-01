@@ -21,7 +21,7 @@ class CsvExporter : Exporter {
     override val extension = "csv"
 
     override fun write(statement: Statement, output: OutputStream, options: Map<String, String>) {
-        val locale = options["locale"]?.let { Locale(it) } ?: Locale.getDefault()
+        val locale = options["locale"]?.let { Locale.Builder().setLanguage(it).build() } ?: Locale.getDefault()
         val separator = options["separator"] ?: CVS_DEFAULT_SEPARATOR
 
         UnixPrintWriter(OutputStreamWriter(output, StandardCharsets.UTF_8)).use { writer ->

@@ -9,4 +9,4 @@ import kotlinx.serialization.KSerializer
 /**
  * A (de-)serializer for Java [Locale] instances from / to strings.
  */
-object LocaleSerializer : KSerializer<Locale> by stringSerializer(::Locale)
+object LocaleSerializer : KSerializer<Locale> by stringSerializer({ Locale.Builder().setLanguage(it).build() })
