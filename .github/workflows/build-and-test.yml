@@ -1,0 +1,65 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-home-cache-cleanup: true
+    - name: Build all classes
+      run: ./gradlew classes
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-home-cache-cleanup: true
+    - name: Run unit tests
+      run: ./gradlew test
+  funTest:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-home-cache-cleanup: true
+      - name: Run functional tests
+        run: ./gradlew funTest
+  detekt:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-home-cache-cleanup: true
+      - name: Check for Detekt Issues
+        run: ./gradlew detekt
+      - name: Check for Detekt Issues with type resolution
+        run: ./gradlew detektMain detektTestFixtures detektTest detektFunTest
+      - name: Upload SARIF File
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() # Upload even if the previous step failed.
+        with:
+          sarif_file: build/reports/detekt/merged.sarif
