@@ -49,9 +49,7 @@ class ExcelExporter : Exporter {
 
             var headerIndex = 0
             bookingProps.forEach { prop ->
-                header.createCell(headerIndex++).apply {
-                    setCellValue(prop.name)
-                }
+                header.createCell(headerIndex++).setCellValue(prop.name)
             }
 
             val noAutoSizeColumns = mutableSetOf<Int>()
