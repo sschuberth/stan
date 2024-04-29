@@ -5,7 +5,7 @@ kotlinPlugin = "1.9.23"
 versionsPlugin = "0.51.0"
 
 bouncyCastle = "1.77"
-clikt = "4.3.0"
+clikt = "4.4.0"
 itextpdf = "5.5.13.3"
 koinCore = "3.5.3"
 kotest = "5.8.1"
