@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.report.ReportMergeTask
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -33,6 +35,9 @@ java {
         languageVersion = JavaLanguageVersion.of(javaLanguageVersion)
     }
 }
+
+val maxKotlinJvmTarget = runCatching { JvmTarget.fromTarget(javaLanguageVersion) }
+    .getOrDefault(enumValues<JvmTarget>().max())
 
 testing {
     suites {
@@ -75,10 +80,40 @@ detekt {
     source.from(fileTree(".") { include("*.gradle.kts") }, "src/funTest/kotlin")
 }
 
+val mergeDetektReportsTaskName = "mergeDetektReports"
+val mergeDetektReports = if (rootProject.tasks.findByName(mergeDetektReportsTaskName) != null) {
+    rootProject.tasks.named<ReportMergeTask>(mergeDetektReportsTaskName)
+} else {
+    rootProject.tasks.register<ReportMergeTask>(mergeDetektReportsTaskName) {
+        output = rootProject.layout.buildDirectory.file("reports/detekt/merged.sarif")
+    }
+}
+
+tasks.withType<Detekt>().configureEach detekt@{
+    jvmTarget = maxKotlinJvmTarget.target
+
+    reports {
+        html.required = false
+
+        // TODO: Enable this once https://github.com/detekt/detekt/issues/5034 is resolved and use the merged
+        //       Markdown file as a GitHub Action job summary, see
+        //       https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/.
+        md.required = false
+
+        sarif.required = true
+        txt.required = false
+        xml.required = false
+    }
+
+    mergeDetektReports.configure {
+        input.from(this@detekt.sarifReportFile)
+    }
+
+    finalizedBy(mergeDetektReports)
+}
+
 tasks.withType<KotlinCompile>().configureEach {
     val hasSerialization = plugins.hasPlugin(libs.plugins.kotlinSerialization.get().pluginId)
-    val maxKotlinJvmTarget = runCatching { JvmTarget.fromTarget(javaLanguageVersion) }
-        .getOrDefault(enumValues<JvmTarget>().max())
 
     compilerOptions {
         allWarningsAsErrors = true
