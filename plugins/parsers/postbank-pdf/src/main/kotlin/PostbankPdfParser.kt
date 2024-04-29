@@ -63,12 +63,12 @@ private class MyLocationTextExtractionStrategy(
  * A filter to ignore vertical text.
  */
 private class VerticalTextFilter : RenderFilter() {
-    override fun allowText(renderInfo: TextRenderInfo?): Boolean {
-        val line = renderInfo!!.baseline
+    override fun allowText(renderInfo: TextRenderInfo): Boolean {
+        val line = renderInfo.baseline
         return line.startPoint.get(Vector.I1) != line.endPoint.get(Vector.I1)
     }
 
-    override fun allowImage(renderInfo: ImageRenderInfo?) = false
+    override fun allowImage(renderInfo: ImageRenderInfo) = false
 }
 
 class PostbankPdfParser : Parser() {
