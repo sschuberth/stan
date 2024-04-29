@@ -20,18 +20,18 @@ repositories {
     mavenCentral()
 }
 
-// Note: Kotlin DSL cannot directly access configurations that are created by applying a plugin in the very same
-// project, thus put configuration names in quotes to leverage lazy lookup.
-dependencies {
-    "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detektPlugin.get()}")
+configurations.all {
+    resolutionStrategy {
+        // Ensure that all transitive versions of Kotlin libraries matches our version of Kotlin.
+        force("org.jetbrains.kotlin:kotlin-reflect:${libs.versions.kotlinPlugin.get()}")
+        force("org.jetbrains.kotlin:kotlin-script-runtime:${libs.versions.kotlinPlugin.get()}")
+    }
 }
 
-detekt {
-    // Only configure differences to the default.
-    buildUponDefaultConfig = true
-    config.from(files("$rootDir/.detekt.yml"))
-
-    source.from(fileTree(".") { include("*.gradle.kts") }, "src/funTest/kotlin")
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(javaLanguageVersion)
+    }
 }
 
 testing {
@@ -61,18 +61,18 @@ kotlin.target.compilations.apply {
     getByName("funTest").associateWith(getByName(KotlinCompilation.MAIN_COMPILATION_NAME))
 }
 
-configurations.all {
-    resolutionStrategy {
-        // Ensure that all transitive versions of Kotlin libraries matches our version of Kotlin.
-        force("org.jetbrains.kotlin:kotlin-reflect:${libs.versions.kotlinPlugin.get()}")
-        force("org.jetbrains.kotlin:kotlin-script-runtime:${libs.versions.kotlinPlugin.get()}")
-    }
+// Note: Kotlin DSL cannot directly access configurations that are created by applying a plugin in the very same
+// project, thus put configuration names in quotes to leverage lazy lookup.
+dependencies {
+    "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detektPlugin.get()}")
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(javaLanguageVersion)
-    }
+detekt {
+    // Only configure differences to the default.
+    buildUponDefaultConfig = true
+    config.from(files("$rootDir/.detekt.yml"))
+
+    source.from(fileTree(".") { include("*.gradle.kts") }, "src/funTest/kotlin")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
