@@ -2,6 +2,7 @@ plugins {
     id("stan-kotlin-conventions")
 
     alias(libs.plugins.compose)
+    alias(libs.plugins.compose.compiler)
 }
 
 compose {
