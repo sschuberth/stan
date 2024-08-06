@@ -1,7 +1,7 @@
 [versions]
 composePlugin = "1.6.11"
 detektPlugin = "1.23.6"
-kotlinPlugin = "2.0.0"
+kotlinPlugin = "2.0.10"
 versionsPlugin = "0.51.0"
 
 bouncyCastle = "1.78.1"
