@@ -113,12 +113,16 @@ tasks.withType<Detekt>().configureEach detekt@{
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-    val hasSerialization = plugins.hasPlugin(libs.plugins.kotlinSerialization.get().pluginId)
+    val hasSerializationPlugin = plugins.hasPlugin(libs.plugins.kotlinSerialization.get().pluginId)
+
+    val optInRequirements = listOfNotNull(
+        "kotlinx.serialization.ExperimentalSerializationApi".takeIf { hasSerializationPlugin }
+    )
 
     compilerOptions {
         allWarningsAsErrors = true
-        if (hasSerialization) freeCompilerArgs.add("-opt-in=kotlinx.serialization.ExperimentalSerializationApi")
         jvmTarget = maxKotlinJvmTarget
+        optIn = optInRequirements
     }
 }
 
