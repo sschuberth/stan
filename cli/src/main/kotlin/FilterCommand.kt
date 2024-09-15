@@ -1,6 +1,7 @@
 package dev.schuberth.stan.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.enum
@@ -11,7 +12,9 @@ import dev.schuberth.stan.model.joinInfo
 
 import java.time.LocalDate
 
-class FilterCommand : CliktCommand(name = "filter", help = "Filter booking items.") {
+class FilterCommand : CliktCommand("filter") {
+    override fun help(context: Context) = "Filter booking items."
+
     private val from by option(
         "--from",
         help = "Start date (inclusive), e.g. '2022-09-01'."

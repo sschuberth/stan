@@ -6,6 +6,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.core.context
+import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.output.MordantHelpFormatter
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -34,7 +35,9 @@ import org.koin.dsl.module
 
 fun main(args: Array<String>) = Main().main(args)
 
-class Main : CliktCommand(invokeWithoutSubcommand = true), Logger {
+class Main : CliktCommand(), Logger {
+    override val invokeWithoutSubcommand = true
+
     private val userHome by lazy {
         val fixedUserHome = System.getProperty("user.home").takeUnless { it.isBlank() || it == "?" } ?: listOfNotNull(
             System.getenv("HOME"),

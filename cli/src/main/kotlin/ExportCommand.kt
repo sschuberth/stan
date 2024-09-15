@@ -4,6 +4,7 @@ package dev.schuberth.stan.cli
 
 import com.github.ajalt.clikt.core.BadParameterValue
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.multiple
@@ -17,7 +18,9 @@ import dev.schuberth.stan.model.Statement
 import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
 
-class ExportCommand : CliktCommand(name = "export", help = "Export statements to different formats.") {
+class ExportCommand : CliktCommand("export") {
+    override fun help(context: Context) = "Export statements to different formats."
+
     private val exportFormats by option(
         "--format", "-f",
         help = "The data format to export to, must be one of ${Exporter.ALL.keys}. If none is specified only " +
