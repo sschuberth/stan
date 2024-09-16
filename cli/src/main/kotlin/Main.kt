@@ -3,7 +3,6 @@
 package dev.schuberth.stan.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.core.context
 import com.github.ajalt.clikt.core.main
@@ -144,8 +143,7 @@ class Main : CliktCommand(), Logger {
         println("Successfully parsed ${parsedStatements.size} of ${statementFiles.size} statement(s) in $duration.\n")
 
         if (parsedStatements.isEmpty()) {
-            System.err.println("No statements found.")
-            throw ProgramResult(2)
+            throw UsageError("No statements found.", "statementGlobs")
         }
 
         println("Checking parsed statements for consistency...")
@@ -154,35 +152,31 @@ class Main : CliktCommand(), Logger {
 
         sortedStatements.zipWithNext().forEach { (curr, next) ->
             if (curr.bankId != next.bankId) {
-                System.err.println(
+                logger.error {
                     "Statements '${curr.filename}' (${curr.bankId}) and '${next.filename}' (${next.bankId}) do not " +
                             "belong to the same bank."
-                )
-                throw ProgramResult(2)
+                }
             }
 
             if (curr.accountId != next.accountId) {
-                System.err.println(
+                logger.error {
                     "Statements '${curr.filename}' (${curr.accountId}) and '${next.filename}' (${next.accountId}) do " +
                             "not belong to the same account."
-                )
-                throw ProgramResult(2)
+                }
             }
 
             if (curr.toDate.plusDays(1) != next.fromDate) {
-                System.err.println(
+                logger.error {
                     "Statements '${curr.filename}' (${curr.toDate}) and '${next.filename}' (${next.fromDate}) are " +
                             "not consecutive."
-                )
-                throw ProgramResult(2)
+                }
             }
 
             if (curr.balanceNew != next.balanceOld) {
-                System.err.println(
+                logger.error {
                     "Balances of statements '${curr.filename}' (${curr.balanceNew}) and '${next.filename}' " +
                             "(${next.balanceOld}) are not successive."
-                )
-                throw ProgramResult(2)
+                }
             }
         }
 
