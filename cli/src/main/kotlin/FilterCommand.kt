@@ -45,6 +45,16 @@ class FilterCommand : CliktCommand("filter") {
         help = "Remove all booking item whose info matches the given regular expression."
     )
 
+    private val lessOrEqual by option(
+        "--less-or-equal",
+        help = "Only include bookings that are less or equal to the given amount."
+    )
+
+    private val greaterOrEqual by option(
+        "--greater-or-equal",
+        help = "Only include bookings that are greater or equal to the given amount."
+    )
+
     private val statements by requireObject<Set<Statement>>()
 
     override fun run() {
@@ -62,6 +72,8 @@ class FilterCommand : CliktCommand("filter") {
             .filterNot { typeNot == it.type }
             .filter { filterRegex?.containsMatchIn(it.info.joinInfo()) != false }
             .filterNot { filterNotRegex?.containsMatchIn(it.info.joinInfo()) == true }
+            .filter { lessOrEqual?.toFloat()?.let { threshold -> it.amount <= threshold } != false }
+            .filter { greaterOrEqual?.toFloat()?.let { threshold -> it.amount >= threshold } != false }
 
         filteredBookings.forEach {
             println("${it.valueDate} : ${it.type} : ${"%.2f".format(it.amount)}")
