@@ -14,6 +14,7 @@ import java.io.File
 import java.text.NumberFormat
 import java.text.ParseException
 import java.time.LocalDate
+import java.time.Month
 import java.util.Locale
 
 import kotlin.IllegalArgumentException
@@ -106,16 +107,10 @@ class PsdBankPdfParser : Logger, Parser() {
 
                 with(state) {
                     val fromDate = checkNotNull(from?.date)
+                    val fromYear = if (fromDate.month == Month.DECEMBER) fromDate.year + 1 else fromDate.year
 
-                    val postDate = LocalDate.of(fromDate.year, checkNotNull(postMonth), checkNotNull(postDay))
-                    if (postDate < fromDate) {
-                        postDate.plusYears(1)
-                    }
-
-                    val valueDate = LocalDate.of(fromDate.year, checkNotNull(valueMonth), checkNotNull(valueDay))
-                    if (valueDate < fromDate) {
-                        valueDate.plusYears(1)
-                    }
+                    val postDate = LocalDate.of(fromYear, checkNotNull(postMonth), checkNotNull(postDay))
+                    val valueDate = LocalDate.of(fromYear, checkNotNull(valueMonth), checkNotNull(valueDay))
 
                     bookings += BookingItem(
                         postDate = postDate,
