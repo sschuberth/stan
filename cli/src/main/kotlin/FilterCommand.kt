@@ -84,6 +84,6 @@ class FilterCommand : CliktCommand("filter") {
         }
 
         val sum = filteredBookings.sumOf { it.amount.toDouble() }
-        println("Sum: ${"%.2f".format(sum)}")
+        println("Sum of ${filteredBookings.count()} booking(s): ${"%.2f".format(sum)}")
     }
 }
