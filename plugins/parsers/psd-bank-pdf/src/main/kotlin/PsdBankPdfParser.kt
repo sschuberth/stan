@@ -131,7 +131,7 @@ class PsdBankPdfParser : Logger, Parser() {
 
             whenMatch(line) {
                 ibanAndBicRegex {
-                    state.accountId = groups["IBAN"]?.value
+                    state.accountId = groups["IBAN"]?.value?.replace(" ", "")
                     state.bankId = groups["BIC"]?.value
                 }
 
