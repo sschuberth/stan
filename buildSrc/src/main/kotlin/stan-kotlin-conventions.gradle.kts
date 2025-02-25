@@ -50,13 +50,7 @@ testing {
             }
         }
 
-        register<JvmTestSuite>("funTest") {
-            sources {
-                kotlin {
-                    testType = TestSuiteType.FUNCTIONAL_TEST
-                }
-            }
-        }
+        register<JvmTestSuite>("funTest")
     }
 }
 
