@@ -61,8 +61,9 @@ class Main : CliktCommand(), Logger {
 
     private val parserOptions by option(
         "--parser-option", "-p",
-        help = "A parser specific option. The key is the (case-insensitive) name of the parser, and the value is an " +
-                "arbitrary key-value pair. For example: -p PostbankPDF=textOutputDir=text/output/dir"
+        help = "A parser specific option. Supported parsers are ${Parser.ALL.keys}. The key is the (case-" +
+                "insensitive) name of the parser, and the value is an arbitrary key-value pair. For example: " +
+                "-p PostbankPDF=textOutputDir=text/output/dir"
     ).splitPair().convert { (format, option) ->
         require(format in Parser.ALL) {
             "Parser format '$format' must be one of ${Parser.ALL.keys}."
