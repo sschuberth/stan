@@ -40,7 +40,8 @@ graalvmNative {
 
             buildArgs.addAll(
                 "--parallelism=8",
-                "-J-Xmx16g"
+                "-J-Xmx16g",
+                "-Os"
             )
         }
     }
