@@ -17,8 +17,6 @@ import java.time.LocalDate
 import java.time.Month
 import java.util.Locale
 
-import kotlin.IllegalArgumentException
-
 class PsdBankPdfParser : Logger, Parser() {
     private data class ParsingState(
         var accountId: String? = null,
