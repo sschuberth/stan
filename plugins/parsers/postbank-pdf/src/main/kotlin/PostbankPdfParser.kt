@@ -65,7 +65,7 @@ private class MyLocationTextExtractionStrategy(
 private class VerticalTextFilter : RenderFilter() {
     override fun allowText(renderInfo: TextRenderInfo): Boolean {
         val line = renderInfo.baseline
-        return line.startPoint.get(Vector.I1) != line.endPoint.get(Vector.I1)
+        return line.startPoint[Vector.I1] != line.endPoint[Vector.I1]
     }
 
     override fun allowImage(renderInfo: ImageRenderInfo) = false
