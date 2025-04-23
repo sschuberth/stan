@@ -2,9 +2,9 @@ package dev.schuberth.stan.cli
 
 import java.lang.System.Logger.Level
 
-// The System.Logger API by default uses the java.util.logging.Logger implementation, so formatting needs to be
-// customized via java.util.logging.* properties, see
-// https://docs.oracle.com/cd/E57471_01/bigData.100/data_processing_bdd/src/rdp_logging_config.html
+// The Java 9 [java.lang.System.Logger] API by default uses the legacy [java.util.logging.Logger] implementation, so
+// formatting needs to be customized via `java.util.logging.*` properties, see
+// https://docs.oracle.com/cd/E57471_01/bigData.100/data_processing_bdd/src/rdp_logging_config.html.
 @Suppress("Unused", "UnusedPrivateProperty")
 private val originalLogFormat = System.setProperty(
     "java.util.logging.SimpleFormatter.format",
@@ -13,6 +13,10 @@ private val originalLogFormat = System.setProperty(
 
 private val rootLogger by lazy { java.util.logging.LogManager.getLogManager().getLogger("") }
 
+/**
+ * Map the [level] of the Java 9 [java.lang.System.Logger] API to the corresponding level of the legacy
+ * [java.util.logging.Logger] implementation and use it as the root logger level.
+ */
 fun setRootLogLevel(level: Level) {
     // See the table at https://docs.oracle.com/javase/9/docs/api/java/lang/System.Logger.Level.html.
     rootLogger.level = when (level) {
