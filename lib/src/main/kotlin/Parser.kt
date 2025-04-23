@@ -38,7 +38,7 @@ private fun Statement.applyCategories(config: Configuration) =
         }
     )
 
-private fun Statement.performSanityChecks() =
+private fun Statement.performSanityChecks(tolerance: Float = 0.01f) =
     apply {
         var calcIn = 0.0f
         var calcOut = 0.0f
@@ -50,16 +50,16 @@ private fun Statement.performSanityChecks() =
             }
         }
 
-        if (abs(calcIn - sumIn) >= 0.01) {
+        if (abs(calcIn - sumIn) > tolerance) {
             throw ParseException("Sanity check on incoming booking summary failed: $calcIn != $sumIn", 0)
         }
 
-        if (abs(calcOut - sumOut) >= 0.01) {
+        if (abs(calcOut - sumOut) > tolerance) {
             throw ParseException("Sanity check on outgoing booking summary failed: $calcOut != $sumOut", 0)
         }
 
         val balanceCalc = balanceOld + sumIn + sumOut
-        if (abs(balanceCalc - balanceNew) >= 0.01) {
+        if (abs(balanceCalc - balanceNew) > tolerance) {
             throw ParseException("Sanity check on balances failed: $balanceCalc != $balanceNew", 0)
         }
     }
