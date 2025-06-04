@@ -5,7 +5,7 @@ graalvmPlugin = "0.10.6"
 kotlinPlugin = "2.1.21"
 versionsPlugin = "0.52.0"
 
-bouncyCastle = "1.80"
+bouncyCastle = "1.81"
 clikt = "5.0.3"
 itextpdf = "5.5.13.4"
 koinCore = "4.0.4"
