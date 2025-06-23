@@ -117,6 +117,9 @@ tasks.named<KotlinCompile>("compileKotlin") {
         allWarningsAsErrors = true
         jvmTarget = maxKotlinJvmTarget
         optIn = optInRequirements
+
+        // Work-around for https://youtrack.jetbrains.com/issue/KT-78352.
+        freeCompilerArgs.add("-Xwarning-level=IDENTITY_SENSITIVE_OPERATIONS_WITH_VALUE_TYPE:disabled")
     }
 }
 
