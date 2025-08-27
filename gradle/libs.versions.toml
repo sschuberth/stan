@@ -23,7 +23,7 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
 
 [libraries]
-bouncyCastle = { module = "org.bouncycastle:bcprov-jdk15to18", version.ref = "bouncyCastle" }
+bouncyCastle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncyCastle" }
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektPlugin" }
 itextpdf = { module = "com.itextpdf:itextpdf", version.ref = "itextpdf" }
