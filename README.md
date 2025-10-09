@@ -50,7 +50,7 @@ Stan is both a library and command line tool to convert and analyze bank account
 
 - [SUPA](https://www.subsembly.com/download/SUPA.pdf)
 
-  Subsembly's SUPA format is used by the [Banking4](https://www.subsembly.com/banking4.html) application.
+  Subsembly's SUPA format is used by the [Banking4](https://banking4.de/) application.
 
 ## How to run the command line tool?
 
