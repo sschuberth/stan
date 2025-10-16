@@ -11,7 +11,7 @@ koinCore = "4.1.1"
 kotest = "6.0.4"
 kotlinxSerialization = "1.9.0"
 ks3 = "1.0.0"
-pdfbox = "3.0.5"
+pdfbox = "3.0.6"
 poiOoxml = "5.4.1"
 
 [plugins]
