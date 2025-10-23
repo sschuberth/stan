@@ -2,7 +2,7 @@
 composePlugin = "1.9.1"
 detektPlugin = "1.23.8"
 graalvmPlugin = "0.11.2"
-kotlinPlugin = "2.2.20"
+kotlinPlugin = "2.2.21"
 
 bouncyCastle = "1.82"
 clikt = "5.0.3"
