@@ -4,7 +4,7 @@ detektPlugin = "1.23.8"
 graalvmPlugin = "0.11.3"
 kotlinPlugin = "2.2.21"
 
-bouncyCastle = "1.82"
+bouncyCastle = "1.83"
 clikt = "5.0.3"
 itextpdf = "5.5.13.4"
 koinCore = "4.1.1"
