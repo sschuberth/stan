@@ -18,23 +18,20 @@ poiOoxml = "5.5.1"
 compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinPlugin" }
 graalvm = { id = "org.graalvm.buildtools.native", version.ref = "graalvmPlugin" }
-kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPlugin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPlugin" }
 
 [libraries]
 bouncyCastle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncyCastle" }
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektPlugin" }
 itextpdf = { module = "com.itextpdf:itextpdf", version.ref = "itextpdf" }
-koinCore = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
-kotestAssertionsCore = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
-kotestRunnerJunit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinPlugin" }
-kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinPlugin" }
-kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinPlugin" }
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 ks3-jdk = { module = "io.ks3:ks3-jdk", version.ref = "ks3" }
 ks3-standard = { module = "io.ks3:ks3-standard", version.ref = "ks3" }
 pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfbox" }
 poiOoxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poiOoxml" }
-
-[bundles]
-ks3 = ["ks3-jdk", "ks3-standard"]
