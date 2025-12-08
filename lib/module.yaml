@@ -1,0 +1,11 @@
+product: jvm/lib
+
+dependencies:
+- $libs.koin.core: exported
+- $libs.ks3.jdk
+- $libs.ks3.standard
+- $libs.kotlinx.serialization
+
+test-dependencies:
+- $libs.kotest.assertions.core
+- $libs.kotest.runner.junit5

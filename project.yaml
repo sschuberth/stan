@@ -1,0 +1,15 @@
+modules:
+#- ./cli
+- ./lib
+#- ./gui
+#- ./plugins/exporters/cvs-exporter
+#- ./plugins/exporters/excel-exporter
+#- ./plugins/exporters/json-exporter
+#- ./plugins/exporters/mt940-exporter
+#- ./plugins/exporters/ofx-exporter
+#- ./plugins/exporters/qif-exporter
+#- ./plugins/exporters/supa-exporter
+#- ./plugins/parsers/ing-pdf-parser
+#- ./plugins/parsers/postbank-db-pdf-parser
+#- ./plugins/parsers/postbank-pdf-parser
+#- ./plugins/parsers/psd-pdf-parser
