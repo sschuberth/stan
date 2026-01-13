@@ -1,5 +1,5 @@
 [versions]
-composePlugin = "1.9.3"
+composePlugin = "1.10.0"
 detektPlugin = "1.23.8"
 graalvmPlugin = "0.11.3"
 kotlinPlugin = "2.2.21"
