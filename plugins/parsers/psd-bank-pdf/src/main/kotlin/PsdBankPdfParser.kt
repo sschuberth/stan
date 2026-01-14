@@ -229,15 +229,14 @@ class PsdBankPdfParser : Logger, Parser() {
         }
     }
 
-    private fun String.toBookingType() =
-        // TODO: Make this configurable like categories.
-        when (this) {
-            "Auszahlung girocard" -> BookingType.ATM
-            "Abschluss lt. Anlage 1" -> BookingType.OTHER
-            "EURO-Überweisung" -> BookingType.PAYMENT
-            "Kartenzahlung girocard", "Kartenzahlung V PAY" -> BookingType.PAYMENT
-            "Lastschrift" -> BookingType.DEBIT
-            "Überweisungsgutschr." -> BookingType.CREDIT
-            else -> BookingType.OTHER
-        }
+    // TODO: Make this configurable like categories.
+    private fun String.toBookingType() = when (this) {
+        "Auszahlung girocard" -> BookingType.ATM
+        "Abschluss lt. Anlage 1" -> BookingType.OTHER
+        "EURO-Überweisung" -> BookingType.PAYMENT
+        "Kartenzahlung girocard", "Kartenzahlung V PAY" -> BookingType.PAYMENT
+        "Lastschrift" -> BookingType.DEBIT
+        "Überweisungsgutschr." -> BookingType.CREDIT
+        else -> BookingType.OTHER
+    }
 }

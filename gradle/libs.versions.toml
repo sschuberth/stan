@@ -1,6 +1,6 @@
 [versions]
 composePlugin = "1.10.0"
-detektPlugin = "1.23.8"
+detektPlugin = "2.0.0-alpha.1"
 graalvmPlugin = "0.11.3"
 kotlinPlugin = "2.3.0"
 
@@ -23,7 +23,7 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 [libraries]
 bouncyCastle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncyCastle" }
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detektPlugin" }
+detekt = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detektPlugin" }
 itextpdf = { module = "com.itextpdf:itextpdf", version.ref = "itextpdf" }
 koinCore = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
 kotestAssertionsCore = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }

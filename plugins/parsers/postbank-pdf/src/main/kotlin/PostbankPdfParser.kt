@@ -162,34 +162,33 @@ class PostbankPdfParser : Parser() {
         return text to isFormat2014
     }
 
-    private fun mapType(infoLine: String) =
-        // TODO: Make this configurable like categories.
-        when (infoLine) {
-            "Auszahlung Geldautomat", "Bargeldausz. Geldautomat", "Kartenverfüg" -> BookingType.ATM
+    // TODO: Make this configurable like categories.
+    private fun mapType(infoLine: String) = when (infoLine) {
+        "Auszahlung Geldautomat", "Bargeldausz. Geldautomat", "Kartenverfüg" -> BookingType.ATM
 
-            "Auszahlung", "Bargeldauszahlung" -> BookingType.CASH
+        "Auszahlung", "Bargeldauszahlung" -> BookingType.CASH
 
-            "Scheckeinreichung", "Scheckeinr", "Inh. Scheck" -> BookingType.CHECK
+        "Scheckeinreichung", "Scheckeinr", "Inh. Scheck" -> BookingType.CHECK
 
-            "Gutschrift", "Gutschr.SEPA", "Gutschr. SEPA", "Storno: SDD Lastschr", "paydirekt Rückzahlung",
-            "Einzahlung", "Retoure" -> BookingType.CREDIT
+        "Gutschrift", "Gutschr.SEPA", "Gutschr. SEPA", "Storno: SDD Lastschr", "paydirekt Rückzahlung",
+        "Einzahlung", "Retoure" -> BookingType.CREDIT
 
-            "Kartenlastschrift", "Lastschrift", "SDD Lastschr", "paydirekt Zahlung" -> BookingType.DEBIT
+        "Kartenlastschrift", "Lastschrift", "SDD Lastschr", "paydirekt Zahlung" -> BookingType.DEBIT
 
-            "Zinsen/Entg." -> BookingType.INT
+        "Zinsen/Entg." -> BookingType.INT
 
-            "Überweisung giropay", "Kartenzahlung", "Geldkarte", "Gutscheinkauf" -> BookingType.PAYMENT
+        "Überweisung giropay", "Kartenzahlung", "Geldkarte", "Gutscheinkauf" -> BookingType.PAYMENT
 
-            "Gehalt/Rente" -> BookingType.CREDIT
+        "Gehalt/Rente" -> BookingType.CREDIT
 
-            "SEPA Überw. Einzel", "SEPA Überw. BZÜ", "Umbuchung" -> BookingType.XFER
+        "SEPA Überw. Einzel", "SEPA Überw. BZÜ", "Umbuchung" -> BookingType.XFER
 
-            else -> when (infoLine.split(' ').firstOrNull()) {
-                "Gut" -> BookingType.CREDIT
-                "Dauerauftrag" -> BookingType.REPEATPMT
-                else -> BookingType.OTHER
-            }
+        else -> when (infoLine.split(' ').firstOrNull()) {
+            "Gut" -> BookingType.CREDIT
+            "Dauerauftrag" -> BookingType.REPEATPMT
+            else -> BookingType.OTHER
         }
+    }
 
     private enum class State {
         INITIAL,
@@ -469,6 +468,7 @@ class PostbankPdfParser : Parser() {
         }
     }
 
+    @Suppress("ThrowsCount")
     override fun parseInternal(statementFile: File, options: Map<String, String>): Statement {
         val filename = statementFile.absolutePath
         val (text, isFormat2014) = extractText(filename)

@@ -87,10 +87,9 @@ class ExcelExporter : Exporter {
     }
 }
 
-private fun XSSFCell.setAnyCellValue(value: Any?) =
-    when (value) {
-        null -> {}
-        is Float -> setCellValue(value.toDouble())
-        is LocalDate -> setCellValue(value)
-        else -> setCellValue(value.toString())
-    }
+private fun XSSFCell.setAnyCellValue(value: Any?) = when (value) {
+    null -> {}
+    is Float -> setCellValue(value.toDouble())
+    is LocalDate -> setCellValue(value)
+    else -> setCellValue(value.toString())
+}

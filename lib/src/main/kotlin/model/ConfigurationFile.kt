@@ -22,39 +22,34 @@ data class ConfigurationFile(
         fun load(configStream: InputStream): Configuration =
             configStream.use { JSON.decodeFromStream<ConfigurationFile>(it) }
 
-        fun load(configFile: File): Configuration =
-            load(configFile.inputStream())
+        fun load(configFile: File): Configuration = load(configFile.inputStream())
 
         fun load(configResource: String): Configuration =
             load(Configuration::class.java.getResourceAsStream(configResource))
 
-        fun loadDefault(): Configuration =
-            load("/config.json")
+        fun loadDefault(): Configuration = load("/config.json")
 
-        fun resolveGlobs(files: Set<File>): Set<File> =
-            files.flatMapTo(mutableSetOf()) { globFile ->
-                if (globFile.isFile) {
-                    sequenceOf(globFile)
-                } else {
-                    val globPath = globFile.absoluteFile.invariantSeparatorsPath
-                    val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
+        fun resolveGlobs(files: Set<File>): Set<File> = files.flatMapTo(mutableSetOf()) { globFile ->
+            if (globFile.isFile) {
+                sequenceOf(globFile)
+            } else {
+                val globPath = globFile.absoluteFile.invariantSeparatorsPath
+                val matcher = FileSystems.getDefault().getPathMatcher("glob:$globPath")
 
-                    var walkRoot: File? = globFile
-                    while (walkRoot?.isDirectory == false) walkRoot = walkRoot.parentFile
+                var walkRoot: File? = globFile
+                while (walkRoot?.isDirectory == false) walkRoot = walkRoot.parentFile
 
-                    walkRoot?.walkBottomUp()?.filter {
-                        matcher.matches(it.toPath())
-                    }.orEmpty().sorted()
-                }
+                walkRoot?.walkBottomUp()?.filter {
+                    matcher.matches(it.toPath())
+                }.orEmpty().sorted()
+            }
         }
     }
 
-    override fun getStatementFiles(): Set<File> =
-        resolveGlobs(statementGlobs)
+    override fun getStatementFiles(): Set<File> = resolveGlobs(statementGlobs)
 
-    override fun findBookingCategory(item: BookingItem): BookingCategory? =
-        bookingCategories.find {
-            val regex = Regex(it.regexes.joinToString("|", ".*(", ").*"), regexOptions)
-            regex.matches(item.info.joinInfo()) && it.minAmount <= item.amount && item.amount < it.maxAmount
-        }
+    override fun findBookingCategory(item: BookingItem): BookingCategory? = bookingCategories.find {
+        val regex = Regex(it.regexes.joinToString("|", ".*(", ").*"), regexOptions)
+        regex.matches(item.info.joinInfo()) && it.minAmount <= item.amount && item.amount < it.maxAmount
+    }
 }

@@ -4,24 +4,34 @@ comments:
 
 complexity:
   CyclomaticComplexMethod:
-    threshold: 40
+    allowedComplexity: 40
   LongMethod:
-    threshold: 120
+    allowedLines: 120
   NestedBlockDepth:
-    threshold: 6
+    allowedDepth: 6
 
 # Formatting rules are implemented via the ktlint plugin. As ktlint does not allow exceptions, we need to disable
 # respective rules completely.
-formatting:
+ktlint:
+  ChainMethodContinuation:
+    active: false
+  ClassSignature:
+    active: false
   ImportOrdering:
     active: false
   Indentation:
     active: false
   MaximumLineLength:
     active: false
+  NoBlankLineInList:
+    active: false
   NoWildcardImports:
     active: false
   ParameterListWrapping:
+    active: false
+  TrailingCommaOnCallSite:
+    active: false
+  TrailingCommaOnDeclarationSite:
     active: false
 
 naming:

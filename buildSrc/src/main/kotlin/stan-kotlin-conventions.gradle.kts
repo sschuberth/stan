@@ -1,5 +1,6 @@
-import io.gitlab.arturbosch.detekt.Detekt
-import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import dev.detekt.gradle.Detekt
+import dev.detekt.gradle.report.ReportMergeTask
+
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -15,7 +16,7 @@ val javaLanguageVersion: String by project
 
 plugins {
     id("org.jetbrains.kotlin.jvm")
-    id("io.gitlab.arturbosch.detekt")
+    id("dev.detekt")
 }
 
 repositories {
@@ -63,7 +64,7 @@ kotlin.target.compilations.apply {
 // Note: Kotlin DSL cannot directly access configurations that are created by applying a plugin in the very same
 // project, thus put configuration names in quotes to leverage lazy lookup.
 dependencies {
-    "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:${libs.versions.detektPlugin.get()}")
+    "detektPlugins"("dev.detekt:detekt-rules-ktlint-wrapper:${libs.versions.detektPlugin.get()}")
 }
 
 detekt {
@@ -92,15 +93,13 @@ tasks.withType<Detekt>().configureEach detekt@{
         // TODO: Enable this once https://github.com/detekt/detekt/issues/5034 is resolved and use the merged
         //       Markdown file as a GitHub Action job summary, see
         //       https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/.
-        md.required = false
+        markdown.required = false
 
         sarif.required = true
-        txt.required = false
-        xml.required = false
     }
 
     mergeDetektReports.configure {
-        input.from(this@detekt.sarifReportFile)
+        input.from(this@detekt.reports.sarif.outputLocation)
     }
 
     finalizedBy(mergeDetektReports)
