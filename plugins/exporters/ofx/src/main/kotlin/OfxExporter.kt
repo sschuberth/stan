@@ -100,17 +100,14 @@ class OfxExporter : Exporter {
 private fun tag(name: String, vararg contents: String) =
     "<$name>\n${contents.joinToString("\n").prependIndent(OfxExporter.INDENTATION_STRING)}\n</$name>"
 
-private fun data(name: String, value: Any) =
-    "<$name>$value"
+private fun data(name: String, value: Any) = "<$name>$value"
 
-private fun writeStatusAggregate(code: Int, severity: String) =
-    tag("STATUS", "<CODE>$code", "<SEVERITY>$severity")
+private fun writeStatusAggregate(code: Int, severity: String) = tag("STATUS", "<CODE>$code", "<SEVERITY>$severity")
 
-private fun writeStatementTransaction(item: BookingItem) =
-    tag(
-        "STMTTRN",
-        data("DTPOSTED", item.postDate.format(DateTimeFormatter.BASIC_ISO_DATE)),
-        data("MEMO", item.info.joinInfo()),
-        data("TRNAMT", item.amount),
-        data("TRNTYPE", item.type.name)
-    )
+private fun writeStatementTransaction(item: BookingItem) = tag(
+    "STMTTRN",
+    data("DTPOSTED", item.postDate.format(DateTimeFormatter.BASIC_ISO_DATE)),
+    data("MEMO", item.info.joinInfo()),
+    data("TRNAMT", item.amount),
+    data("TRNTYPE", item.type.name)
+)

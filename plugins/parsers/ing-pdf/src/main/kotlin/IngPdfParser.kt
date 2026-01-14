@@ -203,16 +203,15 @@ class IngPdfParser : Logger, Parser() {
         return text
     }
 
-    private fun String.toBookingType() =
-        // TODO: Make this configurable like categories.
-        when (this) {
-            "Abbuchung" -> BookingType.DEBIT
-            "Abschluss" -> BookingType.OTHER
-            "Entgelt" -> BookingType.FEE
-            "Gutschrift" -> BookingType.CREDIT
-            "Gutschrift/Dauerauftrag" -> BookingType.REPEATPMT
-            "Lastschrift" -> BookingType.PAYMENT
-            "Ueberweisung" -> BookingType.XFER
-            else -> BookingType.OTHER
-        }
+    // TODO: Make this configurable like categories.
+    private fun String.toBookingType() = when (this) {
+        "Abbuchung" -> BookingType.DEBIT
+        "Abschluss" -> BookingType.OTHER
+        "Entgelt" -> BookingType.FEE
+        "Gutschrift" -> BookingType.CREDIT
+        "Gutschrift/Dauerauftrag" -> BookingType.REPEATPMT
+        "Lastschrift" -> BookingType.PAYMENT
+        "Ueberweisung" -> BookingType.XFER
+        else -> BookingType.OTHER
+    }
 }

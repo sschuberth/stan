@@ -7,7 +7,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.charset.StandardCharsets
 
-@Suppress("UnnecessaryAbstractClass")
+@Suppress("AbstractClassCanBeConcreteClass")
 abstract class AbstractTextExporterFunTest(exporter: Exporter, transform: String.() -> String = { this }) : StringSpec({
     listOf(
         statementGoranBolsec to "PB_KAZ_KtoNr_0914083113_03-06-2016_0313",
