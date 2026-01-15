@@ -11,6 +11,7 @@ import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.model.joinInfo
 
 import java.time.LocalDate
+import java.util.Locale
 
 class FilterCommand : CliktCommand("filter") {
     override fun help(context: Context) = "Filter booking items."
@@ -76,7 +77,7 @@ class FilterCommand : CliktCommand("filter") {
             .filter { greaterOrEqual?.toFloat()?.let { threshold -> it.amount >= threshold } != false }
 
         filteredBookings.forEach {
-            println("${it.valueDate} : ${it.type} : ${"%.2f".format(it.amount)}")
+            println("${it.valueDate} : ${it.type} : ${"%.2f".format(Locale.ROOT, it.amount)}")
             it.info.forEach { line ->
                 println("    $line")
             }
@@ -84,6 +85,6 @@ class FilterCommand : CliktCommand("filter") {
         }
 
         val sum = filteredBookings.sumOf { it.amount.toDouble() }
-        println("Sum of ${filteredBookings.count()} booking(s): ${"%.2f".format(sum)}")
+        println("Sum of ${filteredBookings.count()} booking(s): ${"%.2f".format(Locale.ROOT, sum)}")
     }
 }
