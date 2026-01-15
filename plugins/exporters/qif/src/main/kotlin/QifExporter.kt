@@ -9,6 +9,7 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 /**
  * See https://en.wikipedia.org/wiki/Quicken_Interchange_Format.
@@ -34,7 +35,7 @@ class QifExporter : Exporter {
 
             statement.bookings.forEach {
                 val date = it.valueDate.format(DATE_FORMATTER)
-                val amount = "%.2f".format(it.amount)
+                val amount = "%.2f".format(Locale.ROOT, it.amount)
                 val memo = it.info.joinInfo()
 
                 writer.println("D$date")
