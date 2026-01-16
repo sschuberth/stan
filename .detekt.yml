@@ -30,9 +30,11 @@ ktlint:
   ParameterListWrapping:
     active: false
   TrailingCommaOnCallSite:
-    active: false
+    active: true
+    useTrailingCommaOnCallSite: false
   TrailingCommaOnDeclarationSite:
-    active: false
+    active: true
+    useTrailingCommaOnDeclarationSite: false
 
 naming:
   InvalidPackageDeclaration:
