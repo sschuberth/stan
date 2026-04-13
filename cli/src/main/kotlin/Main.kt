@@ -34,7 +34,7 @@ import org.koin.dsl.module
 
 fun main(args: Array<String>) = Main().main(args)
 
-class Main : CliktCommand(), Logger {
+class Main : CliktCommand("stan"), Logger {
     override val invokeWithoutSubcommand = true
 
     private val userHome by lazy {
