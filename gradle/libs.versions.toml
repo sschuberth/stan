@@ -1,6 +1,6 @@
 [versions]
 composePlugin = "1.10.3"
-detektPlugin = "2.0.0-alpha.2"
+detektPlugin = "2.0.0-alpha.3"
 graalvmPlugin = "1.1.0"
 kotlinPlugin = "2.3.21"
 
