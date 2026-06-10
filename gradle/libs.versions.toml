@@ -1,7 +1,7 @@
 [versions]
 composePlugin = "1.11.1"
 detektPlugin = "2.0.0-alpha.3"
-graalvmPlugin = "1.1.1"
+graalvmPlugin = "1.1.2"
 kotlinPlugin = "2.4.0"
 
 bouncyCastle = "1.84"
