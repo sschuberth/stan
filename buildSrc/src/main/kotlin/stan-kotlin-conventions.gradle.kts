@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 private val Project.libs: LibrariesForLibs
     get() = extensions.getByType()
 
-val javaLanguageVersion: String by project
+val javaLanguageVersion = project.property("javaLanguageVersion") as String
 
 plugins {
     id("org.jetbrains.kotlin.jvm")

@@ -28,9 +28,9 @@ dependencies {
     implementation(libs.kotlinReflect)
 }
 
-val jar by tasks.getting(Jar::class)
+val appJar = tasks.named<Jar>("jar")
 
-val pathingJar by tasks.registering(Jar::class) {
+val pathingJar = tasks.register("pathingJar", Jar::class) {
     archiveClassifier = "pathing"
 
     manifest {
@@ -51,7 +51,7 @@ distributions {
 }
 
 tasks.named<CreateStartScripts>("startScripts") {
-    classpath = jar.outputs.files + pathingJar.get().outputs.files
+    classpath = appJar.get().outputs.files + pathingJar.get().outputs.files
 
     doLast {
         // Append the plugin directory to the Windows classpath.
