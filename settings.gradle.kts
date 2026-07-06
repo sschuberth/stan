@@ -1,3 +1,7 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+rootProject.name = "stan"
+
 include(":cli")
 include(":gui")
 include(":lib")

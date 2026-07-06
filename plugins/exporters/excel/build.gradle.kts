@@ -5,10 +5,10 @@ plugins {
 }
 
 dependencies {
-    api(project(":lib"))
+    api(projects.lib)
 
     implementation(libs.kotlinReflect)
     implementation(libs.poiOoxml)
 
-    funTestImplementation(testFixtures(project(":lib")))
+    funTestImplementation(testFixtures(projects.lib))
 }

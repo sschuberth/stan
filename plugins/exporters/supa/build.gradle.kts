@@ -7,9 +7,9 @@ plugins {
 }
 
 dependencies {
-    api(project(":lib"))
+    api(projects.lib)
 
     implementation(libs.kotlinxSerialization)
 
-    funTestImplementation(testFixtures(project(":lib")))
+    funTestImplementation(testFixtures(projects.lib))
 }

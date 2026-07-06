@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":lib"))
+    api(projects.lib)
 
-    funTestImplementation(testFixtures(project(":lib")))
+    funTestImplementation(testFixtures(projects.lib))
 }

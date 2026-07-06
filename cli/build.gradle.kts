@@ -18,10 +18,10 @@ application {
 }
 
 dependencies {
-    implementation(platform(project(":plugins:exporters")))
-    implementation(platform(project(":plugins:parsers")))
+    implementation(platform(projects.plugins.exporters))
+    implementation(platform(projects.plugins.parsers))
 
-    implementation(project(":lib"))
+    implementation(projects.lib)
 
     implementation(libs.clikt)
     implementation(libs.koinCore)
