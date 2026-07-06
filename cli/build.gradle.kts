@@ -20,12 +20,10 @@ application {
 dependencies {
     implementation(platform(projects.plugins.exporters))
     implementation(platform(projects.plugins.parsers))
-
-    implementation(projects.lib)
-
     implementation(libs.clikt)
     implementation(libs.koinCore)
     implementation(libs.kotlinReflect)
+    implementation(projects.lib)
 }
 
 val appJar = tasks.named<Jar>("jar")
