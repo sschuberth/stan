@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api(projects.lib)
+    compileOnly(projects.plugins.exporters.exporterApi)
 
     implementation(libs.kotlinReflect)
     implementation(libs.poiOoxml)

@@ -3,10 +3,10 @@ package dev.schuberth.stan.plugins.parsers.psdbank
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
 
-import dev.schuberth.stan.Parser
 import dev.schuberth.stan.model.BookingItem
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Statement
+import dev.schuberth.stan.plugins.parsers.api.Parser
 import dev.schuberth.stan.utils.Logger
 import dev.schuberth.stan.utils.whenMatch
 

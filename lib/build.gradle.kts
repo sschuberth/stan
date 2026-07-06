@@ -8,10 +8,9 @@ plugins {
 }
 
 dependencies {
-    api(libs.koinCore)
-
     implementation(libs.bundles.ks3)
     implementation(libs.kotlinxSerialization)
+    implementation(projects.plugins.exporters.exporterApi)
 
     testFixturesImplementation(libs.koinCore)
     testFixturesImplementation(libs.kotestAssertionsCore)

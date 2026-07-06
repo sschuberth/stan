@@ -1,6 +1,6 @@
 package dev.schuberth.stan.plugins.exporters.mt940
 
-import dev.schuberth.stan.Exporter
+import dev.schuberth.stan.plugins.exporters.api.Exporter
 import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.model.joinInfo
 import dev.schuberth.stan.utils.UnixPrintWriter

@@ -1,6 +1,6 @@
 package dev.schuberth.stan.plugins.exporters.csv
 
-import dev.schuberth.stan.Exporter
+import dev.schuberth.stan.plugins.exporters.api.Exporter
 import dev.schuberth.stan.model.BookingType
 import dev.schuberth.stan.model.Statement
 import dev.schuberth.stan.model.joinInfo

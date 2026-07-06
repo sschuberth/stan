@@ -1,4 +1,4 @@
-package dev.schuberth.stan.utils
+package dev.schuberth.stan.plugins.api
 
 import java.util.ServiceLoader
 

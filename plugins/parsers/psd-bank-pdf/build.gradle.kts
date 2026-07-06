@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api(projects.lib)
+    compileOnly(projects.plugins.parsers.parserApi)
 
     implementation(libs.bouncyCastle)
     implementation(libs.itextpdf)

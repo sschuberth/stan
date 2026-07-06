@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    api(projects.lib)
+    compileOnly(projects.plugins.exporters.exporterApi)
 
     implementation(libs.kotlinxSerialization)
 

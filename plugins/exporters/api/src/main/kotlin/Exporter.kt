@@ -1,7 +1,7 @@
-package dev.schuberth.stan
+package dev.schuberth.stan.plugins.exporters.api
 
 import dev.schuberth.stan.model.Statement
-import dev.schuberth.stan.utils.NamedPlugin
+import dev.schuberth.stan.plugins.api.NamedPlugin
 
 import java.io.OutputStream
 

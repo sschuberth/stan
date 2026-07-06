@@ -1,8 +1,8 @@
-package dev.schuberth.stan
+package dev.schuberth.stan.plugins.parsers.api
 
 import dev.schuberth.stan.model.Configuration
 import dev.schuberth.stan.model.Statement
-import dev.schuberth.stan.utils.NamedPlugin
+import dev.schuberth.stan.plugins.api.NamedPlugin
 
 import java.io.File
 import java.text.ParseException
