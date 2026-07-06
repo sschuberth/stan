@@ -3,6 +3,7 @@ composePlugin = "1.11.1"
 detektPlugin = "2.0.0-alpha.5"
 graalvmPlugin = "1.1.6"
 kotlinPlugin = "2.4.10"
+sortDependenciesPlugin = "0.19.0"
 
 bouncyCastle = "1.85"
 clikt = "5.1.0"
@@ -24,6 +25,7 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 # These are Maven coordinates for Gradle plugins, which are required for use in precompiled plugin scripts.
 plugin-detekt = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detektPlugin" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinPlugin" }
+plugin-sortDependencies = { module = "com.squareup:sort-dependencies-gradle-plugin", version.ref = "sortDependenciesPlugin" }
 
 bouncyCastle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncyCastle" }
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }

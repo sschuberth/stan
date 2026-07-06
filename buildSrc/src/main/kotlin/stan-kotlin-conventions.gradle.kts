@@ -16,6 +16,7 @@ val javaLanguageVersion = project.property("javaLanguageVersion") as String
 
 plugins {
     id("org.jetbrains.kotlin.jvm")
+    id("com.squareup.sort-dependencies")
     id("dev.detekt")
 }
 
