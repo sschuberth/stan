@@ -16,6 +16,6 @@ repositories {
 dependencies {
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 
-    implementation(libs.detekt)
-    implementation(libs.kotlin)
+    implementation(libs.plugin.detekt)
+    implementation(libs.plugin.kotlin)
 }
