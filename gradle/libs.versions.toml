@@ -6,7 +6,7 @@ kotlinPlugin = "2.4.10"
 
 bouncyCastle = "1.85"
 clikt = "5.1.0"
-itextpdf = "5.5.13.5"
+itextpdf = "5.5.13.6"
 koinCore = "4.2.2"
 kotest = "6.2.3"
 kotlinxSerialization = "1.11.0"
