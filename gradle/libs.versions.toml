@@ -5,7 +5,7 @@ graalvmPlugin = "1.1.6"
 kotlinPlugin = "2.4.10"
 sortDependenciesPlugin = "0.20.0"
 
-bouncyCastle = "1.85"
+bouncyCastle = "1.85.2"
 clikt = "5.1.0"
 itextpdf = "5.5.13.6"
 koinCore = "4.2.2"
