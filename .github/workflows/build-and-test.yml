@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v6
+      uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
       with:
         gradle-home-cache-cleanup: true
     - name: Build all classes
@@ -25,9 +25,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v6
+      uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
       with:
         gradle-home-cache-cleanup: true
     - name: Run unit tests
@@ -37,9 +37,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
           gradle-home-cache-cleanup: true
       - name: Run functional tests
@@ -49,9 +49,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
           gradle-home-cache-cleanup: true
       - name: Check for Detekt Issues
@@ -59,7 +59,7 @@ jobs:
       - name: Check for Detekt Issues with type resolution
         run: ./gradlew detektMain detektTestFixtures detektTest detektFunTest
       - name: Upload SARIF File
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         if: always() # Upload even if the previous step failed.
         with:
           sarif_file: build/reports/detekt/merged.sarif
