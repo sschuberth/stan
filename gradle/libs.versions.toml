@@ -13,7 +13,7 @@ kotest = "6.2.6"
 kotlinxSerialization = "1.12.0"
 ks3 = "1.0.0"
 pdfbox = "3.0.8"
-poiOoxml = "5.5.1"
+poiOoxml = "6.0.0"
 
 [plugins]
 compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }
