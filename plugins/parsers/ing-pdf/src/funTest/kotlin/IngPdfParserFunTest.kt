@@ -16,7 +16,9 @@ class IngPdfParserFunTest : StringSpec({
     val parser = IngPdfParser()
 
     "2022-01-04 account statement is parsed correctly" {
-        val statement = parser.parse(File("src/funTest/assets/Girokonto_5434805604_Kontoauszug_20220104.pdf"))
+        val resource = checkNotNull(javaClass.getResource("/Girokonto_5434805604_Kontoauszug_20220104.pdf"))
+
+        val statement = parser.parse(File(resource.toURI()))
 
         assertSoftly {
             with(statement) {
@@ -73,7 +75,9 @@ class IngPdfParserFunTest : StringSpec({
     }
 
     "2022-03-02 account statement is parsed correctly" {
-        val statement = parser.parse(File("src/funTest/assets/Girokonto_5434805604_Kontoauszug_20220302.pdf"))
+        val resource = checkNotNull(javaClass.getResource("/Girokonto_5434805604_Kontoauszug_20220302.pdf"))
+
+        val statement = parser.parse(File(resource.toURI()))
 
         with(statement) {
             assertSoftly {

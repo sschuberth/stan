@@ -14,7 +14,9 @@ abstract class AbstractTextExporterFunTest(exporter: Exporter, transform: String
         statementPetraPfiffig to "PB_KAZ_KtoNr_9999999999_06-04-2017_1200"
     ).forEach { (holderToStatement, filename) ->
         "${holderToStatement.first} statement is exported correctly" {
-            val expected = File("src/funTest/assets/$filename-expected.${exporter.extension}")
+            val resource = checkNotNull(javaClass.getResource("/$filename-expected.${exporter.extension}"))
+
+            val expected = File(resource.toURI())
                 .readText()
                 .transform()
 
