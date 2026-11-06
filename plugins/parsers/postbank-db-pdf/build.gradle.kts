@@ -8,4 +8,6 @@ dependencies {
     api(projects.lib)
 
     implementation(libs.pdfbox)
+
+    funTestImplementation(testFixtures(projects.lib))
 }
