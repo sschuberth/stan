@@ -18,6 +18,6 @@ repositories {
 }
 
 dependencies {
-    implementation(compose.desktop.currentOs)
     implementation(projects.lib)
+    implementation(compose.desktop.currentOs)
 }
