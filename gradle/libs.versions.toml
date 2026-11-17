@@ -7,7 +7,7 @@ sortDependenciesPlugin = "0.21.0"
 
 bouncyCastle = "1.87"
 clikt = "5.2.0"
-itextpdf = "5.5.13.6"
+itextpdf = "5.5.13.7"
 koinCore = "4.2.2"
 kotest = "6.2.7"
 kotlinxSerialization = "1.13.0"
